@@ -70,8 +70,8 @@ function StatusDot({ state }: { state: "done" | "active" | "pending" }) {
     );
   if (state === "active")
     return (
-      <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-primary transition-colors">
-        <span className="h-2 w-2 rounded-full bg-primary" />
+      <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-secondary transition-colors">
+        <span className="h-2 w-2 rounded-full bg-secondary" />
       </span>
     );
   return <span className="h-5 w-5 rounded-full border-2 border-border transition-colors" aria-hidden="true" />;
@@ -114,7 +114,7 @@ function SectionHeader({
           done
             ? "bg-secondary text-secondary-foreground animate-scale-in"
             : active
-              ? "bg-primary/10 text-primary ring-1 ring-primary"
+              ? "bg-secondary/10 text-secondary ring-1 ring-secondary"
               : "bg-muted text-muted-foreground",
         ].join(" ")}
       >
@@ -289,9 +289,9 @@ function PresenceBlock({
             onClick={() => onHasChange(true)}
             aria-pressed={has === true}
             className={[
-              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
               has === true
-                ? "bg-primary text-primary-foreground shadow-sm"
+                ? "bg-secondary text-secondary-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
             ].join(" ")}
           >
@@ -302,7 +302,7 @@ function PresenceBlock({
             onClick={() => onHasChange(false)}
             aria-pressed={has === false}
             className={[
-              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
               has === false
                 ? "bg-foreground text-background shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
@@ -318,7 +318,7 @@ function PresenceBlock({
           <Label className="mb-1.5 block text-xs font-medium text-muted-foreground">
             {fieldLabel}
           </Label>
-          <div className="flex items-stretch overflow-hidden rounded-lg border border-border transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+          <div className="flex items-stretch overflow-hidden rounded-lg border border-border transition-colors focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20">
             <Input
               type="number"
               value={value}
@@ -426,14 +426,14 @@ function AmenityChip({
         className={[
           "group flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-sm transition-all duration-200",
           selected
-            ? "border-primary bg-primary/10 text-foreground shadow-sm"
-            : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-muted/40",
+            ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
+            : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
         ].join(" ")}
       >
         <button
           type="button"
           onClick={() => onChange(selected ? 0 : 1)}
-          className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-full"
+          className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full"
           aria-pressed={selected}
           aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
         >
@@ -445,14 +445,14 @@ function AmenityChip({
             <button
               type="button"
               onClick={() => onChange(Math.max(0, count - 1))}
-              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-secondary active:scale-90 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
               aria-label={`Restar ${item.label}`}
             >
               <Minus className="h-3 w-3" />
             </button>
             <span
               key={count}
-              className="inline-block w-3 text-center text-xs font-bold tabular-nums text-primary animate-scale-in"
+              className="inline-block w-3 text-center text-xs font-bold tabular-nums text-secondary animate-scale-in"
               aria-live="polite"
               aria-atomic="true"
             >
@@ -461,7 +461,7 @@ function AmenityChip({
             <button
               type="button"
               onClick={() => onChange(count + 1)}
-              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-secondary active:scale-90 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
               aria-label={`Sumar ${item.label}`}
             >
               <Plus className="h-3 w-3" />
@@ -477,10 +477,10 @@ function AmenityChip({
       type="button"
       onClick={() => onChange(selected ? 0 : 1)}
       className={[
-        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
         selected
-          ? "border-primary bg-primary/10 text-foreground shadow-sm"
-          : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-muted/40",
+          ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
+          : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
       ].join(" ")}
       aria-pressed={selected}
       aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
