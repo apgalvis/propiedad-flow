@@ -6,11 +6,9 @@ import {
   MapPin,
   Home,
   Sparkles,
-  Search,
   Plus,
   Minus,
   Upload,
-  HelpCircle,
   Bed,
   Bath,
   Car,
@@ -19,17 +17,15 @@ import {
   Mail,
   Phone,
   MessageCircle,
-  X,
   Heart,
   Eye,
+  HelpCircle,
 } from "lucide-react";
 import propertyPreviewImg from "@/assets/property-preview.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -37,13 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/")({
   head: () => ({
