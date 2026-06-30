@@ -1276,6 +1276,11 @@ function Index() {
                     <Home className="h-3.5 w-3.5 text-primary" /> {construccionSize} m²
                   </span>
                 )}
+                {estac > 0 && (
+                  <span className="inline-flex items-center gap-1">
+                    <Car className="h-3.5 w-3.5 text-primary" /> {estac} {estac === 1 ? "Estac." : "Estac."}
+                  </span>
+                )}
               </div>
 
               <div className="flex gap-2 pt-1">
