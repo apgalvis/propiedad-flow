@@ -427,7 +427,7 @@ function Index() {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1440px] grid-cols-[300px_1fr] gap-10 px-8 py-10">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-[260px_1fr_340px] gap-8 px-8 py-10">
         {/* Sidebar */}
         <aside className="space-y-6">
           <div>
