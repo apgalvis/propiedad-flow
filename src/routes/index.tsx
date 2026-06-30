@@ -1097,6 +1097,8 @@ function Index() {
                   {/* 2.3 Descripción */}
                   <div>
                     <SubHeader
+                      id="sub-h-descripcion"
+                      panelId="sub-p-descripcion"
                       title="Descripción"
                       done={descripcionDone}
                       open={openSub === "descripcion"}
@@ -1105,7 +1107,7 @@ function Index() {
                       }
                       description="Describe lo que hace única a tu propiedad."
                     />
-                    <Collapse open={openSub === "descripcion"}>
+                    <Collapse id="sub-p-descripcion" open={openSub === "descripcion"}>
                       <div className="space-y-3 pb-6">
                         <Textarea
                           value={descripcion}
