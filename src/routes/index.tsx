@@ -74,7 +74,7 @@ function StatusDot({ state }: { state: "done" | "active" | "pending" }) {
         <span className="h-2 w-2 rounded-full bg-primary" />
       </span>
     );
-  return <span className="h-5 w-5 rounded-full border-2 border-muted-foreground/30 transition-colors" />;
+  return <span className="h-5 w-5 rounded-full border-2 border-border transition-colors" aria-hidden="true" />;
 }
 
 function SectionHeader({
@@ -186,12 +186,14 @@ function Collapse({ id, open, children }: { id?: string; open: boolean; children
   return (
     <div
       id={id}
-      className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+      className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${
         open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
       }`}
       aria-hidden={!open}
     >
-      <div className="overflow-hidden" inert={!open}>{children}</div>
+      <div className="overflow-hidden" inert={!open}>
+        {children}
+      </div>
     </div>
   );
 }
