@@ -141,13 +141,16 @@ function SectionHeader({
 }
 
 function SubHeader({
+  id,
+  panelId,
   title,
   done,
   open,
   onToggle,
   description,
 }: {
-  code?: string;
+  id: string;
+  panelId: string;
   title: string;
   done: boolean;
   open: boolean;
@@ -156,8 +159,12 @@ function SubHeader({
 }) {
   return (
     <button
+      id={id}
+      type="button"
       onClick={onToggle}
-      className="flex w-full items-center gap-3 py-3 text-left"
+      aria-expanded={open}
+      aria-controls={panelId}
+      className="flex w-full items-center gap-3 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-inset"
     >
       <StatusDot state={done ? "done" : open ? "active" : "pending"} />
       <div className="min-w-0 flex-1">
@@ -168,6 +175,7 @@ function SubHeader({
       </div>
       <ChevronDown
         className={`h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+        aria-hidden="true"
       />
     </button>
   );
