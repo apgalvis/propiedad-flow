@@ -182,14 +182,16 @@ function SubHeader({
 }
 
 /* Wrapper that animates open/close of accordion content */
-function Collapse({ open, children }: { open: boolean; children: React.ReactNode }) {
+function Collapse({ id, open, children }: { id?: string; open: boolean; children: React.ReactNode }) {
   return (
     <div
+      id={id}
       className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
         open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
       }`}
+      aria-hidden={!open}
     >
-      <div className="overflow-hidden">{children}</div>
+      <div className="overflow-hidden" inert={!open}>{children}</div>
     </div>
   );
 }
