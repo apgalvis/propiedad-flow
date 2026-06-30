@@ -525,7 +525,7 @@ function Index() {
 
   /* ---------- Summaries ---------- */
   const propiedadSummary = propiedadDone
-    ? `${operacion} · ${tipoPropiedad} · $${Number(precio).toLocaleString("es-MX")} MXN`
+    ? `${operacion} · ${tipoPropiedad} · $${Number(precio).toLocaleString("es-MX")} MXN · ${estac} ${estac === 1 ? "estacionamiento" : "estacionamientos"}`
     : undefined;
 
   const especSummary = useMemo(() => {
@@ -1284,12 +1284,18 @@ function Index() {
               </div>
 
               <div className="flex gap-2 pt-1">
-                <button className="flex-1 rounded-full border border-primary px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/5">
+                <div
+                  className="flex-1 rounded-full border border-primary px-3 py-2 text-center text-xs font-semibold text-primary"
+                  aria-disabled="true"
+                >
                   Contactar
-                </button>
-                <button className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
+                </div>
+                <div
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
+                  aria-disabled="true"
+                >
                   <MessageCircle className="h-3.5 w-3.5" /> Consultar
-                </button>
+                </div>
               </div>
             </div>
           </div>
