@@ -559,18 +559,27 @@ function Index() {
   const contactoDone = !!(nombre && correo && tel);
 
   /* ---------- Summaries ---------- */
-  const propiedadSummary = propiedadDone
-    ? `${operacion} · ${tipoPropiedad} · $${Number(precio).toLocaleString("es-MX")} MXN · ${estac} ${estac === 1 ? "estacionamiento" : "estacionamientos"}`
-    : undefined;
+  const formatEstac = (n: number) => `${n} ${n === 1 ? "estacionamiento" : "estacionamientos"}`;
+
+  const propiedadSummary = useMemo(() => {
+    const op = operacion || "—";
+    const tipo = tipoPropiedad || "—";
+    const precioNum = Number(precio);
+    const precioText = precio && !isNaN(precioNum) && precioNum > 0
+      ? `$${precioNum.toLocaleString("es-MX")} MXN`
+      : "— MXN";
+    return `${op} · ${tipo} · ${precioText} · ${formatEstac(estac)}`;
+  }, [operacion, tipoPropiedad, precio, estac]);
 
   const especSummary = useMemo(() => {
     const parts = [
       `${recamaras} recámaras`,
       `${banos} baños`,
       construccion ? `${construccionSize} m² construcción` : null,
+      formatEstac(estac),
     ].filter(Boolean);
-    return especificacionesDone ? parts.join(" · ") : parts.join(" · ");
-  }, [recamaras, banos, construccion, construccionSize, especificacionesDone]);
+    return parts.join(" · ");
+  }, [recamaras, banos, construccion, construccionSize, estac]);
 
   const contactoSummary = contactoDone ? `${nombre} · ${tel}` : undefined;
 
