@@ -1140,6 +1140,8 @@ function Index() {
                   {/* 2.4 Imágenes */}
                   <div>
                     <SubHeader
+                      id="sub-h-imagenes"
+                      panelId="sub-p-imagenes"
                       title="Imágenes"
                       done={imagenesDone}
                       open={openSub === "imagenes"}
@@ -1148,7 +1150,7 @@ function Index() {
                       }
                       description="Sube fotos de alta calidad para destacar tu propiedad."
                     />
-                    <Collapse open={openSub === "imagenes"}>
+                    <Collapse id="sub-p-imagenes" open={openSub === "imagenes"}>
                       <div className="space-y-3 pb-6">
                         <div className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-muted/30 px-6 py-10 transition-colors hover:border-primary/40 hover:bg-muted/50 sm:py-12">
                           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent">
