@@ -779,6 +779,8 @@ function Index() {
           {/* SECTION 1 — PROPIEDAD */}
           <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <SectionHeader
+              id="sec-h-propiedad"
+              panelId="sec-p-propiedad"
               index={1}
               title="Propiedad"
               summary={propiedadSummary}
@@ -787,11 +789,13 @@ function Index() {
               open={openSection === "propiedad"}
               onToggle={() => toggleSection("propiedad")}
             />
-            <Collapse open={openSection === "propiedad"}>
+            <Collapse id="sec-p-propiedad" open={openSection === "propiedad"}>
               <div className="border-t border-border px-4 pb-5 sm:px-6">
                 <div className="divide-y divide-border">
                   <div>
                     <SubHeader
+                      id="sub-h-ubicacion"
+                      panelId="sub-p-ubicacion"
                       title="Ubicación"
                       done={ubicacionDone}
                       open={openSub === "ubicacion"}
@@ -800,7 +804,7 @@ function Index() {
                       }
                       description="Indica dónde se encuentra tu propiedad."
                     />
-                    <Collapse open={openSub === "ubicacion"}>
+                    <Collapse id="sub-p-ubicacion" open={openSub === "ubicacion"}>
                       <div className="space-y-4 pb-5">
                         <div>
                           <Label className="mb-1.5 block text-sm">Dirección *</Label>
@@ -831,6 +835,8 @@ function Index() {
                   </div>
                   <div>
                     <SubHeader
+                      id="sub-h-basica"
+                      panelId="sub-p-basica"
                       title="Información básica"
                       done={basicaDone}
                       open={openSub === "basica"}
@@ -839,7 +845,7 @@ function Index() {
                       }
                       description="Operación, tipo de propiedad y precio."
                     />
-                    <Collapse open={openSub === "basica"}>
+                    <Collapse id="sub-p-basica" open={openSub === "basica"}>
                       <div className="space-y-4 pb-5">
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                           <div>
