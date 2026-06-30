@@ -1278,7 +1278,12 @@ function Index() {
                   <p className="text-xs">Agrega imágenes para verlas aquí</p>
                 </div>
               )}
-              <button className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition-transform hover:scale-110 hover:bg-white active:scale-95">
+              <button
+                type="button"
+                tabIndex={-1}
+                aria-label="Guardar como favorito (referencia visual)"
+                className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition-transform hover:scale-110 hover:bg-white active:scale-95"
+              >
                 <Heart className="h-4 w-4" />
               </button>
               {imagenesDone && (
@@ -1289,6 +1294,7 @@ function Index() {
                       className={`h-1.5 rounded-full transition-all ${
                         i === 1 ? "w-4 bg-white" : "w-1.5 bg-white/60"
                       }`}
+                      aria-hidden="true"
                     />
                   ))}
                 </div>
@@ -1329,35 +1335,39 @@ function Index() {
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-border pt-3 text-xs text-foreground">
                 <span className="inline-flex items-center gap-1">
-                  <Bed className="h-3.5 w-3.5 text-primary" /> {recamaras} Recá.
+                  <Bed className="h-3.5 w-3.5 text-primary" aria-hidden="true" /> {recamaras} {recamaras === 1 ? "Recám." : "Recáms."}
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <Bath className="h-3.5 w-3.5 text-primary" /> {banos} Baños
+                  <Bath className="h-3.5 w-3.5 text-primary" aria-hidden="true" /> {banos} {banos === 1 ? "Baño" : "Baños"}
                 </span>
                 {construccion && (
                   <span className="inline-flex items-center gap-1">
-                    <Home className="h-3.5 w-3.5 text-primary" /> {construccionSize} m²
+                    <Home className="h-3.5 w-3.5 text-primary" aria-hidden="true" /> {construccionSize} m²
                   </span>
                 )}
-                {estac > 0 && (
-                  <span className="inline-flex items-center gap-1">
-                    <Car className="h-3.5 w-3.5 text-primary" /> {estac} {estac === 1 ? "Estac." : "Estac."}
-                  </span>
-                )}
+                <span className="inline-flex items-center gap-1">
+                  <Car className="h-3.5 w-3.5 text-primary" aria-hidden="true" /> {estac} {estac === 1 ? "estacionamiento" : "estacionamientos"}
+                </span>
               </div>
 
               <div className="flex gap-2 pt-1">
                 <div
-                  className="flex-1 rounded-full border border-primary px-3 py-2 text-center text-xs font-semibold text-primary"
+                  role="button"
                   aria-disabled="true"
+                  aria-label="Botón de referencia visual: Contactar"
+                  tabIndex={-1}
+                  className="flex-1 rounded-full border border-primary px-3 py-2 text-center text-xs font-semibold text-primary"
                 >
                   Contactar
                 </div>
                 <div
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
+                  role="button"
                   aria-disabled="true"
+                  aria-label="Botón de referencia visual: Consultar"
+                  tabIndex={-1}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
                 >
-                  <MessageCircle className="h-3.5 w-3.5" /> Consultar
+                  <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> Consultar
                 </div>
               </div>
             </div>
