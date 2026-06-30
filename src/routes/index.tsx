@@ -544,7 +544,7 @@ function Index() {
               onToggle={() => toggleSection("propiedad")}
             />
             {openSection === "propiedad" && (
-              <div className="border-t border-border px-7 pb-6">
+              <div className="border-t border-border px-6 pb-5">
                 <div className="divide-y divide-border">
                   <div>
                     <SubHeader
@@ -667,7 +667,7 @@ function Index() {
               onToggle={() => toggleSection("especificaciones")}
             />
             {openSection === "especificaciones" && (
-              <div className="border-t border-border px-7 pb-6">
+              <div className="border-t border-border px-6 pb-5">
                 <div className="divide-y divide-border">
                   {/* 2.1 Características */}
                   <div>
@@ -941,7 +941,7 @@ function Index() {
               onToggle={() => toggleSection("contacto")}
             />
             {openSection === "contacto" && (
-              <div className="border-t border-border px-7 pb-6 pt-5">
+              <div className="border-t border-border px-6 pb-5 pt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="mb-1.5 block text-sm">Nombre *</Label>
