@@ -431,9 +431,11 @@ function AmenityChip({
         <button
           type="button"
           onClick={() => onChange(selected ? 0 : 1)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-full"
+          aria-pressed={selected}
+          aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
         >
-          <span className="text-base leading-none">{item.emoji}</span>
+          <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
           <span className="font-medium">{item.label}</span>
         </button>
         {selected && (
@@ -441,22 +443,24 @@ function AmenityChip({
             <button
               type="button"
               onClick={() => onChange(Math.max(0, count - 1))}
-              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all"
-              aria-label="Restar"
+              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+              aria-label={`Restar ${item.label}`}
             >
               <Minus className="h-3 w-3" />
             </button>
             <span
               key={count}
               className="inline-block w-3 text-center text-xs font-bold tabular-nums text-primary animate-scale-in"
+              aria-live="polite"
+              aria-atomic="true"
             >
               {count}
             </span>
             <button
               type="button"
               onClick={() => onChange(count + 1)}
-              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all"
-              aria-label="Sumar"
+              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+              aria-label={`Sumar ${item.label}`}
             >
               <Plus className="h-3 w-3" />
             </button>
@@ -471,16 +475,18 @@ function AmenityChip({
       type="button"
       onClick={() => onChange(selected ? 0 : 1)}
       className={[
-        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95",
+        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
         selected
           ? "border-primary bg-primary/10 text-foreground shadow-sm"
           : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-muted/40",
       ].join(" ")}
+      aria-pressed={selected}
+      aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
     >
-      <span className="text-base leading-none">{item.emoji}</span>
+      <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
       <span className="font-medium">{item.label}</span>
       {selected && (
-        <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground animate-scale-in">
+        <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground animate-scale-in" aria-hidden="true">
           <Check className="h-2.5 w-2.5" strokeWidth={4} />
         </span>
       )}
