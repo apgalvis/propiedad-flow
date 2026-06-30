@@ -61,17 +61,20 @@ type SubId =
 function StatusDot({ state }: { state: "done" | "active" | "pending" }) {
   if (state === "done")
     return (
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+      <span
+        key="done"
+        className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground animate-scale-in"
+      >
         <Check className="h-3 w-3" strokeWidth={3} />
       </span>
     );
   if (state === "active")
     return (
-      <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-primary">
+      <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-primary transition-colors">
         <span className="h-2 w-2 rounded-full bg-primary" />
       </span>
     );
-  return <span className="h-5 w-5 rounded-full border-2 border-muted-foreground/30" />;
+  return <span className="h-5 w-5 rounded-full border-2 border-muted-foreground/30 transition-colors" />;
 }
 
 function SectionHeader({
@@ -94,13 +97,14 @@ function SectionHeader({
   return (
     <button
       onClick={onToggle}
-      className="flex w-full items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-muted/40"
+      className="flex w-full items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3.5 sm:py-4 text-left transition-colors hover:bg-muted/40"
     >
       <span
+        key={done ? "done" : "pending"}
         className={[
-          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold transition-colors",
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold transition-all duration-300",
           done
-            ? "bg-primary text-primary-foreground"
+            ? "bg-primary text-primary-foreground animate-scale-in"
             : active
               ? "bg-primary/10 text-primary ring-1 ring-primary"
               : "bg-muted text-muted-foreground",
@@ -108,8 +112,8 @@ function SectionHeader({
       >
         {done ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : index}
       </span>
-      <div className="flex-1 min-w-0">
-        <h2 className="text-[15px] font-semibold text-foreground">{title}</h2>
+      <div className="min-w-0 flex-1">
+        <h2 className="truncate text-[15px] font-semibold text-foreground">{title}</h2>
         {summary ? (
           <p className="mt-0.5 truncate text-xs text-muted-foreground">{summary}</p>
         ) : (
@@ -121,21 +125,20 @@ function SectionHeader({
         )}
       </div>
       <ChevronDown
-        className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+        className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300 ${open ? "rotate-180" : ""}`}
       />
     </button>
   );
 }
 
 function SubHeader({
-  code,
   title,
   done,
   open,
   onToggle,
   description,
 }: {
-  code: string;
+  code?: string;
   title: string;
   done: boolean;
   open: boolean;
@@ -148,16 +151,29 @@ function SubHeader({
       className="flex w-full items-center gap-3 py-3 text-left"
     >
       <StatusDot state={done ? "done" : open ? "active" : "pending"} />
-      <div className="flex-1">
+      <div className="min-w-0 flex-1">
         <span className="text-[14px] font-medium text-foreground">{title}</span>
         {description && open && (
-          <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground animate-fade-in">{description}</p>
         )}
       </div>
       <ChevronDown
-        className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+        className={`h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform duration-300 ${open ? "rotate-180" : ""}`}
       />
     </button>
+  );
+}
+
+/* Wrapper that animates open/close of accordion content */
+function Collapse({ open, children }: { open: boolean; children: React.ReactNode }) {
+  return (
+    <div
+      className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+        open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+      }`}
+    >
+      <div className="overflow-hidden">{children}</div>
+    </div>
   );
 }
 
@@ -177,19 +193,26 @@ function Stepper({
   return (
     <div>
       <Label className="mb-1.5 block text-sm font-medium">{label}</Label>
-      <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2">
+      <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 transition-colors focus-within:border-primary hover:border-primary/40">
         <span className="text-muted-foreground">{icon}</span>
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={() => onChange(Math.max(min, value - 1))}
-            className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground hover:border-primary hover:text-primary"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-all hover:border-primary hover:text-primary active:scale-90"
           >
             <Minus className="h-3.5 w-3.5" />
           </button>
-          <span className="w-6 text-center text-base font-semibold tabular-nums">{value}</span>
+          <span
+            key={value}
+            className="inline-block w-6 text-center text-base font-semibold tabular-nums animate-scale-in"
+          >
+            {value}
+          </span>
           <button
+            type="button"
             onClick={() => onChange(value + 1)}
-            className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground hover:border-primary hover:text-primary"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-all hover:border-primary hover:text-primary active:scale-90"
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
@@ -199,33 +222,72 @@ function Stepper({
   );
 }
 
-function SizeToggleBlock({
+/* Sí / No con tamaño condicional */
+function PresenceBlock({
   title,
-  enabled,
-  onEnabledChange,
+  emoji,
+  has,
+  onHasChange,
   value,
   onValueChange,
   fieldLabel,
 }: {
   title: string;
-  enabled: boolean;
-  onEnabledChange: (b: boolean) => void;
+  emoji: string;
+  has: boolean | null;
+  onHasChange: (b: boolean) => void;
   value: string;
   onValueChange: (v: string) => void;
   fieldLabel: string;
 }) {
+  const answered = has !== null;
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-foreground">{title}</span>
-        <Switch checked={enabled} onCheckedChange={onEnabledChange} />
+    <div
+      className={[
+        "rounded-xl border bg-card p-4 transition-all duration-300",
+        answered ? "border-border" : "border-dashed border-border",
+        has ? "ring-1 ring-primary/20" : "",
+      ].join(" ")}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="text-base leading-none">{emoji}</span>
+          <span className="truncate text-sm font-semibold text-foreground">{title} *</span>
+        </div>
+        <div className="inline-flex shrink-0 rounded-full border border-border bg-muted/40 p-0.5 text-xs font-medium">
+          <button
+            type="button"
+            onClick={() => onHasChange(true)}
+            className={[
+              "rounded-full px-3 py-1 transition-all",
+              has === true
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            ].join(" ")}
+          >
+            Sí
+          </button>
+          <button
+            type="button"
+            onClick={() => onHasChange(false)}
+            className={[
+              "rounded-full px-3 py-1 transition-all",
+              has === false
+                ? "bg-foreground text-background shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            ].join(" ")}
+          >
+            No
+          </button>
+        </div>
       </div>
-      {enabled && (
+
+      <Collapse open={!!has}>
         <div className="mt-4">
           <Label className="mb-1.5 block text-xs font-medium text-muted-foreground">
             {fieldLabel}
           </Label>
-          <div className="flex items-stretch overflow-hidden rounded-lg border border-border focus-within:ring-2 focus-within:ring-primary/30">
+          <div className="flex items-stretch overflow-hidden rounded-lg border border-border transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
             <Input
               type="number"
               value={value}
@@ -238,17 +300,71 @@ function SizeToggleBlock({
             </div>
           </div>
         </div>
+      </Collapse>
+
+      {has === false && (
+        <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground animate-fade-in">
+          <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/50" />
+          Sin {title.toLowerCase()}
+        </p>
       )}
     </div>
   );
 }
 
 /* ---------- Constants ---------- */
-const AMENITIES = [
-  "Alberca", "Gimnasio", "Terraza", "Mascotas permitidas", "Aire acondicionado",
-  "Seguridad privada 24/7", "Estacionamiento de visitas", "Roof garden", "Salón de eventos",
-  "Área de BBQ", "Cancha de tenis", "Cancha de pádel", "Spa", "Sauna",
-  "Jardín privado", "Bodega", "Elevador", "Lobby", "Coworking", "Cuarto de lavado",
+type Amenity = { id: string; label: string; emoji: string; countable?: boolean };
+type AmenityGroup = { id: string; label: string; hint?: string; items: Amenity[] };
+
+const AMENITY_GROUPS: AmenityGroup[] = [
+  {
+    id: "wellness",
+    label: "Bienestar y recreación",
+    items: [
+      { id: "alberca", label: "Alberca", emoji: "🏊" },
+      { id: "gimnasio", label: "Gimnasio", emoji: "🏋️" },
+      { id: "spa", label: "Spa", emoji: "💆" },
+      { id: "sauna", label: "Sauna", emoji: "♨️" },
+      { id: "roof", label: "Roof garden", emoji: "🌇" },
+      { id: "tenis", label: "Cancha de tenis", emoji: "🎾" },
+      { id: "padel", label: "Cancha de pádel", emoji: "🏓" },
+      { id: "bbq", label: "Área de BBQ", emoji: "🍖" },
+    ],
+  },
+  {
+    id: "services",
+    label: "Servicios del edificio",
+    items: [
+      { id: "seguridad", label: "Seguridad 24/7", emoji: "🛡️" },
+      { id: "visitas", label: "Estacionamiento de visitas", emoji: "🅿️" },
+      { id: "elevador", label: "Elevador", emoji: "🛗" },
+      { id: "lavado", label: "Cuarto de lavado", emoji: "🧺" },
+      { id: "ac", label: "Aire acondicionado", emoji: "❄️" },
+      { id: "lobby", label: "Lobby", emoji: "🛋️" },
+      { id: "coworking", label: "Coworking", emoji: "💻" },
+      { id: "eventos", label: "Salón de eventos", emoji: "🎉" },
+    ],
+  },
+  {
+    id: "lifestyle",
+    label: "Estilo de vida",
+    items: [
+      { id: "pet", label: "Pet friendly", emoji: "🐾" },
+      { id: "jardincomun", label: "Jardín común", emoji: "🌳" },
+    ],
+  },
+  {
+    id: "countable",
+    label: "¿Cuántos tiene tu propiedad?",
+    hint: "Toca para agregar y usa + / − para indicar la cantidad.",
+    items: [
+      { id: "balcon", label: "Balcón", emoji: "🌅", countable: true },
+      { id: "chimenea", label: "Chimenea", emoji: "🔥", countable: true },
+      { id: "terraza", label: "Terraza privada", emoji: "🌿", countable: true },
+      { id: "bodega", label: "Bodega", emoji: "📦", countable: true },
+      { id: "jardinpriv", label: "Jardín privado", emoji: "🌷", countable: true },
+    ],
+  },
 ];
 
 const ANTIGUEDAD_OPTIONS = [
@@ -261,9 +377,90 @@ const ANTIGUEDAD_OPTIONS = [
   "No estoy seguro",
 ];
 
+/* ---------- Amenity chip ---------- */
+function AmenityChip({
+  item,
+  count,
+  onChange,
+}: {
+  item: Amenity;
+  count: number;
+  onChange: (n: number) => void;
+}) {
+  const selected = count > 0;
+
+  if (item.countable) {
+    return (
+      <div
+        className={[
+          "group flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-sm transition-all duration-200",
+          selected
+            ? "border-primary bg-primary/10 text-foreground shadow-sm"
+            : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-muted/40",
+        ].join(" ")}
+      >
+        <button
+          type="button"
+          onClick={() => onChange(selected ? 0 : 1)}
+          className="flex items-center gap-2"
+        >
+          <span className="text-base leading-none">{item.emoji}</span>
+          <span className="font-medium">{item.label}</span>
+        </button>
+        {selected && (
+          <div className="ml-1 flex items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
+            <button
+              type="button"
+              onClick={() => onChange(Math.max(0, count - 1))}
+              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all"
+              aria-label="Restar"
+            >
+              <Minus className="h-3 w-3" />
+            </button>
+            <span
+              key={count}
+              className="inline-block w-3 text-center text-xs font-bold tabular-nums text-primary animate-scale-in"
+            >
+              {count}
+            </span>
+            <button
+              type="button"
+              onClick={() => onChange(count + 1)}
+              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all"
+              aria-label="Sumar"
+            >
+              <Plus className="h-3 w-3" />
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(selected ? 0 : 1)}
+      className={[
+        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95",
+        selected
+          ? "border-primary bg-primary/10 text-foreground shadow-sm"
+          : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-muted/40",
+      ].join(" ")}
+    >
+      <span className="text-base leading-none">{item.emoji}</span>
+      <span className="font-medium">{item.label}</span>
+      {selected && (
+        <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground animate-scale-in">
+          <Check className="h-2.5 w-2.5" strokeWidth={4} />
+        </span>
+      )}
+    </button>
+  );
+}
+
 /* ---------- Page ---------- */
 function Index() {
-  // Sections / subsections open state
   const [openSection, setOpenSection] = useState<SectionId>("especificaciones");
   const [openSub, setOpenSub] = useState<SubId>("caracteristicas");
 
@@ -280,21 +477,24 @@ function Index() {
   const [niveles, setNiveles] = useState(1);
   const [estac, setEstac] = useState(2);
   const [antiguedad, setAntiguedad] = useState("5 a 10 años");
-  const [terreno, setTerreno] = useState(true);
+
+  const [terreno, setTerreno] = useState<boolean | null>(true);
   const [terrenoSize, setTerrenoSize] = useState("250");
-  const [construccion, setConstruccion] = useState(true);
+  const [construccion, setConstruccion] = useState<boolean | null>(true);
   const [construccionSize, setConstruccionSize] = useState("180");
-  const [jardin, setJardin] = useState(true);
+  const [jardin, setJardin] = useState<boolean | null>(true);
   const [jardinSize, setJardinSize] = useState("50");
+
   const [usoSuelo, setUsoSuelo] = useState("Comercial");
   const [tipoRancho, setTipoRancho] = useState("Agrícola");
 
-  // 2.2
-  const [amenitiesOpen, setAmenitiesOpen] = useState(false);
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([
-    "Alberca", "Gimnasio", "Seguridad privada 24/7",
-  ]);
-  const [amenitySearch, setAmenitySearch] = useState("");
+  // 2.2 Amenidades inline
+  const [amenities, setAmenities] = useState<Record<string, number>>({
+    alberca: 1,
+    gimnasio: 1,
+    seguridad: 1,
+    balcon: 2,
+  });
 
   // 2.3
   const [descripcion, setDescripcion] = useState("");
@@ -308,13 +508,15 @@ function Index() {
   const [tel, setTel] = useState("");
   const [whats, setWhats] = useState("");
 
-  /* ---------- Completion logic ---------- */
+  /* ---------- Completion ---------- */
   const ubicacionDone = true;
   const basicaDone = !!(operacion && tipoPropiedad && precio);
   const propiedadDone = ubicacionDone && basicaDone;
 
-  const caractDone = true;
-  const amenidadesDone = selectedAmenities.length > 0;
+  const presenceAnswered = terreno !== null && construccion !== null && jardin !== null;
+  const caractDone = presenceAnswered;
+  const amenidadesCount = Object.values(amenities).filter((n) => n > 0).length;
+  const amenidadesDone = amenidadesCount > 0;
   const descripcionDone = descripcion.trim().length >= 40;
   const imagenesDone = imageCount >= 5;
   const especificacionesDone = caractDone && amenidadesDone && descripcionDone && imagenesDone;
@@ -332,27 +534,18 @@ function Index() {
       `${banos} baños`,
       construccion ? `${construccionSize} m² construcción` : null,
     ].filter(Boolean);
-    return especificacionesDone ? parts.join(" · ") : `${parts.slice(0, 3).join(" · ")}`;
+    return especificacionesDone ? parts.join(" · ") : parts.join(" · ");
   }, [recamaras, banos, construccion, construccionSize, especificacionesDone]);
 
   const contactoSummary = contactoDone ? `${nombre} · ${tel}` : undefined;
 
-  /* ---------- Helpers ---------- */
   const totalSubsDone =
     Number(caractDone) + Number(amenidadesDone) + Number(descripcionDone) + Number(imagenesDone);
-
-  const filteredAmenities = AMENITIES.filter((a) =>
-    a.toLowerCase().includes(amenitySearch.toLowerCase()),
-  );
 
   const toggleSection = (s: SectionId) =>
     setOpenSection((cur) => (cur === s ? ("" as SectionId) : s));
 
-  const continueFromCaract = () => {
-    setOpenSub("amenidades");
-  };
-
-  /* ---------- Sidebar items ---------- */
+  /* ---------- Sidebar ---------- */
   const sideSections: {
     id: SectionId;
     n: number;
@@ -391,34 +584,41 @@ function Index() {
     },
   ];
 
+  const setAmenity = (id: string, n: number) =>
+    setAmenities((cur) => ({ ...cur, [id]: n }));
+
   return (
     <div className="min-h-screen bg-background">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/80 px-8 py-4 backdrop-blur">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/80 px-4 py-3 backdrop-blur sm:px-8 sm:py-4">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
             <Home className="h-4 w-4 text-primary-foreground" />
           </div>
-          <div className="text-lg font-semibold tracking-tight">
+          <div className="truncate text-base font-semibold tracking-tight sm:text-lg">
             Propiedades<span className="text-primary">.com</span>
           </div>
         </div>
-        <div className="flex items-center gap-5">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="flex items-center gap-3 sm:gap-5">
+          <div className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
             <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Check className="h-2.5 w-2.5" strokeWidth={4} />
             </span>
             Guardado automáticamente
           </div>
-          <Button variant="outline" className="rounded-full border-primary text-primary hover:bg-primary/5">
-            Guardar y salir
+          <Button
+            variant="outline"
+            className="h-9 rounded-full border-primary px-3 text-xs text-primary hover:bg-primary/5 sm:px-4 sm:text-sm"
+          >
+            <span className="hidden sm:inline">Guardar y salir</span>
+            <span className="sm:hidden">Guardar</span>
           </Button>
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1440px] grid-cols-[260px_1fr_340px] gap-8 px-8 py-10">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[240px_1fr_320px] lg:gap-8 lg:px-8 lg:py-10">
         {/* Sidebar */}
-        <aside className="space-y-6">
+        <aside className="hidden space-y-6 lg:block">
           <div>
             <h1 className="text-[22px] font-semibold leading-tight tracking-tight">
               Publica tu propiedad
@@ -428,7 +628,6 @@ function Index() {
             </p>
           </div>
 
-          {/* Progress bar */}
           <div>
             <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
               <span>Progreso</span>
@@ -438,7 +637,7 @@ function Index() {
             </div>
             <div className="h-1.5 overflow-hidden rounded-full bg-muted">
               <div
-                className="h-full rounded-full bg-primary transition-all"
+                className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
                 style={{
                   width: `${
                     ((Number(propiedadDone) + Number(especificacionesDone) + Number(contactoDone)) /
@@ -467,10 +666,10 @@ function Index() {
                       {s.n}. {s.label}
                     </span>
                     <ChevronDown
-                      className={`h-4 w-4 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""}`}
+                      className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
                     />
                   </button>
-                  {expanded && (
+                  <Collapse open={expanded}>
                     <div className="ml-4 mt-1 space-y-0.5 border-l border-border pl-4">
                       {s.subs.map((sub) => {
                         const isActive = openSub === sub.id && expanded;
@@ -496,13 +695,12 @@ function Index() {
                         );
                       })}
                     </div>
-                  )}
+                  </Collapse>
                 </div>
               );
             })}
           </nav>
 
-          {/* Help card */}
           <div className="rounded-xl border border-border bg-card p-4">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-accent-foreground">
@@ -519,10 +717,32 @@ function Index() {
           </div>
         </aside>
 
+        {/* Mobile heading + progress */}
+        <div className="lg:hidden">
+          <h1 className="text-xl font-semibold tracking-tight">Publica tu propiedad</h1>
+          <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
+                style={{
+                  width: `${
+                    ((Number(propiedadDone) + Number(especificacionesDone) + Number(contactoDone)) /
+                      3) *
+                    100
+                  }%`,
+                }}
+              />
+            </div>
+            <span className="font-medium text-foreground">
+              {Number(propiedadDone) + Number(especificacionesDone) + Number(contactoDone)}/3
+            </span>
+          </div>
+        </div>
+
         {/* Main */}
         <main className="space-y-4">
           {/* SECTION 1 — PROPIEDAD */}
-          <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <SectionHeader
               index={1}
               title="Propiedad"
@@ -532,12 +752,11 @@ function Index() {
               open={openSection === "propiedad"}
               onToggle={() => toggleSection("propiedad")}
             />
-            {openSection === "propiedad" && (
-              <div className="border-t border-border px-6 pb-5">
+            <Collapse open={openSection === "propiedad"}>
+              <div className="border-t border-border px-4 pb-5 sm:px-6">
                 <div className="divide-y divide-border">
                   <div>
                     <SubHeader
-                      code="1.1"
                       title="Ubicación"
                       done={ubicacionDone}
                       open={openSub === "ubicacion"}
@@ -546,11 +765,11 @@ function Index() {
                       }
                       description="Indica dónde se encuentra tu propiedad."
                     />
-                    {openSub === "ubicacion" && (
+                    <Collapse open={openSub === "ubicacion"}>
                       <div className="space-y-4 pb-5">
                         <div>
                           <Label className="mb-1.5 block text-sm">Dirección *</Label>
-                          <div className="flex items-center rounded-lg border border-border bg-card px-3">
+                          <div className="flex items-center rounded-lg border border-border bg-card px-3 transition-colors focus-within:border-primary">
                             <MapPin className="h-4 w-4 text-muted-foreground" />
                             <Input
                               defaultValue={direccion}
@@ -558,7 +777,7 @@ function Index() {
                             />
                           </div>
                         </div>
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                           <div>
                             <Label className="mb-1.5 block text-sm">Ciudad *</Label>
                             <Input defaultValue="Ciudad de México" />
@@ -573,11 +792,10 @@ function Index() {
                           </div>
                         </div>
                       </div>
-                    )}
+                    </Collapse>
                   </div>
                   <div>
                     <SubHeader
-                      code="1.2"
                       title="Información básica"
                       done={basicaDone}
                       open={openSub === "basica"}
@@ -586,9 +804,9 @@ function Index() {
                       }
                       description="Operación, tipo de propiedad y precio."
                     />
-                    {openSub === "basica" && (
+                    <Collapse open={openSub === "basica"}>
                       <div className="space-y-4 pb-5">
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                           <div>
                             <Label className="mb-1.5 block text-sm">Operación *</Label>
                             <Select value={operacion} onValueChange={setOperacion}>
@@ -633,15 +851,15 @@ function Index() {
                           </Button>
                         </div>
                       </div>
-                    )}
+                    </Collapse>
                   </div>
                 </div>
               </div>
-            )}
+            </Collapse>
           </section>
 
           {/* SECTION 2 — ESPECIFICACIONES */}
-          <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <SectionHeader
               index={2}
               title="Especificaciones"
@@ -655,33 +873,30 @@ function Index() {
               open={openSection === "especificaciones"}
               onToggle={() => toggleSection("especificaciones")}
             />
-            {openSection === "especificaciones" && (
-              <div className="border-t border-border px-6 pb-5">
+            <Collapse open={openSection === "especificaciones"}>
+              <div className="border-t border-border px-4 pb-5 sm:px-6">
                 <div className="divide-y divide-border">
                   {/* 2.1 Características */}
                   <div>
                     <SubHeader
-                      code="2.1"
                       title="Características"
                       done={caractDone}
                       open={openSub === "caracteristicas"}
                       onToggle={() =>
-                        setOpenSub(
-                          openSub === "caracteristicas" ? ("" as SubId) : "caracteristicas",
-                        )
+                        setOpenSub(openSub === "caracteristicas" ? ("" as SubId) : "caracteristicas")
                       }
                       description="Cuéntanos los detalles principales de tu propiedad."
                     />
-                    {openSub === "caracteristicas" && (
+                    <Collapse open={openSub === "caracteristicas"}>
                       <div className="space-y-6 pb-6">
-                        <div className="grid grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                           <Stepper label="Recámaras *" value={recamaras} onChange={setRecamaras} icon={<Bed className="h-4 w-4" />} />
                           <Stepper label="Baños *" value={banos} onChange={setBanos} icon={<Bath className="h-4 w-4" />} />
                           <Stepper label="Medios baños" value={mediosBanos} onChange={setMediosBanos} icon={<Bath className="h-4 w-4" />} />
                           <Stepper label="Niveles" value={niveles} onChange={setNiveles} min={1} icon={<Home className="h-4 w-4" />} />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                           <Stepper label="Estacionamiento(s)" value={estac} onChange={setEstac} icon={<Car className="h-4 w-4" />} />
                           <div>
                             <Label className="mb-1.5 block text-sm font-medium">Antigüedad *</Label>
@@ -696,34 +911,42 @@ function Index() {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-4">
-                          <SizeToggleBlock
-                            title="Terreno"
-                            enabled={terreno}
-                            onEnabledChange={setTerreno}
-                            value={terrenoSize}
-                            onValueChange={setTerrenoSize}
-                            fieldLabel="Tamaño del terreno"
-                          />
-                          <SizeToggleBlock
-                            title="Construcción"
-                            enabled={construccion}
-                            onEnabledChange={setConstruccion}
-                            value={construccionSize}
-                            onValueChange={setConstruccionSize}
-                            fieldLabel="Tamaño de construcción"
-                          />
-                          <SizeToggleBlock
-                            title="Jardín"
-                            enabled={jardin}
-                            onEnabledChange={setJardin}
-                            value={jardinSize}
-                            onValueChange={setJardinSize}
-                            fieldLabel="Tamaño del jardín"
-                          />
+                        <div>
+                          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            Espacios exteriores
+                          </p>
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                            <PresenceBlock
+                              title="Terreno"
+                              emoji="🗺️"
+                              has={terreno}
+                              onHasChange={setTerreno}
+                              value={terrenoSize}
+                              onValueChange={setTerrenoSize}
+                              fieldLabel="Tamaño del terreno"
+                            />
+                            <PresenceBlock
+                              title="Construcción"
+                              emoji="🏗️"
+                              has={construccion}
+                              onHasChange={setConstruccion}
+                              value={construccionSize}
+                              onValueChange={setConstruccionSize}
+                              fieldLabel="Tamaño de construcción"
+                            />
+                            <PresenceBlock
+                              title="Jardín"
+                              emoji="🌳"
+                              has={jardin}
+                              onHasChange={setJardin}
+                              value={jardinSize}
+                              onValueChange={setJardinSize}
+                              fieldLabel="Tamaño del jardín"
+                            />
+                          </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                           <div>
                             <Label className="mb-1.5 block text-sm font-medium">Uso de suelo *</Label>
                             <Select value={usoSuelo} onValueChange={setUsoSuelo}>
@@ -738,15 +961,15 @@ function Index() {
                           </div>
                           <div>
                             <Label className="mb-1.5 block text-sm font-medium">Tipo de rancho</Label>
-                            <div className="inline-flex rounded-lg border border-border bg-card p-1">
+                            <div className="inline-flex flex-wrap rounded-lg border border-border bg-card p-1">
                               {["No aplica", "Agrícola", "Ganadero"].map((t) => (
                                 <button
                                   key={t}
                                   onClick={() => setTipoRancho(t)}
                                   className={[
-                                    "rounded-md px-4 py-1.5 text-sm font-medium transition-colors",
+                                    "rounded-md px-3 py-1.5 text-sm font-medium transition-all active:scale-95 sm:px-4",
                                     tipoRancho === t
-                                      ? "bg-primary text-primary-foreground"
+                                      ? "bg-primary text-primary-foreground shadow-sm"
                                       : "text-muted-foreground hover:text-foreground",
                                   ].join(" ")}
                                 >
@@ -759,60 +982,58 @@ function Index() {
 
                         <div className="flex justify-end pt-2">
                           <Button
-                            onClick={continueFromCaract}
+                            onClick={() => setOpenSub("amenidades")}
                             className="rounded-full bg-primary px-6 hover:bg-primary/90"
+                            disabled={!caractDone}
                           >
                             Guardar y continuar
                           </Button>
                         </div>
                       </div>
-                    )}
+                    </Collapse>
                   </div>
 
-                  {/* 2.2 Amenidades */}
+                  {/* 2.2 Amenidades INLINE */}
                   <div>
                     <SubHeader
-                      code="2.2"
                       title="Amenidades y servicios"
                       done={amenidadesDone}
                       open={openSub === "amenidades"}
                       onToggle={() =>
                         setOpenSub(openSub === "amenidades" ? ("" as SubId) : "amenidades")
                       }
-                      description="Selecciona las amenidades que ofrece la propiedad."
+                      description="Toca para activar. En las contables usa + / − para indicar la cantidad."
                     />
-                    {openSub === "amenidades" && (
-                      <div className="pb-6">
-                        {selectedAmenities.length === 0 ? (
-                          <button
-                            onClick={() => setAmenitiesOpen(true)}
-                            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-muted/30 py-8 text-sm font-medium text-muted-foreground hover:border-primary hover:text-primary"
-                          >
-                            <Plus className="h-4 w-4" />
-                            Agregar amenidades
-                          </button>
-                        ) : (
-                          <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 px-5 py-4">
-                            <div>
-                              <p className="text-sm font-semibold">
-                                {selectedAmenities.length} amenidades seleccionadas
+                    <Collapse open={openSub === "amenidades"}>
+                      <div className="space-y-6 pb-6">
+                        {AMENITY_GROUPS.map((g) => (
+                          <div key={g.id}>
+                            <div className="mb-2.5 flex items-baseline justify-between gap-3">
+                              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                {g.label}
                               </p>
-                              <p className="mt-0.5 text-xs text-muted-foreground">
-                                {selectedAmenities.slice(0, 3).join(", ")}
-                                {selectedAmenities.length > 3 &&
-                                  ` y ${selectedAmenities.length - 3} más`}
-                              </p>
+                              {g.hint && (
+                                <p className="text-[11px] text-muted-foreground/80">{g.hint}</p>
+                              )}
                             </div>
-                            <Button
-                              variant="outline"
-                              onClick={() => setAmenitiesOpen(true)}
-                              className="rounded-full"
-                            >
-                              Editar
-                            </Button>
+                            <div className="flex flex-wrap gap-2">
+                              {g.items.map((it) => (
+                                <AmenityChip
+                                  key={it.id}
+                                  item={it}
+                                  count={amenities[it.id] ?? 0}
+                                  onChange={(n) => setAmenity(it.id, n)}
+                                />
+                              ))}
+                            </div>
                           </div>
-                        )}
-                        <div className="mt-4 flex justify-end">
+                        ))}
+
+                        <div className="flex items-center justify-between border-t border-border pt-4">
+                          <span className="text-xs text-muted-foreground">
+                            <span className="font-semibold text-foreground">{amenidadesCount}</span>{" "}
+                            amenidades seleccionadas
+                          </span>
                           <Button
                             onClick={() => setOpenSub("descripcion")}
                             className="rounded-full bg-primary px-6 hover:bg-primary/90"
@@ -822,13 +1043,12 @@ function Index() {
                           </Button>
                         </div>
                       </div>
-                    )}
+                    </Collapse>
                   </div>
 
                   {/* 2.3 Descripción */}
                   <div>
                     <SubHeader
-                      code="2.3"
                       title="Descripción"
                       done={descripcionDone}
                       open={openSub === "descripcion"}
@@ -837,7 +1057,7 @@ function Index() {
                       }
                       description="Describe lo que hace única a tu propiedad."
                     />
-                    {openSub === "descripcion" && (
+                    <Collapse open={openSub === "descripcion"}>
                       <div className="space-y-3 pb-6">
                         <Textarea
                           value={descripcion}
@@ -846,7 +1066,7 @@ function Index() {
                           className="min-h-[180px] resize-none"
                           maxLength={1500}
                         />
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
                           <Button variant="outline" className="rounded-full gap-2">
                             <Sparkles className="h-4 w-4 text-primary" />
                             Mejorar con IA
@@ -864,13 +1084,12 @@ function Index() {
                           </Button>
                         </div>
                       </div>
-                    )}
+                    </Collapse>
                   </div>
 
                   {/* 2.4 Imágenes */}
                   <div>
                     <SubHeader
-                      code="2.4"
                       title="Imágenes"
                       done={imagenesDone}
                       open={openSub === "imagenes"}
@@ -879,16 +1098,14 @@ function Index() {
                       }
                       description="Sube fotos de alta calidad para destacar tu propiedad."
                     />
-                    {openSub === "imagenes" && (
+                    <Collapse open={openSub === "imagenes"}>
                       <div className="space-y-3 pb-6">
-                        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-muted/30 px-6 py-12">
+                        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-muted/30 px-6 py-10 transition-colors hover:border-primary/40 hover:bg-muted/50 sm:py-12">
                           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent">
                             <Upload className="h-5 w-5 text-accent-foreground" />
                           </div>
                           <div className="text-center">
-                            <p className="text-sm font-semibold">
-                              Arrastra tus imágenes aquí
-                            </p>
+                            <p className="text-sm font-semibold">Arrastra tus imágenes aquí</p>
                             <p className="mt-1 text-xs text-muted-foreground">
                               o{" "}
                               <span className="text-primary underline cursor-pointer">
@@ -903,23 +1120,23 @@ function Index() {
                             <ImageIcon className="h-3.5 w-3.5" />
                             {imageCount} de 20 imágenes recomendadas
                           </span>
-                          <div className="h-1 w-32 overflow-hidden rounded-full bg-muted">
+                          <div className="h-1 w-24 overflow-hidden rounded-full bg-muted sm:w-32">
                             <div
-                              className="h-full bg-primary"
+                              className="h-full bg-primary transition-all duration-500"
                               style={{ width: `${(imageCount / 20) * 100}%` }}
                             />
                           </div>
                         </div>
                       </div>
-                    )}
+                    </Collapse>
                   </div>
                 </div>
               </div>
-            )}
+            </Collapse>
           </section>
 
           {/* SECTION 3 — CONTACTO */}
-          <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <SectionHeader
               index={3}
               title="Contacto"
@@ -929,33 +1146,33 @@ function Index() {
               open={openSection === "contacto"}
               onToggle={() => toggleSection("contacto")}
             />
-            {openSection === "contacto" && (
-              <div className="border-t border-border px-6 pb-5 pt-4">
-                <div className="grid grid-cols-2 gap-4">
+            <Collapse open={openSection === "contacto"}>
+              <div className="border-t border-border px-4 pb-5 pt-4 sm:px-6">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label className="mb-1.5 block text-sm">Nombre *</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3">
+                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
                       <User className="h-4 w-4 text-muted-foreground" />
                       <Input value={nombre} onChange={(e) => setNombre(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="Juan Pérez" />
                     </div>
                   </div>
                   <div>
                     <Label className="mb-1.5 block text-sm">Correo *</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3">
+                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
                       <Mail className="h-4 w-4 text-muted-foreground" />
                       <Input value={correo} onChange={(e) => setCorreo(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="tucorreo@ejemplo.com" />
                     </div>
                   </div>
                   <div>
                     <Label className="mb-1.5 block text-sm">Teléfono *</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3">
+                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
                       <Phone className="h-4 w-4 text-muted-foreground" />
                       <Input value={tel} onChange={(e) => setTel(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="55 1234 5678" />
                     </div>
                   </div>
                   <div>
                     <Label className="mb-1.5 block text-sm">WhatsApp</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3">
+                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
                       <MessageCircle className="h-4 w-4 text-muted-foreground" />
                       <Input value={whats} onChange={(e) => setWhats(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="55 1234 5678" />
                     </div>
@@ -967,7 +1184,7 @@ function Index() {
                   </Button>
                 </div>
               </div>
-            )}
+            </Collapse>
           </section>
         </main>
 
@@ -983,7 +1200,7 @@ function Index() {
             </span>
           </div>
 
-          <div className="sticky top-24 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm lg:sticky lg:top-24">
             <div className="relative">
               {imagenesDone ? (
                 <img
@@ -998,7 +1215,7 @@ function Index() {
                   <p className="text-xs">Agrega imágenes para verlas aquí</p>
                 </div>
               )}
-              <button className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur hover:bg-white">
+              <button className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition-transform hover:scale-110 hover:bg-white active:scale-95">
                 <Heart className="h-4 w-4" />
               </button>
               {imagenesDone && (
@@ -1031,7 +1248,10 @@ function Index() {
 
               <div>
                 {precio ? (
-                  <p className="text-xl font-bold text-foreground">
+                  <p
+                    key={precio}
+                    className="text-xl font-bold text-foreground animate-fade-in"
+                  >
                     ${Number(precio).toLocaleString("es-MX")}{" "}
                     <span className="text-xs font-medium text-muted-foreground">MXN</span>
                   </p>
@@ -1074,67 +1294,6 @@ function Index() {
           </p>
         </aside>
       </div>
-
-      {/* Amenities dialog */}
-      <Dialog open={amenitiesOpen} onOpenChange={setAmenitiesOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Selecciona amenidades</DialogTitle>
-          </DialogHeader>
-          <div className="flex items-center gap-2 rounded-lg border border-border px-3 py-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <input
-              autoFocus
-              value={amenitySearch}
-              onChange={(e) => setAmenitySearch(e.target.value)}
-              placeholder="Buscar amenidad..."
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-            />
-            {amenitySearch && (
-              <button onClick={() => setAmenitySearch("")}>
-                <X className="h-4 w-4 text-muted-foreground" />
-              </button>
-            )}
-          </div>
-          <div className="max-h-[340px] space-y-1 overflow-y-auto pr-1">
-            {filteredAmenities.map((a) => {
-              const checked = selectedAmenities.includes(a);
-              return (
-                <label
-                  key={a}
-                  className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 hover:bg-muted/60"
-                >
-                  <Checkbox
-                    checked={checked}
-                    onCheckedChange={(c) => {
-                      setSelectedAmenities((cur) =>
-                        c ? [...cur, a] : cur.filter((x) => x !== a),
-                      );
-                    }}
-                  />
-                  <span className="text-sm">{a}</span>
-                </label>
-              );
-            })}
-            {filteredAmenities.length === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                Sin resultados para "{amenitySearch}"
-              </p>
-            )}
-          </div>
-          <DialogFooter className="items-center sm:justify-between">
-            <span className="text-xs text-muted-foreground">
-              {selectedAmenities.length} seleccionadas
-            </span>
-            <Button
-              onClick={() => setAmenitiesOpen(false)}
-              className="rounded-full bg-primary hover:bg-primary/90"
-            >
-              Guardar selección
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
