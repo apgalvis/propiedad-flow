@@ -63,7 +63,7 @@ function StatusDot({ state }: { state: "done" | "active" | "pending" }) {
     return (
       <span
         key="done"
-        className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground animate-scale-in"
+        className="flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-secondary-foreground animate-scale-in"
       >
         <Check className="h-3 w-3" strokeWidth={3} />
       </span>
@@ -112,7 +112,7 @@ function SectionHeader({
         className={[
           "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold transition-all duration-300",
           done
-            ? "bg-primary text-primary-foreground animate-scale-in"
+            ? "bg-secondary text-secondary-foreground animate-scale-in"
             : active
               ? "bg-primary/10 text-primary ring-1 ring-primary"
               : "bg-muted text-muted-foreground",
@@ -486,7 +486,7 @@ function AmenityChip({
       <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
       <span className="font-medium">{item.label}</span>
       {selected && (
-        <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground animate-scale-in" aria-hidden="true">
+        <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-secondary-foreground animate-scale-in" aria-hidden="true">
           <Check className="h-2.5 w-2.5" strokeWidth={4} />
         </span>
       )}
@@ -644,7 +644,7 @@ function Index() {
         </div>
         <div className="flex items-center gap-3 sm:gap-5">
           <div className="hidden items-center gap-2 text-sm text-secondary-foreground/80 md:flex">
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
               <Check className="h-2.5 w-2.5" strokeWidth={4} />
             </span>
             Guardado automáticamente
