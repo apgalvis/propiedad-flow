@@ -800,7 +800,7 @@ function Index() {
               onToggle={() => toggleSection("propiedad")}
             />
             <Collapse id="sec-p-propiedad" open={openSection === "propiedad"}>
-              <div className="border-t border-border px-4 pb-5 sm:px-6">
+              <div className="border-t border-border px-4 pb-6 pt-1 sm:px-6">
                 <div className="divide-y divide-border">
                   <div>
                     <SubHeader
@@ -927,7 +927,7 @@ function Index() {
               onToggle={() => toggleSection("especificaciones")}
             />
             <Collapse id="sec-p-especificaciones" open={openSection === "especificaciones"}>
-              <div className="border-t border-border px-4 pb-5 sm:px-6">
+              <div className="border-t border-border px-4 pb-6 pt-1 sm:px-6">
                 <div className="divide-y divide-border">
                   {/* 2.1 Características */}
                   <div>
@@ -1211,7 +1211,7 @@ function Index() {
               onToggle={() => toggleSection("contacto")}
             />
             <Collapse id="sec-p-contacto" open={openSection === "contacto"}>
-              <div className="border-t border-border px-4 pb-5 pt-4 sm:px-6">
+              <div className="border-t border-border px-4 pb-6 pt-5 sm:px-6">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label className="mb-1.5 block text-sm">Nombre *</Label>
