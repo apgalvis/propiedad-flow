@@ -78,6 +78,8 @@ function StatusDot({ state }: { state: "done" | "active" | "pending" }) {
 }
 
 function SectionHeader({
+  id,
+  panelId,
   index,
   title,
   summary,
@@ -86,6 +88,8 @@ function SectionHeader({
   open,
   onToggle,
 }: {
+  id: string;
+  panelId: string;
   index: number;
   title: string;
   summary?: string;
@@ -96,8 +100,12 @@ function SectionHeader({
 }) {
   return (
     <button
+      id={id}
+      type="button"
       onClick={onToggle}
-      className="flex w-full items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3.5 sm:py-4 text-left transition-colors hover:bg-muted/40"
+      aria-expanded={open}
+      aria-controls={panelId}
+      className="flex w-full items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3.5 sm:py-4 text-left transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-inset"
     >
       <span
         key={done ? "done" : "pending"}
@@ -126,19 +134,23 @@ function SectionHeader({
       </div>
       <ChevronDown
         className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+        aria-hidden="true"
       />
     </button>
   );
 }
 
 function SubHeader({
+  id,
+  panelId,
   title,
   done,
   open,
   onToggle,
   description,
 }: {
-  code?: string;
+  id: string;
+  panelId: string;
   title: string;
   done: boolean;
   open: boolean;
@@ -147,8 +159,12 @@ function SubHeader({
 }) {
   return (
     <button
+      id={id}
+      type="button"
       onClick={onToggle}
-      className="flex w-full items-center gap-3 py-3 text-left"
+      aria-expanded={open}
+      aria-controls={panelId}
+      className="flex w-full items-center gap-3 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-inset"
     >
       <StatusDot state={done ? "done" : open ? "active" : "pending"} />
       <div className="min-w-0 flex-1">
@@ -159,20 +175,23 @@ function SubHeader({
       </div>
       <ChevronDown
         className={`h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+        aria-hidden="true"
       />
     </button>
   );
 }
 
 /* Wrapper that animates open/close of accordion content */
-function Collapse({ open, children }: { open: boolean; children: React.ReactNode }) {
+function Collapse({ id, open, children }: { id?: string; open: boolean; children: React.ReactNode }) {
   return (
     <div
+      id={id}
       className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
         open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
       }`}
+      aria-hidden={!open}
     >
-      <div className="overflow-hidden">{children}</div>
+      <div className="overflow-hidden" inert={!open}>{children}</div>
     </div>
   );
 }
@@ -194,18 +213,21 @@ function Stepper({
     <div>
       <Label className="mb-1.5 block text-sm font-medium">{label}</Label>
       <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 transition-colors focus-within:border-primary hover:border-primary/40">
-        <span className="text-muted-foreground">{icon}</span>
+        <span className="text-muted-foreground" aria-hidden="true">{icon}</span>
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => onChange(Math.max(min, value - 1))}
             className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-all hover:border-primary hover:text-primary active:scale-90"
+            aria-label={`Restar ${label.replace(" *", "").replace("(s)", "")}`}
           >
             <Minus className="h-3.5 w-3.5" />
           </button>
           <span
             key={value}
             className="inline-block w-6 text-center text-base font-semibold tabular-nums animate-scale-in"
+            aria-live="polite"
+            aria-atomic="true"
           >
             {value}
           </span>
@@ -213,6 +235,7 @@ function Stepper({
             type="button"
             onClick={() => onChange(value + 1)}
             className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-all hover:border-primary hover:text-primary active:scale-90"
+            aria-label={`Sumar ${label.replace(" *", "").replace("(s)", "")}`}
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
@@ -251,15 +274,20 @@ function PresenceBlock({
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
-          <span className="text-base leading-none">{emoji}</span>
+          <span className="text-base leading-none" aria-hidden="true">{emoji}</span>
           <span className="truncate text-sm font-semibold text-foreground">{title} *</span>
         </div>
-        <div className="inline-flex shrink-0 rounded-full border border-border bg-muted/40 p-0.5 text-xs font-medium">
+        <div
+          role="group"
+          aria-label={`¿Tiene ${title.toLowerCase()}?`}
+          className="inline-flex shrink-0 rounded-full border border-border bg-muted/40 p-0.5 text-xs font-medium"
+        >
           <button
             type="button"
             onClick={() => onHasChange(true)}
+            aria-pressed={has === true}
             className={[
-              "rounded-full px-3 py-1 transition-all",
+              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
               has === true
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
@@ -270,8 +298,9 @@ function PresenceBlock({
           <button
             type="button"
             onClick={() => onHasChange(false)}
+            aria-pressed={has === false}
             className={[
-              "rounded-full px-3 py-1 transition-all",
+              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
               has === false
                 ? "bg-foreground text-background shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
@@ -402,9 +431,11 @@ function AmenityChip({
         <button
           type="button"
           onClick={() => onChange(selected ? 0 : 1)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-full"
+          aria-pressed={selected}
+          aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
         >
-          <span className="text-base leading-none">{item.emoji}</span>
+          <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
           <span className="font-medium">{item.label}</span>
         </button>
         {selected && (
@@ -412,22 +443,24 @@ function AmenityChip({
             <button
               type="button"
               onClick={() => onChange(Math.max(0, count - 1))}
-              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all"
-              aria-label="Restar"
+              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+              aria-label={`Restar ${item.label}`}
             >
               <Minus className="h-3 w-3" />
             </button>
             <span
               key={count}
               className="inline-block w-3 text-center text-xs font-bold tabular-nums text-primary animate-scale-in"
+              aria-live="polite"
+              aria-atomic="true"
             >
               {count}
             </span>
             <button
               type="button"
               onClick={() => onChange(count + 1)}
-              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all"
-              aria-label="Sumar"
+              className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary active:scale-90 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+              aria-label={`Sumar ${item.label}`}
             >
               <Plus className="h-3 w-3" />
             </button>
@@ -442,16 +475,18 @@ function AmenityChip({
       type="button"
       onClick={() => onChange(selected ? 0 : 1)}
       className={[
-        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95",
+        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
         selected
           ? "border-primary bg-primary/10 text-foreground shadow-sm"
           : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-muted/40",
       ].join(" ")}
+      aria-pressed={selected}
+      aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
     >
-      <span className="text-base leading-none">{item.emoji}</span>
+      <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
       <span className="font-medium">{item.label}</span>
       {selected && (
-        <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground animate-scale-in">
+        <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground animate-scale-in" aria-hidden="true">
           <Check className="h-2.5 w-2.5" strokeWidth={4} />
         </span>
       )}
@@ -524,9 +559,17 @@ function Index() {
   const contactoDone = !!(nombre && correo && tel);
 
   /* ---------- Summaries ---------- */
-  const propiedadSummary = propiedadDone
-    ? `${operacion} · ${tipoPropiedad} · $${Number(precio).toLocaleString("es-MX")} MXN · ${estac} ${estac === 1 ? "estacionamiento" : "estacionamientos"}`
-    : undefined;
+  const formatEstac = (n: number) => `${n} ${n === 1 ? "estacionamiento" : "estacionamientos"}`;
+
+  const propiedadSummary = useMemo(() => {
+    const op = operacion || "—";
+    const tipo = tipoPropiedad || "—";
+    const precioNum = Number(precio);
+    const precioText = precio && !isNaN(precioNum) && precioNum > 0
+      ? `$${precioNum.toLocaleString("es-MX")} MXN`
+      : "— MXN";
+    return `${op} · ${tipo} · ${precioText} · ${formatEstac(estac)}`;
+  }, [operacion, tipoPropiedad, precio, estac]);
 
   const especSummary = useMemo(() => {
     const parts = [
@@ -534,8 +577,8 @@ function Index() {
       `${banos} baños`,
       construccion ? `${construccionSize} m² construcción` : null,
     ].filter(Boolean);
-    return especificacionesDone ? parts.join(" · ") : parts.join(" · ");
-  }, [recamaras, banos, construccion, construccionSize, especificacionesDone]);
+    return parts.join(" · ");
+  }, [recamaras, banos, construccion, construccionSize]);
 
   const contactoSummary = contactoDone ? `${nombre} · ${tel}` : undefined;
 
@@ -744,6 +787,8 @@ function Index() {
           {/* SECTION 1 — PROPIEDAD */}
           <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <SectionHeader
+              id="sec-h-propiedad"
+              panelId="sec-p-propiedad"
               index={1}
               title="Propiedad"
               summary={propiedadSummary}
@@ -752,11 +797,13 @@ function Index() {
               open={openSection === "propiedad"}
               onToggle={() => toggleSection("propiedad")}
             />
-            <Collapse open={openSection === "propiedad"}>
+            <Collapse id="sec-p-propiedad" open={openSection === "propiedad"}>
               <div className="border-t border-border px-4 pb-5 sm:px-6">
                 <div className="divide-y divide-border">
                   <div>
                     <SubHeader
+                      id="sub-h-ubicacion"
+                      panelId="sub-p-ubicacion"
                       title="Ubicación"
                       done={ubicacionDone}
                       open={openSub === "ubicacion"}
@@ -765,7 +812,7 @@ function Index() {
                       }
                       description="Indica dónde se encuentra tu propiedad."
                     />
-                    <Collapse open={openSub === "ubicacion"}>
+                    <Collapse id="sub-p-ubicacion" open={openSub === "ubicacion"}>
                       <div className="space-y-4 pb-5">
                         <div>
                           <Label className="mb-1.5 block text-sm">Dirección *</Label>
@@ -796,6 +843,8 @@ function Index() {
                   </div>
                   <div>
                     <SubHeader
+                      id="sub-h-basica"
+                      panelId="sub-p-basica"
                       title="Información básica"
                       done={basicaDone}
                       open={openSub === "basica"}
@@ -804,7 +853,7 @@ function Index() {
                       }
                       description="Operación, tipo de propiedad y precio."
                     />
-                    <Collapse open={openSub === "basica"}>
+                    <Collapse id="sub-p-basica" open={openSub === "basica"}>
                       <div className="space-y-4 pb-5">
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                           <div>
@@ -861,6 +910,8 @@ function Index() {
           {/* SECTION 2 — ESPECIFICACIONES */}
           <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <SectionHeader
+              id="sec-h-especificaciones"
+              panelId="sec-p-especificaciones"
               index={2}
               title="Especificaciones"
               summary={
@@ -873,12 +924,14 @@ function Index() {
               open={openSection === "especificaciones"}
               onToggle={() => toggleSection("especificaciones")}
             />
-            <Collapse open={openSection === "especificaciones"}>
+            <Collapse id="sec-p-especificaciones" open={openSection === "especificaciones"}>
               <div className="border-t border-border px-4 pb-5 sm:px-6">
                 <div className="divide-y divide-border">
                   {/* 2.1 Características */}
                   <div>
                     <SubHeader
+                      id="sub-h-caracteristicas"
+                      panelId="sub-p-caracteristicas"
                       title="Características"
                       done={caractDone}
                       open={openSub === "caracteristicas"}
@@ -887,7 +940,7 @@ function Index() {
                       }
                       description="Cuéntanos los detalles principales de tu propiedad."
                     />
-                    <Collapse open={openSub === "caracteristicas"}>
+                    <Collapse id="sub-p-caracteristicas" open={openSub === "caracteristicas"}>
                       <div className="space-y-6 pb-6">
                         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                           <Stepper label="Recámaras *" value={recamaras} onChange={setRecamaras} icon={<Bed className="h-4 w-4" />} />
@@ -965,9 +1018,10 @@ function Index() {
                               {["No aplica", "Agrícola", "Ganadero"].map((t) => (
                                 <button
                                   key={t}
+                                  type="button"
                                   onClick={() => setTipoRancho(t)}
                                   className={[
-                                    "rounded-md px-3 py-1.5 text-sm font-medium transition-all active:scale-95 sm:px-4",
+                                    "rounded-md px-3 py-1.5 text-sm font-medium transition-all active:scale-95 sm:px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
                                     tipoRancho === t
                                       ? "bg-primary text-primary-foreground shadow-sm"
                                       : "text-muted-foreground hover:text-foreground",
@@ -996,6 +1050,8 @@ function Index() {
                   {/* 2.2 Amenidades INLINE */}
                   <div>
                     <SubHeader
+                      id="sub-h-amenidades"
+                      panelId="sub-p-amenidades"
                       title="Amenidades y servicios"
                       done={amenidadesDone}
                       open={openSub === "amenidades"}
@@ -1004,7 +1060,7 @@ function Index() {
                       }
                       description="Toca para activar. En las contables usa + / − para indicar la cantidad."
                     />
-                    <Collapse open={openSub === "amenidades"}>
+                    <Collapse id="sub-p-amenidades" open={openSub === "amenidades"}>
                       <div className="space-y-6 pb-6">
                         {AMENITY_GROUPS.map((g) => (
                           <div key={g.id}>
@@ -1049,6 +1105,8 @@ function Index() {
                   {/* 2.3 Descripción */}
                   <div>
                     <SubHeader
+                      id="sub-h-descripcion"
+                      panelId="sub-p-descripcion"
                       title="Descripción"
                       done={descripcionDone}
                       open={openSub === "descripcion"}
@@ -1057,7 +1115,7 @@ function Index() {
                       }
                       description="Describe lo que hace única a tu propiedad."
                     />
-                    <Collapse open={openSub === "descripcion"}>
+                    <Collapse id="sub-p-descripcion" open={openSub === "descripcion"}>
                       <div className="space-y-3 pb-6">
                         <Textarea
                           value={descripcion}
@@ -1090,6 +1148,8 @@ function Index() {
                   {/* 2.4 Imágenes */}
                   <div>
                     <SubHeader
+                      id="sub-h-imagenes"
+                      panelId="sub-p-imagenes"
                       title="Imágenes"
                       done={imagenesDone}
                       open={openSub === "imagenes"}
@@ -1098,7 +1158,7 @@ function Index() {
                       }
                       description="Sube fotos de alta calidad para destacar tu propiedad."
                     />
-                    <Collapse open={openSub === "imagenes"}>
+                    <Collapse id="sub-p-imagenes" open={openSub === "imagenes"}>
                       <div className="space-y-3 pb-6">
                         <div className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-muted/30 px-6 py-10 transition-colors hover:border-primary/40 hover:bg-muted/50 sm:py-12">
                           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent">
@@ -1138,6 +1198,8 @@ function Index() {
           {/* SECTION 3 — CONTACTO */}
           <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <SectionHeader
+              id="sec-h-contacto"
+              panelId="sec-p-contacto"
               index={3}
               title="Contacto"
               summary={contactoSummary}
@@ -1146,7 +1208,7 @@ function Index() {
               open={openSection === "contacto"}
               onToggle={() => toggleSection("contacto")}
             />
-            <Collapse open={openSection === "contacto"}>
+            <Collapse id="sec-p-contacto" open={openSection === "contacto"}>
               <div className="border-t border-border px-4 pb-5 pt-4 sm:px-6">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
@@ -1215,7 +1277,12 @@ function Index() {
                   <p className="text-xs">Agrega imágenes para verlas aquí</p>
                 </div>
               )}
-              <button className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition-transform hover:scale-110 hover:bg-white active:scale-95">
+              <button
+                type="button"
+                tabIndex={-1}
+                aria-label="Guardar como favorito (referencia visual)"
+                className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur transition-transform hover:scale-110 hover:bg-white active:scale-95"
+              >
                 <Heart className="h-4 w-4" />
               </button>
               {imagenesDone && (
@@ -1226,6 +1293,7 @@ function Index() {
                       className={`h-1.5 rounded-full transition-all ${
                         i === 1 ? "w-4 bg-white" : "w-1.5 bg-white/60"
                       }`}
+                      aria-hidden="true"
                     />
                   ))}
                 </div>
@@ -1266,35 +1334,39 @@ function Index() {
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-border pt-3 text-xs text-foreground">
                 <span className="inline-flex items-center gap-1">
-                  <Bed className="h-3.5 w-3.5 text-primary" /> {recamaras} Recá.
+                  <Bed className="h-3.5 w-3.5 text-primary" aria-hidden="true" /> {recamaras} {recamaras === 1 ? "Recám." : "Recáms."}
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <Bath className="h-3.5 w-3.5 text-primary" /> {banos} Baños
+                  <Bath className="h-3.5 w-3.5 text-primary" aria-hidden="true" /> {banos} {banos === 1 ? "Baño" : "Baños"}
                 </span>
                 {construccion && (
                   <span className="inline-flex items-center gap-1">
-                    <Home className="h-3.5 w-3.5 text-primary" /> {construccionSize} m²
+                    <Home className="h-3.5 w-3.5 text-primary" aria-hidden="true" /> {construccionSize} m²
                   </span>
                 )}
-                {estac > 0 && (
-                  <span className="inline-flex items-center gap-1">
-                    <Car className="h-3.5 w-3.5 text-primary" /> {estac} {estac === 1 ? "Estac." : "Estac."}
-                  </span>
-                )}
+                <span className="inline-flex items-center gap-1">
+                  <Car className="h-3.5 w-3.5 text-primary" aria-hidden="true" /> {estac} {estac === 1 ? "estacionamiento" : "estacionamientos"}
+                </span>
               </div>
 
               <div className="flex gap-2 pt-1">
                 <div
-                  className="flex-1 rounded-full border border-primary px-3 py-2 text-center text-xs font-semibold text-primary"
+                  role="button"
                   aria-disabled="true"
+                  aria-label="Botón de referencia visual: Contactar"
+                  tabIndex={-1}
+                  className="flex-1 rounded-full border border-primary px-3 py-2 text-center text-xs font-semibold text-primary"
                 >
                   Contactar
                 </div>
                 <div
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
+                  role="button"
                   aria-disabled="true"
+                  aria-label="Botón de referencia visual: Consultar"
+                  tabIndex={-1}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
                 >
-                  <MessageCircle className="h-3.5 w-3.5" /> Consultar
+                  <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> Consultar
                 </div>
               </div>
             </div>
