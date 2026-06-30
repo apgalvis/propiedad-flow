@@ -1042,6 +1042,8 @@ function Index() {
                   {/* 2.2 Amenidades INLINE */}
                   <div>
                     <SubHeader
+                      id="sub-h-amenidades"
+                      panelId="sub-p-amenidades"
                       title="Amenidades y servicios"
                       done={amenidadesDone}
                       open={openSub === "amenidades"}
@@ -1050,7 +1052,7 @@ function Index() {
                       }
                       description="Toca para activar. En las contables usa + / − para indicar la cantidad."
                     />
-                    <Collapse open={openSub === "amenidades"}>
+                    <Collapse id="sub-p-amenidades" open={openSub === "amenidades"}>
                       <div className="space-y-6 pb-6">
                         {AMENITY_GROUPS.map((g) => (
                           <div key={g.id}>
