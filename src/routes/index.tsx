@@ -105,39 +105,34 @@ function SectionHeader({
   return (
     <button
       onClick={onToggle}
-      className="flex w-full items-center gap-4 px-7 py-5 text-left transition-colors hover:bg-muted/40"
+      className="flex w-full items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-muted/40"
     >
       <span
         className={[
-          "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors",
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold transition-colors",
           done
             ? "bg-primary text-primary-foreground"
             : active
-              ? "bg-primary/10 text-primary ring-2 ring-primary"
+              ? "bg-primary/10 text-primary ring-1 ring-primary"
               : "bg-muted text-muted-foreground",
         ].join(" ")}
       >
-        {done ? <Check className="h-4 w-4" strokeWidth={3} /> : index}
+        {done ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : index}
       </span>
       <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-3">
-          <h2 className="text-base font-semibold text-foreground">{title}</h2>
-          {done && (
-            <span className="text-xs font-medium text-primary">Completado</span>
-          )}
-        </div>
+        <h2 className="text-[15px] font-semibold text-foreground">{title}</h2>
         {summary ? (
-          <p className="mt-0.5 truncate text-sm text-muted-foreground">{summary}</p>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">{summary}</p>
         ) : (
           !done && (
-            <p className="mt-0.5 text-sm text-muted-foreground">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               {active ? "En progreso" : "Pendiente"}
             </p>
           )
         )}
       </div>
       <ChevronDown
-        className={`h-5 w-5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+        className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
       />
     </button>
   );
@@ -161,20 +156,17 @@ function SubHeader({
   return (
     <button
       onClick={onToggle}
-      className="flex w-full items-center gap-3 py-4 text-left"
+      className="flex w-full items-center gap-3 py-3 text-left"
     >
       <StatusDot state={done ? "done" : open ? "active" : "pending"} />
       <div className="flex-1">
-        <div className="flex items-baseline gap-2">
-          <span className="text-xs font-mono text-muted-foreground">{code}</span>
-          <span className="text-[15px] font-medium text-foreground">{title}</span>
-        </div>
+        <span className="text-[14px] font-medium text-foreground">{title}</span>
         {description && open && (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
         )}
       </div>
       <ChevronDown
-        className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+        className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
       />
     </button>
   );
