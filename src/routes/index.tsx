@@ -981,6 +981,109 @@ function Index() {
             )}
           </section>
         </main>
+
+        {/* Live preview card */}
+        <aside className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Eye className="h-3.5 w-3.5" />
+              Vista previa del anuncio
+            </div>
+            <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-accent-foreground">
+              En vivo
+            </span>
+          </div>
+
+          <div className="sticky top-24 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div className="relative">
+              {imagenesDone ? (
+                <img
+                  src={propertyPreviewImg}
+                  alt="Vista previa"
+                  loading="lazy"
+                  className="aspect-[4/3] w-full object-cover"
+                />
+              ) : (
+                <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-muted to-accent/40 text-muted-foreground">
+                  <ImageIcon className="h-8 w-8" />
+                  <p className="text-xs">Agrega imágenes para verlas aquí</p>
+                </div>
+              )}
+              <button className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur hover:bg-white">
+                <Heart className="h-4 w-4" />
+              </button>
+              {imagenesDone && (
+                <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+                  {[0, 1, 2, 3].map((i) => (
+                    <span
+                      key={i}
+                      className={`h-1.5 rounded-full transition-all ${
+                        i === 1 ? "w-4 bg-white" : "w-1.5 bg-white/60"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-3 p-4">
+              <div className="flex gap-1.5">
+                {tipoPropiedad && (
+                  <span className="rounded-md border border-border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground">
+                    {tipoPropiedad}
+                  </span>
+                )}
+                {operacion && (
+                  <span className="rounded-md border border-border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground">
+                    {operacion}
+                  </span>
+                )}
+              </div>
+
+              <div>
+                {precio ? (
+                  <p className="text-xl font-bold text-foreground">
+                    ${Number(precio).toLocaleString("es-MX")}{" "}
+                    <span className="text-xs font-medium text-muted-foreground">MXN</span>
+                  </p>
+                ) : (
+                  <p className="text-xl font-bold text-muted-foreground/50">— MXN</p>
+                )}
+              </div>
+
+              <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                {direccion || "Agrega la ubicación para mostrarla aquí."}
+              </p>
+
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-border pt-3 text-xs text-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <Bed className="h-3.5 w-3.5 text-primary" /> {recamaras} Recá.
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Bath className="h-3.5 w-3.5 text-primary" /> {banos} Baños
+                </span>
+                {construccion && (
+                  <span className="inline-flex items-center gap-1">
+                    <Home className="h-3.5 w-3.5 text-primary" /> {construccionSize} m²
+                  </span>
+                )}
+              </div>
+
+              <div className="flex gap-2 pt-1">
+                <button className="flex-1 rounded-full border border-primary px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/5">
+                  Contactar
+                </button>
+                <button className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
+                  <MessageCircle className="h-3.5 w-3.5" /> Consultar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p className="px-1 text-[11px] leading-relaxed text-muted-foreground">
+            Así verán los compradores tu anuncio. Completa los campos para mejorar su atractivo.
+          </p>
+        </aside>
       </div>
 
       {/* Amenities dialog */}
