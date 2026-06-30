@@ -576,10 +576,9 @@ function Index() {
       `${recamaras} recámaras`,
       `${banos} baños`,
       construccion ? `${construccionSize} m² construcción` : null,
-      formatEstac(estac),
     ].filter(Boolean);
     return parts.join(" · ");
-  }, [recamaras, banos, construccion, construccionSize, estac]);
+  }, [recamaras, banos, construccion, construccionSize]);
 
   const contactoSummary = contactoDone ? `${nombre} · ${tel}` : undefined;
 
