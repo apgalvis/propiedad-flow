@@ -902,6 +902,8 @@ function Index() {
           {/* SECTION 2 — ESPECIFICACIONES */}
           <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <SectionHeader
+              id="sec-h-especificaciones"
+              panelId="sec-p-especificaciones"
               index={2}
               title="Especificaciones"
               summary={
@@ -914,12 +916,14 @@ function Index() {
               open={openSection === "especificaciones"}
               onToggle={() => toggleSection("especificaciones")}
             />
-            <Collapse open={openSection === "especificaciones"}>
+            <Collapse id="sec-p-especificaciones" open={openSection === "especificaciones"}>
               <div className="border-t border-border px-4 pb-5 sm:px-6">
                 <div className="divide-y divide-border">
                   {/* 2.1 Características */}
                   <div>
                     <SubHeader
+                      id="sub-h-caracteristicas"
+                      panelId="sub-p-caracteristicas"
                       title="Características"
                       done={caractDone}
                       open={openSub === "caracteristicas"}
@@ -928,7 +932,7 @@ function Index() {
                       }
                       description="Cuéntanos los detalles principales de tu propiedad."
                     />
-                    <Collapse open={openSub === "caracteristicas"}>
+                    <Collapse id="sub-p-caracteristicas" open={openSub === "caracteristicas"}>
                       <div className="space-y-6 pb-6">
                         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                           <Stepper label="Recámaras *" value={recamaras} onChange={setRecamaras} icon={<Bed className="h-4 w-4" />} />
@@ -1006,9 +1010,10 @@ function Index() {
                               {["No aplica", "Agrícola", "Ganadero"].map((t) => (
                                 <button
                                   key={t}
+                                  type="button"
                                   onClick={() => setTipoRancho(t)}
                                   className={[
-                                    "rounded-md px-3 py-1.5 text-sm font-medium transition-all active:scale-95 sm:px-4",
+                                    "rounded-md px-3 py-1.5 text-sm font-medium transition-all active:scale-95 sm:px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
                                     tipoRancho === t
                                       ? "bg-primary text-primary-foreground shadow-sm"
                                       : "text-muted-foreground hover:text-foreground",
