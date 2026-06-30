@@ -632,8 +632,8 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top bar */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/80 px-4 py-3 backdrop-blur sm:px-8 sm:py-4">
+      {/* Top bar — brand hero look */}
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/10 bg-secondary px-4 py-3 text-secondary-foreground sm:px-8 sm:py-4">
         <div className="flex min-w-0 items-center gap-2">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
             <Home className="h-4 w-4 text-primary-foreground" />
@@ -643,7 +643,7 @@ function Index() {
           </div>
         </div>
         <div className="flex items-center gap-3 sm:gap-5">
-          <div className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
+          <div className="hidden items-center gap-2 text-sm text-secondary-foreground/80 md:flex">
             <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Check className="h-2.5 w-2.5" strokeWidth={4} />
             </span>
@@ -651,7 +651,7 @@ function Index() {
           </div>
           <Button
             variant="outline"
-            className="h-9 rounded-full border-primary px-3 text-xs text-primary hover:bg-primary/5 sm:px-4 sm:text-sm"
+            className="h-9 rounded-full border-white/20 bg-transparent px-3 text-xs text-secondary-foreground hover:bg-white/10 sm:px-4 sm:text-sm"
           >
             <span className="hidden sm:inline">Guardar y salir</span>
             <span className="sm:hidden">Guardar</span>
