@@ -70,8 +70,8 @@ function StatusDot({ state }: { state: "done" | "active" | "pending" }) {
     );
   if (state === "active")
     return (
-      <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-primary transition-colors">
-        <span className="h-2 w-2 rounded-full bg-primary" />
+      <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-secondary transition-colors">
+        <span className="h-2 w-2 rounded-full bg-secondary" />
       </span>
     );
   return <span className="h-5 w-5 rounded-full border-2 border-border transition-colors" aria-hidden="true" />;
@@ -114,7 +114,7 @@ function SectionHeader({
           done
             ? "bg-secondary text-secondary-foreground animate-scale-in"
             : active
-              ? "bg-primary/10 text-primary ring-1 ring-primary"
+              ? "bg-secondary/10 text-secondary ring-1 ring-secondary"
               : "bg-muted text-muted-foreground",
         ].join(" ")}
       >
@@ -289,9 +289,9 @@ function PresenceBlock({
             onClick={() => onHasChange(true)}
             aria-pressed={has === true}
             className={[
-              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
               has === true
-                ? "bg-primary text-primary-foreground shadow-sm"
+                ? "bg-secondary text-secondary-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
             ].join(" ")}
           >
