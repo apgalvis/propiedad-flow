@@ -1190,6 +1190,8 @@ function Index() {
           {/* SECTION 3 — CONTACTO */}
           <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <SectionHeader
+              id="sec-h-contacto"
+              panelId="sec-p-contacto"
               index={3}
               title="Contacto"
               summary={contactoSummary}
@@ -1198,7 +1200,7 @@ function Index() {
               open={openSection === "contacto"}
               onToggle={() => toggleSection("contacto")}
             />
-            <Collapse open={openSection === "contacto"}>
+            <Collapse id="sec-p-contacto" open={openSection === "contacto"}>
               <div className="border-t border-border px-4 pb-5 pt-4 sm:px-6">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
