@@ -302,7 +302,7 @@ function PresenceBlock({
             onClick={() => onHasChange(false)}
             aria-pressed={has === false}
             className={[
-              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
               has === false
                 ? "bg-foreground text-background shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
