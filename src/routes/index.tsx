@@ -274,15 +274,20 @@ function PresenceBlock({
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
-          <span className="text-base leading-none">{emoji}</span>
+          <span className="text-base leading-none" aria-hidden="true">{emoji}</span>
           <span className="truncate text-sm font-semibold text-foreground">{title} *</span>
         </div>
-        <div className="inline-flex shrink-0 rounded-full border border-border bg-muted/40 p-0.5 text-xs font-medium">
+        <div
+          role="group"
+          aria-label={`¿Tiene ${title.toLowerCase()}?`}
+          className="inline-flex shrink-0 rounded-full border border-border bg-muted/40 p-0.5 text-xs font-medium"
+        >
           <button
             type="button"
             onClick={() => onHasChange(true)}
+            aria-pressed={has === true}
             className={[
-              "rounded-full px-3 py-1 transition-all",
+              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
               has === true
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
@@ -293,8 +298,9 @@ function PresenceBlock({
           <button
             type="button"
             onClick={() => onHasChange(false)}
+            aria-pressed={has === false}
             className={[
-              "rounded-full px-3 py-1 transition-all",
+              "rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
               has === false
                 ? "bg-foreground text-background shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
