@@ -20,7 +20,10 @@ import {
   Phone,
   MessageCircle,
   X,
+  Heart,
+  Eye,
 } from "lucide-react";
+import propertyPreviewImg from "@/assets/property-preview.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
