@@ -213,18 +213,21 @@ function Stepper({
     <div>
       <Label className="mb-1.5 block text-sm font-medium">{label}</Label>
       <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 transition-colors focus-within:border-primary hover:border-primary/40">
-        <span className="text-muted-foreground">{icon}</span>
+        <span className="text-muted-foreground" aria-hidden="true">{icon}</span>
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => onChange(Math.max(min, value - 1))}
             className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-all hover:border-primary hover:text-primary active:scale-90"
+            aria-label={`Restar ${label.replace(" *", "").replace("(s)", "")}`}
           >
             <Minus className="h-3.5 w-3.5" />
           </button>
           <span
             key={value}
             className="inline-block w-6 text-center text-base font-semibold tabular-nums animate-scale-in"
+            aria-live="polite"
+            aria-atomic="true"
           >
             {value}
           </span>
@@ -232,6 +235,7 @@ function Stepper({
             type="button"
             onClick={() => onChange(value + 1)}
             className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-all hover:border-primary hover:text-primary active:scale-90"
+            aria-label={`Sumar ${label.replace(" *", "").replace("(s)", "")}`}
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
