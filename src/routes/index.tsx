@@ -78,6 +78,8 @@ function StatusDot({ state }: { state: "done" | "active" | "pending" }) {
 }
 
 function SectionHeader({
+  id,
+  panelId,
   index,
   title,
   summary,
@@ -86,6 +88,8 @@ function SectionHeader({
   open,
   onToggle,
 }: {
+  id: string;
+  panelId: string;
   index: number;
   title: string;
   summary?: string;
@@ -96,8 +100,12 @@ function SectionHeader({
 }) {
   return (
     <button
+      id={id}
+      type="button"
       onClick={onToggle}
-      className="flex w-full items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3.5 sm:py-4 text-left transition-colors hover:bg-muted/40"
+      aria-expanded={open}
+      aria-controls={panelId}
+      className="flex w-full items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3.5 sm:py-4 text-left transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-inset"
     >
       <span
         key={done ? "done" : "pending"}
@@ -126,6 +134,7 @@ function SectionHeader({
       </div>
       <ChevronDown
         className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+        aria-hidden="true"
       />
     </button>
   );
