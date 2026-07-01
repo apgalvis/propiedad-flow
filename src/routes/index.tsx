@@ -20,7 +20,18 @@ import {
   Heart,
   Eye,
   HelpCircle,
+  Search,
+  Trees,
+  Waves,
+  ShieldCheck,
+  Building2,
+  Snowflake,
+  BedDouble,
+  Tag,
+  Network,
+  Trash2,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import propertyPreviewImg from "@/assets/property-preview.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
