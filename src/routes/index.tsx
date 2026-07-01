@@ -611,11 +611,41 @@ function Index() {
 
   // 2.2 Amenidades inline
   const [amenities, setAmenities] = useState<Record<string, number>>({
+    jardin: 1,
+    jardinpriv: 1,
+    terraza: 1,
+    balcon: 2,
+    roof: 1,
+    bbq: 1,
     alberca: 1,
     gimnasio: 1,
-    seguridad: 1,
-    balcon: 2,
+    padel: 1,
+    estac: 2,
+    visitas: 1,
+    ev: 1,
+    seg247: 1,
+    caseta: 1,
+    acceso: 1,
+    cctv: 1,
+    porton: 1,
+    elevador: 1,
+    lobby: 1,
+    planta: 1,
+    lavado: 1,
+    bodega: 1,
+    ac: 1,
+    chimenea: 1,
+    recamaras: 3,
+    banos_c: 2,
+    medios_b: 1,
+    walkin: 2,
+    estudio: 1,
   });
+  const [amenitySearch, setAmenitySearch] = useState("");
+  const [amenityOnlyActive, setAmenityOnlyActive] = useState(false);
+  const [amenityView, setAmenityView] = useState<"categorias" | "todas">("categorias");
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
   // 2.3
   const [descripcion, setDescripcion] = useState("");
