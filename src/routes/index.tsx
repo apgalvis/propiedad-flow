@@ -30,6 +30,9 @@ import {
   Tag,
   Network,
   Trash2,
+  Ruler,
+  Compass,
+  ClipboardList,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import {
