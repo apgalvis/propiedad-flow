@@ -356,55 +356,128 @@ function PresenceBlock({
 
 /* ---------- Constants ---------- */
 type Amenity = { id: string; label: string; emoji: string; countable?: boolean };
-type AmenityGroup = { id: string; label: string; hint?: string; items: Amenity[] };
+type AmenityGroup = {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  tint: string; // bg + text tailwind classes for the round icon badge
+  visible: number; // number of chips visible before "Ver más"
+  items: Amenity[];
+};
 
 const AMENITY_GROUPS: AmenityGroup[] = [
   {
-    id: "wellness",
+    id: "exteriores",
+    label: "Exteriores",
+    icon: Trees,
+    tint: "bg-emerald-50 text-emerald-600",
+    visible: 8,
+    items: [
+      { id: "jardin", label: "Jardín", emoji: "🌳" },
+      { id: "jardinpriv", label: "Jardín privado", emoji: "🌿" },
+      { id: "terraza", label: "Terraza", emoji: "🌅" },
+      { id: "terrazapriv", label: "Terraza privada", emoji: "🌄" },
+      { id: "balcon", label: "Balcón", emoji: "🏙️", countable: true },
+      { id: "roof", label: "Roof garden", emoji: "🌇" },
+      { id: "patio", label: "Patio", emoji: "🪴" },
+      { id: "patiotrasero", label: "Patio trasero", emoji: "🌾" },
+      { id: "bbq", label: "Asador / BBQ", emoji: "🍖" },
+    ],
+  },
+  {
+    id: "bienestar",
     label: "Bienestar y recreación",
+    icon: Waves,
+    tint: "bg-sky-50 text-sky-600",
+    visible: 8,
     items: [
       { id: "alberca", label: "Alberca", emoji: "🏊" },
+      { id: "alberca_clima", label: "Alberca climatizada", emoji: "♨️" },
       { id: "gimnasio", label: "Gimnasio", emoji: "🏋️" },
+      { id: "jacuzzi", label: "Jacuzzi", emoji: "🛁" },
       { id: "spa", label: "Spa", emoji: "💆" },
-      { id: "sauna", label: "Sauna", emoji: "♨️" },
-      { id: "roof", label: "Roof garden", emoji: "🌇" },
+      { id: "sauna", label: "Sauna", emoji: "🧖" },
       { id: "tenis", label: "Cancha de tenis", emoji: "🎾" },
       { id: "padel", label: "Cancha de pádel", emoji: "🏓" },
-      { id: "bbq", label: "Área de BBQ", emoji: "🍖" },
+      { id: "infantil", label: "Área infantil", emoji: "🧒" },
     ],
   },
   {
-    id: "services",
-    label: "Servicios del edificio",
+    id: "estacionamiento",
+    label: "Estacionamiento y movilidad",
+    icon: Car,
+    tint: "bg-violet-50 text-violet-600",
+    visible: 5,
     items: [
-      { id: "seguridad", label: "Seguridad 24/7", emoji: "🛡️" },
-      { id: "visitas", label: "Estacionamiento de visitas", emoji: "🅿️" },
+      { id: "estac", label: "Estacionamiento", emoji: "🚗", countable: true },
+      { id: "visitas", label: "Visitas", emoji: "🅿️", countable: true },
+      { id: "estac_techado", label: "Estacionamiento techado", emoji: "🏠" },
+      { id: "garage", label: "Garage cerrado", emoji: "🚪" },
+      { id: "ev", label: "Cargador EV", emoji: "🔌", countable: true },
+      { id: "bici", label: "Bicicletero", emoji: "🚲" },
+    ],
+  },
+  {
+    id: "seguridad",
+    label: "Seguridad",
+    icon: ShieldCheck,
+    tint: "bg-rose-50 text-rose-600",
+    visible: 8,
+    items: [
+      { id: "seg247", label: "Seguridad 24/7", emoji: "🛡️" },
+      { id: "caseta", label: "Caseta de vigilancia", emoji: "👮" },
+      { id: "acceso", label: "Acceso controlado", emoji: "🎫" },
+      { id: "cctv", label: "CCTV", emoji: "📹" },
+      { id: "alarma", label: "Alarma", emoji: "🚨" },
+      { id: "porton", label: "Portón eléctrico", emoji: "🚧" },
+      { id: "humo", label: "Detector de humo", emoji: "💨" },
+      { id: "cerca", label: "Cerca eléctrica", emoji: "⚡" },
+    ],
+  },
+  {
+    id: "edificio",
+    label: "Servicios del edificio",
+    icon: Building2,
+    tint: "bg-amber-50 text-amber-600",
+    visible: 8,
+    items: [
       { id: "elevador", label: "Elevador", emoji: "🛗" },
-      { id: "lavado", label: "Cuarto de lavado", emoji: "🧺" },
-      { id: "ac", label: "Aire acondicionado", emoji: "❄️" },
       { id: "lobby", label: "Lobby", emoji: "🛋️" },
       { id: "coworking", label: "Coworking", emoji: "💻" },
-      { id: "eventos", label: "Salón de eventos", emoji: "🎉" },
-    ],
-  },
-  {
-    id: "lifestyle",
-    label: "Estilo de vida",
-    items: [
-      { id: "pet", label: "Pet friendly", emoji: "🐾" },
-      { id: "jardincomun", label: "Jardín común", emoji: "🌳" },
-    ],
-  },
-  {
-    id: "countable",
-    label: "¿Cuántos tiene tu propiedad?",
-    hint: "Toca para agregar y usa + / − para indicar la cantidad.",
-    items: [
-      { id: "balcon", label: "Balcón", emoji: "🌅", countable: true },
-      { id: "chimenea", label: "Chimenea", emoji: "🔥", countable: true },
-      { id: "terraza", label: "Terraza privada", emoji: "🌿", countable: true },
+      { id: "recepcion", label: "Recepción", emoji: "🛎️" },
+      { id: "planta", label: "Planta eléctrica", emoji: "⚙️" },
+      { id: "cisterna", label: "Cisterna", emoji: "💧" },
+      { id: "lavado", label: "Cuarto de lavado", emoji: "🧺" },
       { id: "bodega", label: "Bodega", emoji: "📦", countable: true },
-      { id: "jardinpriv", label: "Jardín privado", emoji: "🌷", countable: true },
+    ],
+  },
+  {
+    id: "confort",
+    label: "Confort",
+    icon: Snowflake,
+    tint: "bg-cyan-50 text-cyan-600",
+    visible: 6,
+    items: [
+      { id: "ac", label: "Aire acondicionado", emoji: "❄️" },
+      { id: "calefaccion", label: "Calefacción", emoji: "🔥" },
+      { id: "chimenea", label: "Chimenea", emoji: "🪵", countable: true },
+      { id: "ventiladores", label: "Ventiladores", emoji: "🌀" },
+      { id: "persianas", label: "Persianas", emoji: "🪟" },
+      { id: "smart", label: "Casa inteligente", emoji: "🤖" },
+    ],
+  },
+  {
+    id: "habitaciones",
+    label: "Habitaciones",
+    icon: BedDouble,
+    tint: "bg-fuchsia-50 text-fuchsia-600",
+    visible: 6,
+    items: [
+      { id: "recamaras", label: "Recámaras", emoji: "🛏️", countable: true },
+      { id: "banos_c", label: "Baños completos", emoji: "🛁", countable: true },
+      { id: "medios_b", label: "Medios baños", emoji: "🚽", countable: true },
+      { id: "walkin", label: "Walk-in closet", emoji: "👗", countable: true },
+      { id: "estudio", label: "Estudio / Oficina", emoji: "💼", countable: true },
     ],
   },
 ];
