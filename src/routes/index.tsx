@@ -645,6 +645,12 @@ function Index() {
   const [moreGroupId, setMoreGroupId] = useState<string | null>(null);
   const [moreSearch, setMoreSearch] = useState("");
 
+  // 2.1 Characteristics — toolbar/drawer state (mirrors amenities)
+  const [caractSearch, setCaractSearch] = useState("");
+  const [caractOnlyPending, setCaractOnlyPending] = useState(false);
+  const [caractCollapsed, setCaractCollapsed] = useState<Record<string, boolean>>({});
+  const [caractMoreId, setCaractMoreId] = useState<string | null>(null);
+
   // 2.3
   const [descripcion, setDescripcion] = useState("");
 
@@ -743,6 +749,227 @@ function Index() {
 
   const setAmenity = (id: string, n: number) =>
     setAmenities((cur) => ({ ...cur, [id]: n }));
+
+  /* ---------- Características: shared body renderer (list + focus dialog) ---------- */
+  type CField = { id: string; label: string; pending: boolean; span?: "full"; node: React.ReactNode };
+  type CGroup = {
+    id: string;
+    label: string;
+    badge: string;
+    desc: string;
+    tint: string;
+    icon: React.ComponentType<{ className?: string }>;
+    grid: string;
+    fields: CField[];
+  };
+
+  const caractGroups: CGroup[] = [
+    {
+      id: "distribucion",
+      label: "Distribución",
+      badge: "Habitaciones y estacionamiento",
+      desc: "Ajusta la cantidad con + / − en cada espacio.",
+      tint: "bg-fuchsia-50 text-fuchsia-600",
+      icon: BedDouble,
+      grid: "grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5",
+      fields: [
+        { id: "recamaras", label: "Recámaras", pending: recamaras === 0, node: <Stepper label="Recámaras *" value={recamaras} onChange={setRecamaras} icon={<Bed className="h-4 w-4" />} /> },
+        { id: "banos", label: "Baños", pending: banos === 0, node: <Stepper label="Baños *" value={banos} onChange={setBanos} icon={<Bath className="h-4 w-4" />} /> },
+        { id: "medios-banos", label: "Medios baños", pending: false, node: <Stepper label="Medios baños" value={mediosBanos} onChange={setMediosBanos} icon={<Bath className="h-4 w-4" />} /> },
+        { id: "niveles", label: "Niveles", pending: false, node: <Stepper label="Niveles" value={niveles} onChange={setNiveles} min={1} icon={<Home className="h-4 w-4" />} /> },
+        { id: "estacionamiento", label: "Estacionamiento", pending: false, node: <Stepper label="Estacionamiento" value={estac} onChange={setEstac} icon={<Car className="h-4 w-4" />} /> },
+      ],
+    },
+    {
+      id: "espacios",
+      label: "Espacios exteriores",
+      badge: "Terreno · Construcción · Jardín",
+      desc: "Responde Sí o No. Si aplica, indica la superficie en m².",
+      tint: "bg-emerald-50 text-emerald-600",
+      icon: Trees,
+      grid: "grid-cols-1 gap-3 sm:grid-cols-3",
+      fields: [
+        { id: "terreno", label: "Terreno", pending: terreno === null, node: <PresenceBlock title="Terreno" emoji="🗺️" has={terreno} onHasChange={setTerreno} value={terrenoSize} onValueChange={setTerrenoSize} fieldLabel="Tamaño del terreno" /> },
+        { id: "construccion", label: "Construcción", pending: construccion === null, node: <PresenceBlock title="Construcción" emoji="🏗️" has={construccion} onHasChange={setConstruccion} value={construccionSize} onValueChange={setConstruccionSize} fieldLabel="Tamaño de construcción" /> },
+        { id: "jardin", label: "Jardín", pending: jardin === null, node: <PresenceBlock title="Jardín" emoji="🌳" has={jardin} onHasChange={setJardin} value={jardinSize} onValueChange={setJardinSize} fieldLabel="Tamaño del jardín" /> },
+      ],
+    },
+    {
+      id: "detalles",
+      label: "Detalles",
+      badge: "Antigüedad · Uso de suelo",
+      desc: "Datos que ayudan a compradores a filtrar mejor.",
+      tint: "bg-sky-50 text-sky-600",
+      icon: ClipboardList,
+      grid: "grid-cols-1 gap-4 sm:grid-cols-2",
+      fields: [
+        { id: "antiguedad", label: "Antigüedad", pending: !antiguedad, node: (
+          <div>
+            <Label className="mb-1.5 block text-sm font-medium">Antigüedad *</Label>
+            <Select value={antiguedad} onValueChange={setAntiguedad}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {ANTIGUEDAD_OPTIONS.map((o) => (<SelectItem key={o} value={o}>{o}</SelectItem>))}
+              </SelectContent>
+            </Select>
+          </div>
+        )},
+        { id: "uso-suelo", label: "Uso de suelo", pending: !usoSuelo, node: (
+          <div>
+            <Label className="mb-1.5 block text-sm font-medium">Uso de suelo *</Label>
+            <Select value={usoSuelo} onValueChange={setUsoSuelo}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Habitacional">Habitacional</SelectItem>
+                <SelectItem value="Comercial">Comercial</SelectItem>
+                <SelectItem value="Mixto">Mixto</SelectItem>
+                <SelectItem value="Industrial">Industrial</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )},
+        { id: "tipo-rancho", label: "Tipo de rancho", pending: false, span: "full", node: (
+          <div>
+            <Label className="mb-1.5 block text-sm font-medium">Tipo de rancho</Label>
+            <div className="inline-flex flex-wrap rounded-full border border-border bg-muted/40 p-0.5">
+              {["No aplica", "Agrícola", "Ganadero"].map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTipoRancho(t)}
+                  aria-pressed={tipoRancho === t}
+                  className={[
+                    "rounded-full px-3.5 py-1.5 text-sm font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                    tipoRancho === t ? "bg-secondary text-secondary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                  ].join(" ")}
+                >{t}</button>
+              ))}
+            </div>
+          </div>
+        )},
+      ],
+    },
+  ];
+
+  const caractFilter = (fields: CField[]) => {
+    const q = caractSearch.trim().toLowerCase();
+    return fields.filter((f) => {
+      if (q && !f.label.toLowerCase().includes(q)) return false;
+      if (caractOnlyPending && !f.pending) return false;
+      return true;
+    });
+  };
+
+  const renderCaractFields = (g: CGroup, fields: CField[]) => (
+    <div className={`grid ${g.grid}`}>
+      {fields.map((f) => (
+        <div key={f.id} className={f.span === "full" ? "sm:col-span-2" : ""}>{f.node}</div>
+      ))}
+    </div>
+  );
+
+  const renderCaracteristicasBody = () => {
+    const totalFields = caractGroups.reduce((a, g) => a + g.fields.length, 0);
+    const pendingTotal = caractGroups.reduce((a, g) => a + g.fields.filter((f) => f.pending).length, 0);
+    const completedTotal = totalFields - pendingTotal;
+    return (
+      <>
+        {/* Toolbar */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={caractSearch}
+              onChange={(e) => setCaractSearch(e.target.value)}
+              placeholder="Buscar característica…"
+              className="h-10 rounded-full border-border bg-card pl-9"
+              aria-label="Buscar característica"
+            />
+          </div>
+          <label className="flex shrink-0 items-center gap-2 text-sm text-foreground">
+            <Switch
+              checked={caractOnlyPending}
+              onCheckedChange={setCaractOnlyPending}
+              aria-label="Mostrar solo pendientes"
+            />
+            <span>Solo pendientes</span>
+          </label>
+        </div>
+
+        {/* Summary bar */}
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
+          <SummaryStat icon={<Check className="h-4 w-4" />} tint="bg-emerald-50 text-emerald-600" label="Completados" value={completedTotal} />
+          <div className="hidden h-8 w-px bg-border sm:block" />
+          <SummaryStat icon={<Ruler className="h-4 w-4" />} tint="bg-amber-50 text-amber-600" label="Pendientes" value={pendingTotal} />
+          <div className="hidden h-8 w-px bg-border sm:block" />
+          <SummaryStat icon={<Network className="h-4 w-4" />} tint="bg-slate-100 text-slate-600" label="Totales" value={totalFields} />
+        </div>
+
+        {/* Category cards */}
+        <div className="space-y-3">
+          {caractGroups.map((g) => {
+            const filtered = caractFilter(g.fields);
+            if (filtered.length === 0) return null;
+            const groupPending = g.fields.filter((f) => f.pending).length;
+            const collapsed = caractCollapsed[g.id];
+            const Icon = g.icon;
+            return (
+              <div key={g.id} className="overflow-hidden rounded-2xl border border-border bg-card">
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <button
+                    type="button"
+                    onClick={() => setCaractCollapsed((c) => ({ ...c, [g.id]: !c[g.id] }))}
+                    className="flex flex-1 items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-lg"
+                    aria-expanded={!collapsed}
+                  >
+                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${g.tint}`}>
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-semibold text-foreground">{g.label}</span>
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                          {g.badge}
+                        </span>
+                        {groupPending > 0 && (
+                          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600">
+                            {groupPending} por completar
+                          </span>
+                        )}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">{g.desc}</span>
+                    </span>
+                    <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCaractMoreId(g.id)}
+                    className="hidden shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-secondary/50 hover:text-secondary sm:inline-flex"
+                    aria-haspopup="dialog"
+                  >
+                    Ver más
+                  </button>
+                </div>
+                <Collapse id={`caract-${g.id}`} open={!collapsed}>
+                  <div className="px-4 pb-4">{renderCaractFields(g, filtered)}</div>
+                </Collapse>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <Button
+            onClick={() => setOpenSub("amenidades")}
+            className="rounded-full bg-primary px-6 hover:bg-primary/90"
+            disabled={!caractDone}
+          >
+            Guardar y continuar
+          </Button>
+        </div>
+      </>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -1056,182 +1283,7 @@ function Index() {
                     />
                     <Collapse id="sub-p-caracteristicas" open={openSub === "caracteristicas"}>
                       <div className="space-y-4 pb-6">
-                        {/* Summary bar mirrors amenities */}
-                        {(() => {
-                          const distribCount =
-                            (recamaras > 0 ? 1 : 0) +
-                            (banos > 0 ? 1 : 0) +
-                            (mediosBanos > 0 ? 1 : 0) +
-                            (niveles > 0 ? 1 : 0) +
-                            (estac > 0 ? 1 : 0);
-                          const espaciosCount =
-                            (terreno ? 1 : 0) + (construccion ? 1 : 0) + (jardin ? 1 : 0);
-                          const detallesCount =
-                            (antiguedad ? 1 : 0) + (usoSuelo ? 1 : 0) + (tipoRancho && tipoRancho !== "No aplica" ? 1 : 0);
-                          const totalItems = 5 + 3 + 3;
-                          const totalActivos = distribCount + espaciosCount + detallesCount;
-                          return (
-                            <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
-                              <SummaryStat icon={<Check className="h-4 w-4" />} tint="bg-emerald-50 text-emerald-600" label="Completados" value={totalActivos} />
-                              <div className="hidden h-8 w-px bg-border sm:block" />
-                              <SummaryStat icon={<Ruler className="h-4 w-4" />} tint="bg-amber-50 text-amber-600" label="Espacios" value={espaciosCount} />
-                              <div className="hidden h-8 w-px bg-border sm:block" />
-                              <SummaryStat icon={<Network className="h-4 w-4" />} tint="bg-slate-100 text-slate-600" label="Totales" value={totalItems} />
-                            </div>
-                          );
-                        })()}
-
-                        {/* Category 1 — Distribución */}
-                        <div className="overflow-hidden rounded-2xl border border-border bg-card">
-                          <div className="flex items-center gap-3 px-4 py-3">
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-fuchsia-50 text-fuchsia-600">
-                              <BedDouble className="h-5 w-5" />
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold text-foreground">Distribución</span>
-                                <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                  Habitaciones y estacionamiento
-                                </span>
-                              </div>
-                              <p className="mt-0.5 text-xs text-muted-foreground">
-                                Ajusta la cantidad con + / − en cada espacio.
-                              </p>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-3 px-4 pb-4 sm:gap-4 lg:grid-cols-5">
-                            <Stepper label="Recámaras *" value={recamaras} onChange={setRecamaras} icon={<Bed className="h-4 w-4" />} />
-                            <Stepper label="Baños *" value={banos} onChange={setBanos} icon={<Bath className="h-4 w-4" />} />
-                            <Stepper label="Medios baños" value={mediosBanos} onChange={setMediosBanos} icon={<Bath className="h-4 w-4" />} />
-                            <Stepper label="Niveles" value={niveles} onChange={setNiveles} min={1} icon={<Home className="h-4 w-4" />} />
-                            <Stepper label="Estacionamiento" value={estac} onChange={setEstac} icon={<Car className="h-4 w-4" />} />
-                          </div>
-                        </div>
-
-                        {/* Category 2 — Espacios exteriores */}
-                        <div className="overflow-hidden rounded-2xl border border-border bg-card">
-                          <div className="flex items-center gap-3 px-4 py-3">
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                              <Trees className="h-5 w-5" />
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold text-foreground">Espacios exteriores</span>
-                                <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                  Terreno · Construcción · Jardín
-                                </span>
-                              </div>
-                              <p className="mt-0.5 text-xs text-muted-foreground">
-                                Responde Sí o No. Si aplica, indica la superficie en m².
-                              </p>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-1 gap-3 px-4 pb-4 sm:grid-cols-3">
-                            <PresenceBlock
-                              title="Terreno"
-                              emoji="🗺️"
-                              has={terreno}
-                              onHasChange={setTerreno}
-                              value={terrenoSize}
-                              onValueChange={setTerrenoSize}
-                              fieldLabel="Tamaño del terreno"
-                            />
-                            <PresenceBlock
-                              title="Construcción"
-                              emoji="🏗️"
-                              has={construccion}
-                              onHasChange={setConstruccion}
-                              value={construccionSize}
-                              onValueChange={setConstruccionSize}
-                              fieldLabel="Tamaño de construcción"
-                            />
-                            <PresenceBlock
-                              title="Jardín"
-                              emoji="🌳"
-                              has={jardin}
-                              onHasChange={setJardin}
-                              value={jardinSize}
-                              onValueChange={setJardinSize}
-                              fieldLabel="Tamaño del jardín"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Category 3 — Detalles */}
-                        <div className="overflow-hidden rounded-2xl border border-border bg-card">
-                          <div className="flex items-center gap-3 px-4 py-3">
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-600">
-                              <ClipboardList className="h-5 w-5" />
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold text-foreground">Detalles</span>
-                                <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                  Antigüedad · Uso de suelo
-                                </span>
-                              </div>
-                              <p className="mt-0.5 text-xs text-muted-foreground">
-                                Datos que ayudan a compradores a filtrar mejor.
-                              </p>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-1 gap-4 px-4 pb-4 sm:grid-cols-2">
-                            <div>
-                              <Label className="mb-1.5 block text-sm font-medium">Antigüedad *</Label>
-                              <Select value={antiguedad} onValueChange={setAntiguedad}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                  {ANTIGUEDAD_OPTIONS.map((o) => (
-                                    <SelectItem key={o} value={o}>{o}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
-                              <Label className="mb-1.5 block text-sm font-medium">Uso de suelo *</Label>
-                              <Select value={usoSuelo} onValueChange={setUsoSuelo}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Habitacional">Habitacional</SelectItem>
-                                  <SelectItem value="Comercial">Comercial</SelectItem>
-                                  <SelectItem value="Mixto">Mixto</SelectItem>
-                                  <SelectItem value="Industrial">Industrial</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="sm:col-span-2">
-                              <Label className="mb-1.5 block text-sm font-medium">Tipo de rancho</Label>
-                              <div className="inline-flex flex-wrap rounded-full border border-border bg-muted/40 p-0.5">
-                                {["No aplica", "Agrícola", "Ganadero"].map((t) => (
-                                  <button
-                                    key={t}
-                                    type="button"
-                                    onClick={() => setTipoRancho(t)}
-                                    aria-pressed={tipoRancho === t}
-                                    className={[
-                                      "rounded-full px-3.5 py-1.5 text-sm font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
-                                      tipoRancho === t
-                                        ? "bg-secondary text-secondary-foreground shadow-sm"
-                                        : "text-muted-foreground hover:text-foreground",
-                                    ].join(" ")}
-                                  >
-                                    {t}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex justify-end pt-2">
-                          <Button
-                            onClick={() => setOpenSub("amenidades")}
-                            className="rounded-full bg-primary px-6 hover:bg-primary/90"
-                            disabled={!caractDone}
-                          >
-                            Guardar y continuar
-                          </Button>
-                        </div>
+                        {renderCaracteristicasBody()}
                       </div>
                     </Collapse>
                   </div>
@@ -1762,6 +1814,48 @@ function Index() {
                   </DialogFooter>
                 </div>
               )}
+            </DialogContent>
+          </Dialog>
+        );
+      })()}
+
+      {/* Características "Ver más" — focus dialog */}
+      {(() => {
+        const g = caractGroups.find((x) => x.id === caractMoreId) ?? null;
+        if (!g) return null;
+        const Icon = g.icon;
+        const groupPending = g.fields.filter((f) => f.pending).length;
+        return (
+          <Dialog open={!!g} onOpenChange={(o) => !o && setCaractMoreId(null)}>
+            <DialogContent className="max-h-[85vh] overflow-hidden p-0 sm:max-w-2xl">
+              <div className="flex flex-col">
+                <DialogHeader className="border-b border-border px-6 py-4 text-left">
+                  <div className="flex items-center gap-3">
+                    <span className={`flex h-10 w-10 items-center justify-center rounded-full ${g.tint}`}>
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <DialogTitle className="text-base font-semibold">{g.label}</DialogTitle>
+                      <DialogDescription className="text-xs">
+                        {groupPending === 0
+                          ? "Todo listo en esta categoría."
+                          : `${groupPending} campo${groupPending === 1 ? "" : "s"} por completar.`}
+                      </DialogDescription>
+                    </div>
+                  </div>
+                </DialogHeader>
+                <div className="max-h-[60vh] overflow-y-auto px-6 py-4">
+                  {renderCaractFields(g, g.fields)}
+                </div>
+                <DialogFooter className="flex-row items-center justify-end border-t border-border bg-muted/30 px-6 py-3">
+                  <Button
+                    onClick={() => setCaractMoreId(null)}
+                    className="rounded-full bg-primary px-6 hover:bg-primary/90"
+                  >
+                    Listo
+                  </Button>
+                </DialogFooter>
+              </div>
             </DialogContent>
           </Dialog>
         );
