@@ -645,6 +645,12 @@ function Index() {
   const [moreGroupId, setMoreGroupId] = useState<string | null>(null);
   const [moreSearch, setMoreSearch] = useState("");
 
+  // 2.1 Characteristics — toolbar/drawer state (mirrors amenities)
+  const [caractSearch, setCaractSearch] = useState("");
+  const [caractOnlyPending, setCaractOnlyPending] = useState(false);
+  const [caractCollapsed, setCaractCollapsed] = useState<Record<string, boolean>>({});
+  const [caractMoreId, setCaractMoreId] = useState<string | null>(null);
+
   // 2.3
   const [descripcion, setDescripcion] = useState("");
 
