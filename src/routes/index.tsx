@@ -20,7 +20,18 @@ import {
   Heart,
   Eye,
   HelpCircle,
+  Search,
+  Trees,
+  Waves,
+  ShieldCheck,
+  Building2,
+  Snowflake,
+  BedDouble,
+  Tag,
+  Network,
+  Trash2,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import propertyPreviewImg from "@/assets/property-preview.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -345,55 +356,128 @@ function PresenceBlock({
 
 /* ---------- Constants ---------- */
 type Amenity = { id: string; label: string; emoji: string; countable?: boolean };
-type AmenityGroup = { id: string; label: string; hint?: string; items: Amenity[] };
+type AmenityGroup = {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  tint: string; // bg + text tailwind classes for the round icon badge
+  visible: number; // number of chips visible before "Ver más"
+  items: Amenity[];
+};
 
 const AMENITY_GROUPS: AmenityGroup[] = [
   {
-    id: "wellness",
+    id: "exteriores",
+    label: "Exteriores",
+    icon: Trees,
+    tint: "bg-emerald-50 text-emerald-600",
+    visible: 8,
+    items: [
+      { id: "jardin", label: "Jardín", emoji: "🌳" },
+      { id: "jardinpriv", label: "Jardín privado", emoji: "🌿" },
+      { id: "terraza", label: "Terraza", emoji: "🌅" },
+      { id: "terrazapriv", label: "Terraza privada", emoji: "🌄" },
+      { id: "balcon", label: "Balcón", emoji: "🏙️", countable: true },
+      { id: "roof", label: "Roof garden", emoji: "🌇" },
+      { id: "patio", label: "Patio", emoji: "🪴" },
+      { id: "patiotrasero", label: "Patio trasero", emoji: "🌾" },
+      { id: "bbq", label: "Asador / BBQ", emoji: "🍖" },
+    ],
+  },
+  {
+    id: "bienestar",
     label: "Bienestar y recreación",
+    icon: Waves,
+    tint: "bg-sky-50 text-sky-600",
+    visible: 8,
     items: [
       { id: "alberca", label: "Alberca", emoji: "🏊" },
+      { id: "alberca_clima", label: "Alberca climatizada", emoji: "♨️" },
       { id: "gimnasio", label: "Gimnasio", emoji: "🏋️" },
+      { id: "jacuzzi", label: "Jacuzzi", emoji: "🛁" },
       { id: "spa", label: "Spa", emoji: "💆" },
-      { id: "sauna", label: "Sauna", emoji: "♨️" },
-      { id: "roof", label: "Roof garden", emoji: "🌇" },
+      { id: "sauna", label: "Sauna", emoji: "🧖" },
       { id: "tenis", label: "Cancha de tenis", emoji: "🎾" },
       { id: "padel", label: "Cancha de pádel", emoji: "🏓" },
-      { id: "bbq", label: "Área de BBQ", emoji: "🍖" },
+      { id: "infantil", label: "Área infantil", emoji: "🧒" },
     ],
   },
   {
-    id: "services",
-    label: "Servicios del edificio",
+    id: "estacionamiento",
+    label: "Estacionamiento y movilidad",
+    icon: Car,
+    tint: "bg-violet-50 text-violet-600",
+    visible: 5,
     items: [
-      { id: "seguridad", label: "Seguridad 24/7", emoji: "🛡️" },
-      { id: "visitas", label: "Estacionamiento de visitas", emoji: "🅿️" },
+      { id: "estac", label: "Estacionamiento", emoji: "🚗", countable: true },
+      { id: "visitas", label: "Visitas", emoji: "🅿️", countable: true },
+      { id: "estac_techado", label: "Estacionamiento techado", emoji: "🏠" },
+      { id: "garage", label: "Garage cerrado", emoji: "🚪" },
+      { id: "ev", label: "Cargador EV", emoji: "🔌", countable: true },
+      { id: "bici", label: "Bicicletero", emoji: "🚲" },
+    ],
+  },
+  {
+    id: "seguridad",
+    label: "Seguridad",
+    icon: ShieldCheck,
+    tint: "bg-rose-50 text-rose-600",
+    visible: 8,
+    items: [
+      { id: "seg247", label: "Seguridad 24/7", emoji: "🛡️" },
+      { id: "caseta", label: "Caseta de vigilancia", emoji: "👮" },
+      { id: "acceso", label: "Acceso controlado", emoji: "🎫" },
+      { id: "cctv", label: "CCTV", emoji: "📹" },
+      { id: "alarma", label: "Alarma", emoji: "🚨" },
+      { id: "porton", label: "Portón eléctrico", emoji: "🚧" },
+      { id: "humo", label: "Detector de humo", emoji: "💨" },
+      { id: "cerca", label: "Cerca eléctrica", emoji: "⚡" },
+    ],
+  },
+  {
+    id: "edificio",
+    label: "Servicios del edificio",
+    icon: Building2,
+    tint: "bg-amber-50 text-amber-600",
+    visible: 8,
+    items: [
       { id: "elevador", label: "Elevador", emoji: "🛗" },
-      { id: "lavado", label: "Cuarto de lavado", emoji: "🧺" },
-      { id: "ac", label: "Aire acondicionado", emoji: "❄️" },
       { id: "lobby", label: "Lobby", emoji: "🛋️" },
       { id: "coworking", label: "Coworking", emoji: "💻" },
-      { id: "eventos", label: "Salón de eventos", emoji: "🎉" },
-    ],
-  },
-  {
-    id: "lifestyle",
-    label: "Estilo de vida",
-    items: [
-      { id: "pet", label: "Pet friendly", emoji: "🐾" },
-      { id: "jardincomun", label: "Jardín común", emoji: "🌳" },
-    ],
-  },
-  {
-    id: "countable",
-    label: "¿Cuántos tiene tu propiedad?",
-    hint: "Toca para agregar y usa + / − para indicar la cantidad.",
-    items: [
-      { id: "balcon", label: "Balcón", emoji: "🌅", countable: true },
-      { id: "chimenea", label: "Chimenea", emoji: "🔥", countable: true },
-      { id: "terraza", label: "Terraza privada", emoji: "🌿", countable: true },
+      { id: "recepcion", label: "Recepción", emoji: "🛎️" },
+      { id: "planta", label: "Planta eléctrica", emoji: "⚙️" },
+      { id: "cisterna", label: "Cisterna", emoji: "💧" },
+      { id: "lavado", label: "Cuarto de lavado", emoji: "🧺" },
       { id: "bodega", label: "Bodega", emoji: "📦", countable: true },
-      { id: "jardinpriv", label: "Jardín privado", emoji: "🌷", countable: true },
+    ],
+  },
+  {
+    id: "confort",
+    label: "Confort",
+    icon: Snowflake,
+    tint: "bg-cyan-50 text-cyan-600",
+    visible: 6,
+    items: [
+      { id: "ac", label: "Aire acondicionado", emoji: "❄️" },
+      { id: "calefaccion", label: "Calefacción", emoji: "🔥" },
+      { id: "chimenea", label: "Chimenea", emoji: "🪵", countable: true },
+      { id: "ventiladores", label: "Ventiladores", emoji: "🌀" },
+      { id: "persianas", label: "Persianas", emoji: "🪟" },
+      { id: "smart", label: "Casa inteligente", emoji: "🤖" },
+    ],
+  },
+  {
+    id: "habitaciones",
+    label: "Habitaciones",
+    icon: BedDouble,
+    tint: "bg-fuchsia-50 text-fuchsia-600",
+    visible: 6,
+    items: [
+      { id: "recamaras", label: "Recámaras", emoji: "🛏️", countable: true },
+      { id: "banos_c", label: "Baños completos", emoji: "🛁", countable: true },
+      { id: "medios_b", label: "Medios baños", emoji: "🚽", countable: true },
+      { id: "walkin", label: "Walk-in closet", emoji: "👗", countable: true },
+      { id: "estudio", label: "Estudio / Oficina", emoji: "💼", countable: true },
     ],
   },
 ];
@@ -496,6 +580,29 @@ function AmenityChip({
   );
 }
 
+/* ---------- Summary stat pill (amenities toolbar) ---------- */
+function SummaryStat({
+  icon,
+  tint,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  tint: string;
+  label: string;
+  value: number;
+}) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <span className={`flex h-9 w-9 items-center justify-center rounded-full ${tint}`}>{icon}</span>
+      <div className="leading-tight">
+        <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
+        <div className="text-base font-semibold tabular-nums text-foreground">{value}</div>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- Page ---------- */
 function Index() {
   const [openSection, setOpenSection] = useState<SectionId>("especificaciones");
@@ -527,11 +634,41 @@ function Index() {
 
   // 2.2 Amenidades inline
   const [amenities, setAmenities] = useState<Record<string, number>>({
+    jardin: 1,
+    jardinpriv: 1,
+    terraza: 1,
+    balcon: 2,
+    roof: 1,
+    bbq: 1,
     alberca: 1,
     gimnasio: 1,
-    seguridad: 1,
-    balcon: 2,
+    padel: 1,
+    estac: 2,
+    visitas: 1,
+    ev: 1,
+    seg247: 1,
+    caseta: 1,
+    acceso: 1,
+    cctv: 1,
+    porton: 1,
+    elevador: 1,
+    lobby: 1,
+    planta: 1,
+    lavado: 1,
+    bodega: 1,
+    ac: 1,
+    chimenea: 1,
+    recamaras: 3,
+    banos_c: 2,
+    medios_b: 1,
+    walkin: 2,
+    estudio: 1,
   });
+  const [amenitySearch, setAmenitySearch] = useState("");
+  const [amenityOnlyActive, setAmenityOnlyActive] = useState(false);
+  const [amenityView, setAmenityView] = useState<"categorias" | "todas">("categorias");
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
   // 2.3
   const [descripcion, setDescripcion] = useState("");
@@ -1063,35 +1200,148 @@ function Index() {
                       description="Toca para activar. En las contables usa + / − para indicar la cantidad."
                     />
                     <Collapse id="sub-p-amenidades" open={openSub === "amenidades"}>
-                      <div className="space-y-6 pb-6">
-                        {AMENITY_GROUPS.map((g) => (
-                          <div key={g.id}>
-                            <div className="mb-2.5 flex items-baseline justify-between gap-3">
-                              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                {g.label}
-                              </p>
-                              {g.hint && (
-                                <p className="text-[11px] text-muted-foreground/80">{g.hint}</p>
-                              )}
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              {g.items.map((it) => (
-                                <AmenityChip
-                                  key={it.id}
-                                  item={it}
-                                  count={amenities[it.id] ?? 0}
-                                  onChange={(n) => setAmenity(it.id, n)}
-                                />
-                              ))}
-                            </div>
+                      <div className="space-y-4 pb-6">
+                        {/* Toolbar: search + view selector + only-active toggle */}
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                          <div className="relative flex-1">
+                            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                              value={amenitySearch}
+                              onChange={(e) => setAmenitySearch(e.target.value)}
+                              placeholder="Buscar amenidad…"
+                              className="h-10 rounded-full border-border bg-card pl-9"
+                              aria-label="Buscar amenidad"
+                            />
                           </div>
-                        ))}
+                          <Select value={amenityView} onValueChange={(v) => setAmenityView(v as "categorias" | "todas")}>
+                            <SelectTrigger className="h-10 w-full rounded-full sm:w-52">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="categorias">Ver por categorías</SelectItem>
+                              <SelectItem value="todas">Ver todas</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <label className="flex shrink-0 items-center gap-2 text-sm text-foreground">
+                            <Switch
+                              checked={amenityOnlyActive}
+                              onCheckedChange={setAmenityOnlyActive}
+                              aria-label="Mostrar solo activas"
+                            />
+                            <span>Mostrar solo activas</span>
+                          </label>
+                        </div>
 
-                        <div className="flex items-center justify-between border-t border-border pt-4">
-                          <span className="text-xs text-muted-foreground">
-                            <span className="font-semibold text-foreground">{amenidadesCount}</span>{" "}
-                            amenidades seleccionadas
-                          </span>
+                        {/* Summary bar */}
+                        {(() => {
+                          const totalDisponibles = AMENITY_GROUPS.reduce((a, g) => a + g.items.length, 0);
+                          const totalCantidad = Object.values(amenities).filter((n) => n > 1).length;
+                          return (
+                            <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
+                              <SummaryStat icon={<Check className="h-4 w-4" />} tint="bg-emerald-50 text-emerald-600" label="Seleccionadas" value={amenidadesCount} />
+                              <div className="hidden h-8 w-px bg-border sm:block" />
+                              <SummaryStat icon={<Tag className="h-4 w-4" />} tint="bg-amber-50 text-amber-600" label="Con cantidad" value={totalCantidad} />
+                              <div className="hidden h-8 w-px bg-border sm:block" />
+                              <SummaryStat icon={<Network className="h-4 w-4" />} tint="bg-slate-100 text-slate-600" label="Disponibles" value={totalDisponibles} />
+                              <div className="ml-auto">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setAmenities({})}
+                                  className="rounded-full border-border text-secondary hover:bg-accent hover:text-secondary"
+                                  disabled={amenidadesCount === 0}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                  Limpiar todo
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* Category cards */}
+                        <div className="space-y-3">
+                          {AMENITY_GROUPS.map((g) => {
+                            const q = amenitySearch.trim().toLowerCase();
+                            let items = g.items;
+                            if (q) items = items.filter((it) => it.label.toLowerCase().includes(q));
+                            if (amenityOnlyActive) items = items.filter((it) => (amenities[it.id] ?? 0) > 0);
+                            if (items.length === 0) return null;
+                            const activeCount = g.items.filter((it) => (amenities[it.id] ?? 0) > 0).length;
+                            const collapsed = collapsedGroups[g.id];
+                            const expanded = expandedGroups[g.id];
+                            const visibleN = expanded || amenityView === "todas" || q ? items.length : g.visible;
+                            const visibleItems = items.slice(0, visibleN);
+                            const hasMore = items.length > visibleN;
+                            const Icon = g.icon;
+                            return (
+                              <div key={g.id} className="overflow-hidden rounded-2xl border border-border bg-card">
+                                <button
+                                  type="button"
+                                  onClick={() => setCollapsedGroups((c) => ({ ...c, [g.id]: !c[g.id] }))}
+                                  className="flex w-full items-center gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
+                                  aria-expanded={!collapsed}
+                                >
+                                  <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${g.tint}`}>
+                                    <Icon className="h-5 w-5" />
+                                  </span>
+                                  <span className="flex-1 min-w-0">
+                                    <span className="flex items-center gap-2">
+                                      <span className="text-sm font-semibold text-foreground">{g.label}</span>
+                                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                                        {activeCount || g.items.length}
+                                      </span>
+                                    </span>
+                                  </span>
+                                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`} />
+                                </button>
+                                <Collapse id={`amen-${g.id}`} open={!collapsed}>
+                                  <div className="flex flex-wrap gap-2 px-4 pb-4">
+                                    {visibleItems.map((it) => (
+                                      <AmenityChip
+                                        key={it.id}
+                                        item={it}
+                                        count={amenities[it.id] ?? 0}
+                                        onChange={(n) => setAmenity(it.id, n)}
+                                      />
+                                    ))}
+                                    {hasMore && (
+                                      <button
+                                        type="button"
+                                        onClick={() => setExpandedGroups((c) => ({ ...c, [g.id]: true }))}
+                                        className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:border-secondary/50 hover:text-secondary"
+                                      >
+                                        Ver más
+                                        <ChevronDown className="h-3.5 w-3.5" />
+                                      </button>
+                                    )}
+                                  </div>
+                                </Collapse>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Footer legend + continue */}
+                        <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1.5">
+                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+                                <Check className="h-2.5 w-2.5" strokeWidth={4} />
+                              </span>
+                              Seleccionada
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+                                <Minus className="h-2.5 w-2.5" strokeWidth={4} />
+                              </span>
+                              Con cantidad
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                              <span className="h-4 w-4 rounded-full border border-border bg-card" />
+                              No seleccionada
+                            </span>
+                          </div>
                           <Button
                             onClick={() => setOpenSub("descripcion")}
                             className="rounded-full bg-primary px-6 hover:bg-primary/90"
