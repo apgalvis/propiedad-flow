@@ -1318,10 +1318,14 @@ function Index() {
                                     {hasMore && (
                                       <button
                                         type="button"
-                                        onClick={() => setExpandedGroups((c) => ({ ...c, [g.id]: true }))}
+                                        onClick={() => {
+                                          setMoreGroupId(g.id);
+                                          setMoreSearch("");
+                                        }}
                                         className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:border-secondary/50 hover:text-secondary"
+                                        aria-haspopup="dialog"
                                       >
-                                        Ver más
+                                        Ver más ({items.length - visibleN})
                                         <ChevronDown className="h-3.5 w-3.5" />
                                       </button>
                                     )}
