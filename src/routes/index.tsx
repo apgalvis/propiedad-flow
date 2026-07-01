@@ -677,6 +677,8 @@ function Index() {
   const [amenityView, setAmenityView] = useState<"categorias" | "todas">("categorias");
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [moreGroupId, setMoreGroupId] = useState<string | null>(null);
+  const [moreSearch, setMoreSearch] = useState("");
 
   // 2.3
   const [descripcion, setDescripcion] = useState("");
