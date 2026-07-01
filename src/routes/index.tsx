@@ -30,6 +30,8 @@ import {
   Tag,
   Network,
   Trash2,
+  Ruler,
+  ClipboardList,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -411,21 +413,6 @@ const AMENITY_GROUPS: AmenityGroup[] = [
     ],
   },
   {
-    id: "estacionamiento",
-    label: "Estacionamiento y movilidad",
-    icon: Car,
-    tint: "bg-violet-50 text-violet-600",
-    visible: 5,
-    items: [
-      { id: "estac", label: "Estacionamiento", emoji: "🚗", countable: true },
-      { id: "visitas", label: "Visitas", emoji: "🅿️", countable: true },
-      { id: "estac_techado", label: "Estacionamiento techado", emoji: "🏠" },
-      { id: "garage", label: "Garage cerrado", emoji: "🚪" },
-      { id: "ev", label: "Cargador EV", emoji: "🔌", countable: true },
-      { id: "bici", label: "Bicicletero", emoji: "🚲" },
-    ],
-  },
-  {
     id: "seguridad",
     label: "Seguridad",
     icon: ShieldCheck,
@@ -472,20 +459,6 @@ const AMENITY_GROUPS: AmenityGroup[] = [
       { id: "ventiladores", label: "Ventiladores", emoji: "🌀" },
       { id: "persianas", label: "Persianas", emoji: "🪟" },
       { id: "smart", label: "Casa inteligente", emoji: "🤖" },
-    ],
-  },
-  {
-    id: "habitaciones",
-    label: "Habitaciones",
-    icon: BedDouble,
-    tint: "bg-fuchsia-50 text-fuchsia-600",
-    visible: 6,
-    items: [
-      { id: "recamaras", label: "Recámaras", emoji: "🛏️", countable: true },
-      { id: "banos_c", label: "Baños completos", emoji: "🛁", countable: true },
-      { id: "medios_b", label: "Medios baños", emoji: "🚽", countable: true },
-      { id: "walkin", label: "Walk-in closet", emoji: "👗", countable: true },
-      { id: "estudio", label: "Estudio / Oficina", emoji: "💼", countable: true },
     ],
   },
 ];
@@ -651,9 +624,6 @@ function Index() {
     alberca: 1,
     gimnasio: 1,
     padel: 1,
-    estac: 2,
-    visitas: 1,
-    ev: 1,
     seg247: 1,
     caseta: 1,
     acceso: 1,
@@ -666,11 +636,6 @@ function Index() {
     bodega: 1,
     ac: 1,
     chimenea: 1,
-    recamaras: 3,
-    banos_c: 2,
-    medios_b: 1,
-    walkin: 2,
-    estudio: 1,
   });
   const [amenitySearch, setAmenitySearch] = useState("");
   const [amenityOnlyActive, setAmenityOnlyActive] = useState(false);
@@ -1090,34 +1055,78 @@ function Index() {
                       description="Cuéntanos los detalles principales de tu propiedad."
                     />
                     <Collapse id="sub-p-caracteristicas" open={openSub === "caracteristicas"}>
-                      <div className="space-y-6 pb-6">
-                        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-                          <Stepper label="Recámaras *" value={recamaras} onChange={setRecamaras} icon={<Bed className="h-4 w-4" />} />
-                          <Stepper label="Baños *" value={banos} onChange={setBanos} icon={<Bath className="h-4 w-4" />} />
-                          <Stepper label="Medios baños" value={mediosBanos} onChange={setMediosBanos} icon={<Bath className="h-4 w-4" />} />
-                          <Stepper label="Niveles" value={niveles} onChange={setNiveles} min={1} icon={<Home className="h-4 w-4" />} />
-                        </div>
+                      <div className="space-y-4 pb-6">
+                        {/* Summary bar mirrors amenities */}
+                        {(() => {
+                          const distribCount =
+                            (recamaras > 0 ? 1 : 0) +
+                            (banos > 0 ? 1 : 0) +
+                            (mediosBanos > 0 ? 1 : 0) +
+                            (niveles > 0 ? 1 : 0) +
+                            (estac > 0 ? 1 : 0);
+                          const espaciosCount =
+                            (terreno ? 1 : 0) + (construccion ? 1 : 0) + (jardin ? 1 : 0);
+                          const detallesCount =
+                            (antiguedad ? 1 : 0) + (usoSuelo ? 1 : 0) + (tipoRancho && tipoRancho !== "No aplica" ? 1 : 0);
+                          const totalItems = 5 + 3 + 3;
+                          const totalActivos = distribCount + espaciosCount + detallesCount;
+                          return (
+                            <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
+                              <SummaryStat icon={<Check className="h-4 w-4" />} tint="bg-emerald-50 text-emerald-600" label="Completados" value={totalActivos} />
+                              <div className="hidden h-8 w-px bg-border sm:block" />
+                              <SummaryStat icon={<Ruler className="h-4 w-4" />} tint="bg-amber-50 text-amber-600" label="Espacios" value={espaciosCount} />
+                              <div className="hidden h-8 w-px bg-border sm:block" />
+                              <SummaryStat icon={<Network className="h-4 w-4" />} tint="bg-slate-100 text-slate-600" label="Totales" value={totalItems} />
+                            </div>
+                          );
+                        })()}
 
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                          <Stepper label="Estacionamiento(s)" value={estac} onChange={setEstac} icon={<Car className="h-4 w-4" />} />
-                          <div>
-                            <Label className="mb-1.5 block text-sm font-medium">Antigüedad *</Label>
-                            <Select value={antiguedad} onValueChange={setAntiguedad}>
-                              <SelectTrigger><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                {ANTIGUEDAD_OPTIONS.map((o) => (
-                                  <SelectItem key={o} value={o}>{o}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                        {/* Category 1 — Distribución */}
+                        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+                          <div className="flex items-center gap-3 px-4 py-3">
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-fuchsia-50 text-fuchsia-600">
+                              <BedDouble className="h-5 w-5" />
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold text-foreground">Distribución</span>
+                                <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                                  Habitaciones y estacionamiento
+                                </span>
+                              </div>
+                              <p className="mt-0.5 text-xs text-muted-foreground">
+                                Ajusta la cantidad con + / − en cada espacio.
+                              </p>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3 px-4 pb-4 sm:gap-4 lg:grid-cols-5">
+                            <Stepper label="Recámaras *" value={recamaras} onChange={setRecamaras} icon={<Bed className="h-4 w-4" />} />
+                            <Stepper label="Baños *" value={banos} onChange={setBanos} icon={<Bath className="h-4 w-4" />} />
+                            <Stepper label="Medios baños" value={mediosBanos} onChange={setMediosBanos} icon={<Bath className="h-4 w-4" />} />
+                            <Stepper label="Niveles" value={niveles} onChange={setNiveles} min={1} icon={<Home className="h-4 w-4" />} />
+                            <Stepper label="Estacionamiento" value={estac} onChange={setEstac} icon={<Car className="h-4 w-4" />} />
                           </div>
                         </div>
 
-                        <div>
-                          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                            Espacios exteriores
-                          </p>
-                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        {/* Category 2 — Espacios exteriores */}
+                        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+                          <div className="flex items-center gap-3 px-4 py-3">
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                              <Trees className="h-5 w-5" />
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold text-foreground">Espacios exteriores</span>
+                                <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                                  Terreno · Construcción · Jardín
+                                </span>
+                              </div>
+                              <p className="mt-0.5 text-xs text-muted-foreground">
+                                Responde Sí o No. Si aplica, indica la superficie en m².
+                              </p>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 gap-3 px-4 pb-4 sm:grid-cols-3">
                             <PresenceBlock
                               title="Terreno"
                               emoji="🗺️"
@@ -1148,37 +1157,68 @@ function Index() {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                          <div>
-                            <Label className="mb-1.5 block text-sm font-medium">Uso de suelo *</Label>
-                            <Select value={usoSuelo} onValueChange={setUsoSuelo}>
-                              <SelectTrigger><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Habitacional">Habitacional</SelectItem>
-                                <SelectItem value="Comercial">Comercial</SelectItem>
-                                <SelectItem value="Mixto">Mixto</SelectItem>
-                                <SelectItem value="Industrial">Industrial</SelectItem>
-                              </SelectContent>
-                            </Select>
+                        {/* Category 3 — Detalles */}
+                        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+                          <div className="flex items-center gap-3 px-4 py-3">
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-600">
+                              <ClipboardList className="h-5 w-5" />
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold text-foreground">Detalles</span>
+                                <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                                  Antigüedad · Uso de suelo
+                                </span>
+                              </div>
+                              <p className="mt-0.5 text-xs text-muted-foreground">
+                                Datos que ayudan a compradores a filtrar mejor.
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <Label className="mb-1.5 block text-sm font-medium">Tipo de rancho</Label>
-                            <div className="inline-flex flex-wrap rounded-lg border border-border bg-card p-1">
-                              {["No aplica", "Agrícola", "Ganadero"].map((t) => (
-                                <button
-                                  key={t}
-                                  type="button"
-                                  onClick={() => setTipoRancho(t)}
-                                  className={[
-                                    "rounded-md px-3 py-1.5 text-sm font-medium transition-all active:scale-95 sm:px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
-                                    tipoRancho === t
-                                      ? "bg-primary text-primary-foreground shadow-sm"
-                                      : "text-muted-foreground hover:text-foreground",
-                                  ].join(" ")}
-                                >
-                                  {t}
-                                </button>
-                              ))}
+                          <div className="grid grid-cols-1 gap-4 px-4 pb-4 sm:grid-cols-2">
+                            <div>
+                              <Label className="mb-1.5 block text-sm font-medium">Antigüedad *</Label>
+                              <Select value={antiguedad} onValueChange={setAntiguedad}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  {ANTIGUEDAD_OPTIONS.map((o) => (
+                                    <SelectItem key={o} value={o}>{o}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label className="mb-1.5 block text-sm font-medium">Uso de suelo *</Label>
+                              <Select value={usoSuelo} onValueChange={setUsoSuelo}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Habitacional">Habitacional</SelectItem>
+                                  <SelectItem value="Comercial">Comercial</SelectItem>
+                                  <SelectItem value="Mixto">Mixto</SelectItem>
+                                  <SelectItem value="Industrial">Industrial</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="sm:col-span-2">
+                              <Label className="mb-1.5 block text-sm font-medium">Tipo de rancho</Label>
+                              <div className="inline-flex flex-wrap rounded-full border border-border bg-muted/40 p-0.5">
+                                {["No aplica", "Agrícola", "Ganadero"].map((t) => (
+                                  <button
+                                    key={t}
+                                    type="button"
+                                    onClick={() => setTipoRancho(t)}
+                                    aria-pressed={tipoRancho === t}
+                                    className={[
+                                      "rounded-full px-3.5 py-1.5 text-sm font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                                      tipoRancho === t
+                                        ? "bg-secondary text-secondary-foreground shadow-sm"
+                                        : "text-muted-foreground hover:text-foreground",
+                                    ].join(" ")}
+                                  >
+                                    {t}
+                                  </button>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
