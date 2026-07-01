@@ -32,6 +32,14 @@ import {
   Trash2,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import propertyPreviewImg from "@/assets/property-preview.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -669,6 +677,8 @@ function Index() {
   const [amenityView, setAmenityView] = useState<"categorias" | "todas">("categorias");
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [moreGroupId, setMoreGroupId] = useState<string | null>(null);
+  const [moreSearch, setMoreSearch] = useState("");
 
   // 2.3
   const [descripcion, setDescripcion] = useState("");
@@ -1308,10 +1318,14 @@ function Index() {
                                     {hasMore && (
                                       <button
                                         type="button"
-                                        onClick={() => setExpandedGroups((c) => ({ ...c, [g.id]: true }))}
+                                        onClick={() => {
+                                          setMoreGroupId(g.id);
+                                          setMoreSearch("");
+                                        }}
                                         className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:border-secondary/50 hover:text-secondary"
+                                        aria-haspopup="dialog"
                                       >
-                                        Ver más
+                                        Ver más ({items.length - visibleN})
                                         <ChevronDown className="h-3.5 w-3.5" />
                                       </button>
                                     )}
@@ -1629,6 +1643,89 @@ function Index() {
           </p>
         </aside>
       </div>
+
+      {/* Amenities "Ver más" dialog */}
+      {(() => {
+        const g = AMENITY_GROUPS.find((x) => x.id === moreGroupId) ?? null;
+        const q = moreSearch.trim().toLowerCase();
+        const items = g ? (q ? g.items.filter((it) => it.label.toLowerCase().includes(q)) : g.items) : [];
+        const activeInGroup = g ? g.items.filter((it) => (amenities[it.id] ?? 0) > 0).length : 0;
+        const Icon = g?.icon;
+        return (
+          <Dialog open={!!g} onOpenChange={(o) => !o && setMoreGroupId(null)}>
+            <DialogContent className="max-h-[85vh] overflow-hidden p-0 sm:max-w-2xl">
+              {g && Icon && (
+                <div className="flex flex-col">
+                  <DialogHeader className="border-b border-border px-6 py-4 text-left">
+                    <div className="flex items-center gap-3">
+                      <span className={`flex h-10 w-10 items-center justify-center rounded-full ${g.tint}`}>
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <DialogTitle className="text-base font-semibold">{g.label}</DialogTitle>
+                        <DialogDescription className="text-xs">
+                          {activeInGroup} de {g.items.length} seleccionadas
+                        </DialogDescription>
+                      </div>
+                    </div>
+                    <div className="relative mt-3">
+                      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        value={moreSearch}
+                        onChange={(e) => setMoreSearch(e.target.value)}
+                        placeholder={`Buscar en ${g.label.toLowerCase()}…`}
+                        className="h-10 rounded-full border-border bg-card pl-9"
+                        aria-label="Buscar amenidad"
+                        autoFocus
+                      />
+                    </div>
+                  </DialogHeader>
+                  <div className="max-h-[55vh] overflow-y-auto px-6 py-4">
+                    {items.length === 0 ? (
+                      <p className="py-8 text-center text-sm text-muted-foreground">
+                        No encontramos amenidades para "{moreSearch}".
+                      </p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {items.map((it) => (
+                          <AmenityChip
+                            key={it.id}
+                            item={it}
+                            count={amenities[it.id] ?? 0}
+                            onChange={(n) => setAmenity(it.id, n)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <DialogFooter className="flex-row items-center justify-between border-t border-border bg-muted/30 px-6 py-3 sm:justify-between">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAmenities((cur) => {
+                          const next = { ...cur };
+                          g.items.forEach((it) => delete next[it.id]);
+                          return next;
+                        });
+                      }}
+                      className="text-xs font-medium text-muted-foreground hover:text-destructive"
+                      disabled={activeInGroup === 0}
+                    >
+                      Limpiar categoría
+                    </button>
+                    <Button
+                      onClick={() => setMoreGroupId(null)}
+                      className="rounded-full bg-primary px-6 hover:bg-primary/90"
+                    >
+                      Listo
+                    </Button>
+                  </DialogFooter>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
+        );
+      })()}
     </div>
   );
 }
