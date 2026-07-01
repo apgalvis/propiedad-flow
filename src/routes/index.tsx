@@ -625,9 +625,6 @@ function Index() {
     alberca: 1,
     gimnasio: 1,
     padel: 1,
-    estac: 2,
-    visitas: 1,
-    ev: 1,
     seg247: 1,
     caseta: 1,
     acceso: 1,
@@ -640,11 +637,6 @@ function Index() {
     bodega: 1,
     ac: 1,
     chimenea: 1,
-    recamaras: 3,
-    banos_c: 2,
-    medios_b: 1,
-    walkin: 2,
-    estudio: 1,
   });
   const [amenitySearch, setAmenitySearch] = useState("");
   const [amenityOnlyActive, setAmenityOnlyActive] = useState(false);
