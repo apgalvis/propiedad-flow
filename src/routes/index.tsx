@@ -1177,35 +1177,148 @@ function Index() {
                       description="Toca para activar. En las contables usa + / − para indicar la cantidad."
                     />
                     <Collapse id="sub-p-amenidades" open={openSub === "amenidades"}>
-                      <div className="space-y-6 pb-6">
-                        {AMENITY_GROUPS.map((g) => (
-                          <div key={g.id}>
-                            <div className="mb-2.5 flex items-baseline justify-between gap-3">
-                              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                {g.label}
-                              </p>
-                              {g.hint && (
-                                <p className="text-[11px] text-muted-foreground/80">{g.hint}</p>
-                              )}
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              {g.items.map((it) => (
-                                <AmenityChip
-                                  key={it.id}
-                                  item={it}
-                                  count={amenities[it.id] ?? 0}
-                                  onChange={(n) => setAmenity(it.id, n)}
-                                />
-                              ))}
-                            </div>
+                      <div className="space-y-4 pb-6">
+                        {/* Toolbar: search + view selector + only-active toggle */}
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                          <div className="relative flex-1">
+                            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                              value={amenitySearch}
+                              onChange={(e) => setAmenitySearch(e.target.value)}
+                              placeholder="Buscar amenidad…"
+                              className="h-10 rounded-full border-border bg-card pl-9"
+                              aria-label="Buscar amenidad"
+                            />
                           </div>
-                        ))}
+                          <Select value={amenityView} onValueChange={(v) => setAmenityView(v as "categorias" | "todas")}>
+                            <SelectTrigger className="h-10 w-full rounded-full sm:w-52">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="categorias">Ver por categorías</SelectItem>
+                              <SelectItem value="todas">Ver todas</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <label className="flex shrink-0 items-center gap-2 text-sm text-foreground">
+                            <Switch
+                              checked={amenityOnlyActive}
+                              onCheckedChange={setAmenityOnlyActive}
+                              aria-label="Mostrar solo activas"
+                            />
+                            <span>Mostrar solo activas</span>
+                          </label>
+                        </div>
 
-                        <div className="flex items-center justify-between border-t border-border pt-4">
-                          <span className="text-xs text-muted-foreground">
-                            <span className="font-semibold text-foreground">{amenidadesCount}</span>{" "}
-                            amenidades seleccionadas
-                          </span>
+                        {/* Summary bar */}
+                        {(() => {
+                          const totalDisponibles = AMENITY_GROUPS.reduce((a, g) => a + g.items.length, 0);
+                          const totalCantidad = Object.values(amenities).filter((n) => n > 1).length;
+                          return (
+                            <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
+                              <SummaryStat icon={<Check className="h-4 w-4" />} tint="bg-emerald-50 text-emerald-600" label="Seleccionadas" value={amenidadesCount} />
+                              <div className="hidden h-8 w-px bg-border sm:block" />
+                              <SummaryStat icon={<Tag className="h-4 w-4" />} tint="bg-amber-50 text-amber-600" label="Con cantidad" value={totalCantidad} />
+                              <div className="hidden h-8 w-px bg-border sm:block" />
+                              <SummaryStat icon={<Network className="h-4 w-4" />} tint="bg-slate-100 text-slate-600" label="Disponibles" value={totalDisponibles} />
+                              <div className="ml-auto">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setAmenities({})}
+                                  className="rounded-full border-border text-secondary hover:bg-accent hover:text-secondary"
+                                  disabled={amenidadesCount === 0}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                  Limpiar todo
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* Category cards */}
+                        <div className="space-y-3">
+                          {AMENITY_GROUPS.map((g) => {
+                            const q = amenitySearch.trim().toLowerCase();
+                            let items = g.items;
+                            if (q) items = items.filter((it) => it.label.toLowerCase().includes(q));
+                            if (amenityOnlyActive) items = items.filter((it) => (amenities[it.id] ?? 0) > 0);
+                            if (items.length === 0) return null;
+                            const activeCount = g.items.filter((it) => (amenities[it.id] ?? 0) > 0).length;
+                            const collapsed = collapsedGroups[g.id];
+                            const expanded = expandedGroups[g.id];
+                            const visibleN = expanded || amenityView === "todas" || q ? items.length : g.visible;
+                            const visibleItems = items.slice(0, visibleN);
+                            const hasMore = items.length > visibleN;
+                            const Icon = g.icon;
+                            return (
+                              <div key={g.id} className="overflow-hidden rounded-2xl border border-border bg-card">
+                                <button
+                                  type="button"
+                                  onClick={() => setCollapsedGroups((c) => ({ ...c, [g.id]: !c[g.id] }))}
+                                  className="flex w-full items-center gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
+                                  aria-expanded={!collapsed}
+                                >
+                                  <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${g.tint}`}>
+                                    <Icon className="h-5 w-5" />
+                                  </span>
+                                  <span className="flex-1 min-w-0">
+                                    <span className="flex items-center gap-2">
+                                      <span className="text-sm font-semibold text-foreground">{g.label}</span>
+                                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                                        {activeCount || g.items.length}
+                                      </span>
+                                    </span>
+                                  </span>
+                                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`} />
+                                </button>
+                                <Collapse id={`amen-${g.id}`} open={!collapsed}>
+                                  <div className="flex flex-wrap gap-2 px-4 pb-4">
+                                    {visibleItems.map((it) => (
+                                      <AmenityChip
+                                        key={it.id}
+                                        item={it}
+                                        count={amenities[it.id] ?? 0}
+                                        onChange={(n) => setAmenity(it.id, n)}
+                                      />
+                                    ))}
+                                    {hasMore && (
+                                      <button
+                                        type="button"
+                                        onClick={() => setExpandedGroups((c) => ({ ...c, [g.id]: true }))}
+                                        className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:border-secondary/50 hover:text-secondary"
+                                      >
+                                        Ver más
+                                        <ChevronDown className="h-3.5 w-3.5" />
+                                      </button>
+                                    )}
+                                  </div>
+                                </Collapse>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Footer legend + continue */}
+                        <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1.5">
+                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+                                <Check className="h-2.5 w-2.5" strokeWidth={4} />
+                              </span>
+                              Seleccionada
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+                                <Minus className="h-2.5 w-2.5" strokeWidth={4} />
+                              </span>
+                              Con cantidad
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                              <span className="h-4 w-4 rounded-full border border-border bg-card" />
+                              No seleccionada
+                            </span>
+                          </div>
                           <Button
                             onClick={() => setOpenSub("descripcion")}
                             className="rounded-full bg-primary px-6 hover:bg-primary/90"
