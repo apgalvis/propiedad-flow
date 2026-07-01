@@ -414,21 +414,6 @@ const AMENITY_GROUPS: AmenityGroup[] = [
     ],
   },
   {
-    id: "estacionamiento",
-    label: "Estacionamiento y movilidad",
-    icon: Car,
-    tint: "bg-violet-50 text-violet-600",
-    visible: 5,
-    items: [
-      { id: "estac", label: "Estacionamiento", emoji: "🚗", countable: true },
-      { id: "visitas", label: "Visitas", emoji: "🅿️", countable: true },
-      { id: "estac_techado", label: "Estacionamiento techado", emoji: "🏠" },
-      { id: "garage", label: "Garage cerrado", emoji: "🚪" },
-      { id: "ev", label: "Cargador EV", emoji: "🔌", countable: true },
-      { id: "bici", label: "Bicicletero", emoji: "🚲" },
-    ],
-  },
-  {
     id: "seguridad",
     label: "Seguridad",
     icon: ShieldCheck,
@@ -475,20 +460,6 @@ const AMENITY_GROUPS: AmenityGroup[] = [
       { id: "ventiladores", label: "Ventiladores", emoji: "🌀" },
       { id: "persianas", label: "Persianas", emoji: "🪟" },
       { id: "smart", label: "Casa inteligente", emoji: "🤖" },
-    ],
-  },
-  {
-    id: "habitaciones",
-    label: "Habitaciones",
-    icon: BedDouble,
-    tint: "bg-fuchsia-50 text-fuchsia-600",
-    visible: 6,
-    items: [
-      { id: "recamaras", label: "Recámaras", emoji: "🛏️", countable: true },
-      { id: "banos_c", label: "Baños completos", emoji: "🛁", countable: true },
-      { id: "medios_b", label: "Medios baños", emoji: "🚽", countable: true },
-      { id: "walkin", label: "Walk-in closet", emoji: "👗", countable: true },
-      { id: "estudio", label: "Estudio / Oficina", emoji: "💼", countable: true },
     ],
   },
 ];
