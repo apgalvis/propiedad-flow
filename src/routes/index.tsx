@@ -874,37 +874,6 @@ function Index() {
     const completedTotal = totalFields - pendingTotal;
     return (
       <>
-        {/* Toolbar */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={caractSearch}
-              onChange={(e) => setCaractSearch(e.target.value)}
-              placeholder="Buscar característica…"
-              className="h-10 rounded-full border-border bg-card pl-9"
-              aria-label="Buscar característica"
-            />
-          </div>
-          <label className="flex shrink-0 items-center gap-2 text-sm text-foreground">
-            <Switch
-              checked={caractOnlyPending}
-              onCheckedChange={setCaractOnlyPending}
-              aria-label="Mostrar solo pendientes"
-            />
-            <span>Solo pendientes</span>
-          </label>
-        </div>
-
-        {/* Summary bar */}
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
-          <SummaryStat icon={<Check className="h-4 w-4" />} tint="bg-emerald-50 text-emerald-600" label="Completados" value={completedTotal} />
-          <div className="hidden h-8 w-px bg-border sm:block" />
-          <SummaryStat icon={<Ruler className="h-4 w-4" />} tint="bg-amber-50 text-amber-600" label="Pendientes" value={pendingTotal} />
-          <div className="hidden h-8 w-px bg-border sm:block" />
-          <SummaryStat icon={<Network className="h-4 w-4" />} tint="bg-slate-100 text-slate-600" label="Totales" value={totalFields} />
-        </div>
-
         {/* Category cards */}
         <div className="space-y-3">
           {caractGroups.map((g) => {
@@ -940,14 +909,6 @@ function Index() {
                       <span className="mt-0.5 block text-xs text-muted-foreground">{g.desc}</span>
                     </span>
                     <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCaractMoreId(g.id)}
-                    className="hidden shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-secondary/50 hover:text-secondary sm:inline-flex"
-                    aria-haspopup="dialog"
-                  >
-                    Ver más
                   </button>
                 </div>
                 <Collapse id={`caract-${g.id}`} open={!collapsed}>
