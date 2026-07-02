@@ -1590,28 +1590,45 @@ function Index() {
                           })}
                         </div>
 
-                        {/* Footer legend + continue */}
+                        {/* Confirmación "sin amenidades" + continue */}
                         <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1.5">
-                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-                                <Check className="h-2.5 w-2.5" strokeWidth={4} />
+                          <button
+                            type="button"
+                            onClick={toggleNoAmenities}
+                            aria-pressed={noAmenities}
+                            disabled={amenidadesCount > 0}
+                            className={[
+                              "group inline-flex items-center gap-2.5 rounded-full border px-3 py-2 text-left text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                              amenidadesCount > 0
+                                ? "cursor-not-allowed border-border bg-muted/30 text-muted-foreground/60"
+                                : noAmenities
+                                  ? "border-secondary bg-secondary/10 text-foreground"
+                                  : "border-dashed border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
+                            ].join(" ")}
+                          >
+                            <span
+                              className={[
+                                "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors",
+                                noAmenities && amenidadesCount === 0
+                                  ? "border-secondary bg-secondary text-secondary-foreground"
+                                  : "border-border bg-background",
+                              ].join(" ")}
+                              aria-hidden="true"
+                            >
+                              {noAmenities && amenidadesCount === 0 && (
+                                <Check className="h-3 w-3" strokeWidth={4} />
+                              )}
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block font-medium">No cuenta con amenidades ni servicios</span>
+                              <span className="block text-xs text-muted-foreground">
+                                Confírmalo para continuar si no seleccionaste ninguna opción.
                               </span>
-                              Seleccionada
                             </span>
-                            <span className="flex items-center gap-1.5">
-                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-50 text-amber-600">
-                                <Minus className="h-2.5 w-2.5" strokeWidth={4} />
-                              </span>
-                              Con cantidad
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                              <span className="h-4 w-4 rounded-full border border-border bg-card" />
-                              No seleccionada
-                            </span>
-                          </div>
+                          </button>
                           <Button
                             onClick={() => setOpenSub("descripcion")}
+                            disabled={!amenidadesDone}
                             className="rounded-full bg-primary px-6 hover:bg-primary/90"
                           >
                             Guardar y continuar
