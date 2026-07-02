@@ -480,8 +480,8 @@ const AmenityChip = memo(function AmenityChip({
     return (
       <div
         className={[
-          "group flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-sm transition-all duration-200",
-          block ? "w-full justify-between" : "",
+          "group flex h-9 items-center gap-2 rounded-full border pl-3 pr-1.5 text-sm transition-all duration-200",
+          block ? "w-full" : "",
           selected
             ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
             : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
@@ -491,17 +491,16 @@ const AmenityChip = memo(function AmenityChip({
           type="button"
           onClick={() => onChange(selected ? 0 : 1)}
           className={[
-            "flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full",
-            block ? "min-w-0 flex-1 justify-start text-left" : "",
+            "flex min-w-0 flex-1 items-center gap-2 justify-start text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full",
           ].join(" ")}
           aria-pressed={selected}
           aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
         >
           <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
-          <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
+          <span className="truncate font-medium">{item.label}</span>
         </button>
         {selected && (
-          <div className="ml-1 flex shrink-0 items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
             <button
               type="button"
               onClick={() => onChange(Math.max(0, count - 1))}
@@ -537,8 +536,8 @@ const AmenityChip = memo(function AmenityChip({
       type="button"
       onClick={() => onChange(selected ? 0 : 1)}
       className={[
-        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
-        block ? "w-full justify-between" : "",
+        "flex h-9 items-center gap-2 rounded-full border px-3 text-sm transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+        block ? "w-full" : "",
         selected
           ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
           : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
@@ -546,12 +545,12 @@ const AmenityChip = memo(function AmenityChip({
       aria-pressed={selected}
       aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
     >
-      <span className={`flex items-center gap-2 ${block ? "min-w-0" : ""}`}>
+      <span className="flex min-w-0 flex-1 items-center gap-2">
         <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
-        <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
+        <span className="truncate font-medium">{item.label}</span>
       </span>
       {selected && (
-        <span className="ml-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground animate-scale-in" aria-hidden="true">
+        <span className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground animate-scale-in" aria-hidden="true">
           <Check className="h-2.5 w-2.5" strokeWidth={4} />
         </span>
       )}
