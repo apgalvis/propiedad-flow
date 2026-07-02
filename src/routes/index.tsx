@@ -30,7 +30,6 @@ import {
   Trash2,
   Star,
   Pencil,
-  ShieldCheck as Shield,
 } from "lucide-react";
 
 import {
