@@ -1113,18 +1113,77 @@ function Index() {
           node: (
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Antigüedad *</Label>
-              <Select value={antiguedad} onValueChange={setAntiguedad}>
-                <SelectTrigger className="h-10 rounded-lg">
-                  <SelectValue placeholder="Selecciona" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ANTIGUEDAD_OPTIONS.map((o) => (
-                    <SelectItem key={o} value={o}>
-                      {o}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex flex-wrap items-center gap-2">
+                <div
+                  className={cn(
+                    "flex h-10 items-center gap-1 rounded-lg border px-2 transition",
+                    antiguedadYears > 0
+                      ? "border-secondary/60 bg-secondary/10"
+                      : "border-input bg-background",
+                    antiguedad === "Nueva" || antiguedad === "No estoy seguro"
+                      ? "opacity-50"
+                      : "",
+                  )}
+                >
+                  <button
+                    type="button"
+                    aria-label="Restar año"
+                    onClick={() => {
+                      const n = Math.max(0, antiguedadYears - 1);
+                      setAntiguedad(n > 0 ? `${n} ${n === 1 ? "año" : "años"}` : "");
+                    }}
+                    disabled={antiguedad === "Nueva" || antiguedad === "No estoy seguro"}
+                    className="grid h-7 w-7 place-items-center rounded-md bg-muted text-foreground/70 hover:bg-muted/80 disabled:cursor-not-allowed"
+                  >
+                    <Minus className="h-3.5 w-3.5" />
+                  </button>
+                  <span className="min-w-[4.5rem] px-1 text-center text-sm font-medium tabular-nums">
+                    {antiguedadYears > 0
+                      ? `${antiguedadYears} ${antiguedadYears === 1 ? "año" : "años"}`
+                      : "0 años"}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Sumar año"
+                    onClick={() => {
+                      const n = Math.min(150, antiguedadYears + 1);
+                      setAntiguedad(`${n} ${n === 1 ? "año" : "años"}`);
+                    }}
+                    disabled={antiguedad === "Nueva" || antiguedad === "No estoy seguro"}
+                    className="grid h-7 w-7 place-items-center rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 disabled:cursor-not-allowed"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setAntiguedad((v) => (v === "Nueva" ? "" : "Nueva"))
+                  }
+                  className={cn(
+                    "h-10 rounded-lg border px-3 text-sm font-medium transition",
+                    antiguedad === "Nueva"
+                      ? "border-secondary bg-secondary text-secondary-foreground"
+                      : "border-input bg-background text-foreground/80 hover:bg-muted",
+                  )}
+                >
+                  Nueva
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setAntiguedad((v) => (v === "No estoy seguro" ? "" : "No estoy seguro"))
+                  }
+                  className={cn(
+                    "h-10 rounded-lg border px-3 text-sm font-medium transition",
+                    antiguedad === "No estoy seguro"
+                      ? "border-secondary bg-secondary text-secondary-foreground"
+                      : "border-input bg-background text-foreground/80 hover:bg-muted",
+                  )}
+                >
+                  No estoy segura
+                </button>
+              </div>
             </div>
           ),
         },
