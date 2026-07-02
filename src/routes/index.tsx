@@ -28,6 +28,7 @@ import {
   BedDouble,
   Trash2,
   Star,
+  Pencil,
 } from "lucide-react";
 
 import {
@@ -559,6 +560,98 @@ const AmenityChip = memo(function AmenityChip({
 });
 
 /* ---------- Contact channel card ---------- */
+/* ---------- Antigüedad block (exclusive options, jardín style) ---------- */
+const AntiguedadBlock = memo(function AntiguedadBlock({
+  value,
+  onChange,
+  years,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  years: number;
+}) {
+  const isYears = value !== "" && value !== "Nueva" && value !== "No estoy seguro";
+  const isNueva = value === "Nueva";
+  const isNose = value === "No estoy seguro";
+  const answered = !!value;
+  const options: { id: "years" | "nueva" | "nose"; label: string; emoji: string; active: boolean; onClick: () => void }[] = [
+    { id: "years", label: "Años", emoji: "📅", active: isYears, onClick: () => onChange("1 año") },
+    { id: "nueva", label: "Nueva", emoji: "✨", active: isNueva, onClick: () => onChange("Nueva") },
+    { id: "nose", label: "No estoy segura", emoji: "🤔", active: isNose, onClick: () => onChange("No estoy seguro") },
+  ];
+  return (
+    <div
+      className={[
+        "rounded-xl border bg-card p-4 transition-all duration-300",
+        answered ? "border-border" : "border-dashed border-border",
+        isYears || isNueva ? "ring-1 ring-primary/20" : "",
+      ].join(" ")}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="text-base leading-none" aria-hidden="true">🏛️</span>
+          <span className="truncate text-sm font-semibold text-foreground">Antigüedad *</span>
+        </div>
+        <div
+          role="group"
+          aria-label="Antigüedad de la propiedad"
+          className="inline-flex shrink-0 flex-wrap rounded-full border border-border bg-muted/40 p-0.5 text-xs font-medium"
+        >
+          {options.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={opt.onClick}
+              aria-pressed={opt.active}
+              className={[
+                "inline-flex items-center gap-1 rounded-full px-3 py-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                opt.active
+                  ? "bg-secondary text-secondary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              ].join(" ")}
+            >
+              <span aria-hidden="true">{opt.emoji}</span>
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <Collapse open={isYears}>
+        <div className="mt-4">
+          <Label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+            Años de antigüedad
+          </Label>
+          <div className="flex items-stretch overflow-hidden rounded-lg border border-border transition-colors focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20">
+            <Input
+              type="number"
+              min={1}
+              max={150}
+              value={isYears ? years : ""}
+              onChange={(e) => {
+                const n = Math.max(0, Math.min(150, Number(e.target.value) || 0));
+                onChange(n > 0 ? `${n} ${n === 1 ? "año" : "años"}` : "");
+              }}
+              className="border-0 shadow-none focus-visible:ring-0"
+              placeholder="0"
+            />
+            <div className="flex items-center bg-muted px-3 text-sm font-medium text-muted-foreground">
+              años
+            </div>
+          </div>
+        </div>
+      </Collapse>
+
+      {isNose && (
+        <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground animate-fade-in">
+          <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/50" />
+          Sin especificar antigüedad
+        </p>
+      )}
+    </div>
+  );
+});
+
 const ContactChannelCard = memo(function ContactChannelCard({
   icon: Icon,
   title,
@@ -656,6 +749,18 @@ const ContactChannelCard = memo(function ContactChannelCard({
             >
               <ShieldCheck className="h-4 w-4" />
               Verificar
+            </Button>
+          )}
+          {filled && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => onChange("")}
+              className="h-11 gap-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/60 sm:flex-none"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              Modificar
             </Button>
           )}
         </div>
@@ -1199,44 +1304,19 @@ function Index() {
       desc: "Indica los años de antigüedad o si la propiedad es nueva.",
       tint: "bg-amber-50 text-amber-600",
       icon: Building2,
-      layout: "chips",
+      layout: "grid",
+      grid: "grid-cols-1",
       fields: [
         {
-          id: "antiguedad-years",
-          label: "Años de antigüedad",
+          id: "antiguedad-block",
+          label: "Antigüedad",
           pending: !antiguedad,
+          span: "full",
           node: (
-            <AmenityChip
-              item={{ id: "antiguedad-years", label: "Años de antigüedad", emoji: "📅", countable: true }}
-              count={antiguedad === "Nueva" || antiguedad === "No estoy seguro" ? 0 : antiguedadYears}
-              onChange={(n) => {
-                const clamped = Math.max(0, Math.min(150, n));
-                setAntiguedad(clamped > 0 ? `${clamped} ${clamped === 1 ? "año" : "años"}` : "");
-              }}
-            />
-          ),
-        },
-        {
-          id: "antiguedad-nueva",
-          label: "Nueva",
-          pending: false,
-          node: (
-            <AmenityChip
-              item={{ id: "antiguedad-nueva", label: "Nueva", emoji: "✨", countable: false }}
-              count={antiguedad === "Nueva" ? 1 : 0}
-              onChange={(n) => setAntiguedad(n > 0 ? "Nueva" : "")}
-            />
-          ),
-        },
-        {
-          id: "antiguedad-nose",
-          label: "No estoy segura",
-          pending: false,
-          node: (
-            <AmenityChip
-              item={{ id: "antiguedad-nose", label: "No estoy segura", emoji: "🤔", countable: false }}
-              count={antiguedad === "No estoy seguro" ? 1 : 0}
-              onChange={(n) => setAntiguedad(n > 0 ? "No estoy seguro" : "")}
+            <AntiguedadBlock
+              value={antiguedad}
+              years={antiguedadYears}
+              onChange={setAntiguedad}
             />
           ),
         },
