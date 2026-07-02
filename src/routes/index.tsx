@@ -378,7 +378,7 @@ const AMENITY_GROUPS: AmenityGroup[] = [
     label: "Exteriores",
     icon: Trees,
     tint: "bg-emerald-50 text-emerald-600",
-    visible: 8,
+    visible: 9,
     items: [
       { id: "jardin", label: "Jardín", emoji: "🌳" },
       { id: "jardinpriv", label: "Jardín privado", emoji: "🌿" },
@@ -396,7 +396,7 @@ const AMENITY_GROUPS: AmenityGroup[] = [
     label: "Bienestar y recreación",
     icon: Waves,
     tint: "bg-sky-50 text-sky-600",
-    visible: 8,
+    visible: 9,
     items: [
       { id: "alberca", label: "Alberca", emoji: "🏊" },
       { id: "alberca_clima", label: "Alberca climatizada", emoji: "♨️" },
