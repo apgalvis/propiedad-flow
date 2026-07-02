@@ -1017,7 +1017,7 @@ function Index() {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[240px_1fr_320px] lg:gap-8 lg:px-8 lg:py-10">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-5 px-4 py-5 sm:px-6 sm:py-7 lg:grid-cols-[224px_minmax(0,1fr)_320px] lg:gap-6 lg:px-8 lg:py-8">
         {/* Sidebar */}
         <aside className="hidden space-y-6 lg:block">
           <div>
@@ -1141,7 +1141,7 @@ function Index() {
         </div>
 
         {/* Main */}
-        <main className="space-y-4">
+        <main className="space-y-3">
           {/* SECTION 1 — PROPIEDAD */}
           <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <SectionHeader
