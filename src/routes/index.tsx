@@ -473,7 +473,7 @@ const ANTIGUEDAD_OPTIONS = [
 ];
 
 /* ---------- Amenity chip ---------- */
-function AmenityChip({
+const AmenityChip = memo(function AmenityChip({
   item,
   count,
   onChange,
@@ -558,7 +558,7 @@ function AmenityChip({
       )}
     </button>
   );
-}
+});
 
 /* ---------- Summary stat pill (amenities toolbar) ---------- */
 function SummaryStat({
