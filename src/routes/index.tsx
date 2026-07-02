@@ -996,7 +996,13 @@ function Index() {
           </div>
         )},
         { id: "niveles", label: "Niveles", pending: false, node: (
-          <Stepper label="Niveles" value={niveles} onChange={setNiveles} min={1} icon={<Home className="h-4 w-4" />} />
+          <div className="flex flex-wrap">
+            <AmenityChip
+              item={{ id: "niveles", label: "Niveles", emoji: "🪜", countable: true }}
+              count={niveles}
+              onChange={(n) => setNiveles(Math.max(1, n))}
+            />
+          </div>
         )},
         { id: "clasificacion", label: "Uso de suelo y tipo de rancho", pending: !usoSuelo, span: "full", node: (
           <div className="rounded-xl border border-border/70 bg-muted/30 p-4">
@@ -1020,9 +1026,9 @@ function Index() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className="min-w-0">
                 <Label className="mb-1.5 block text-sm font-medium">Tipo de rancho</Label>
-                <div className="inline-flex flex-wrap rounded-full border border-border bg-background p-0.5">
+                <div className="flex w-full flex-wrap gap-1.5 rounded-2xl border border-border bg-background p-1">
                   {["No aplica", "Agrícola", "Ganadero"].map((t) => (
                     <button
                       key={t}
@@ -1030,7 +1036,7 @@ function Index() {
                       onClick={() => setTipoRancho(t)}
                       aria-pressed={tipoRancho === t}
                       className={[
-                        "rounded-full px-3.5 py-1.5 text-sm font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                        "flex-1 min-w-[88px] rounded-xl px-3 py-1.5 text-sm font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
                         tipoRancho === t ? "bg-secondary text-secondary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
                       ].join(" ")}
                     >{t}</button>
