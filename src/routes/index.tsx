@@ -1293,15 +1293,10 @@ function Index() {
                         {/* Category cards */}
                         <div className="space-y-3">
                           {AMENITY_GROUPS.map((g) => {
-                            const q = amenitySearch.trim().toLowerCase();
-                            let items = g.items;
-                            if (q) items = items.filter((it) => it.label.toLowerCase().includes(q));
-                            if (amenityOnlyActive) items = items.filter((it) => (amenities[it.id] ?? 0) > 0);
-                            if (items.length === 0) return null;
+                            const items = g.items;
                             const activeCount = g.items.filter((it) => (amenities[it.id] ?? 0) > 0).length;
                             const collapsed = collapsedGroups[g.id];
-                            const expanded = expandedGroups[g.id];
-                            const visibleN = expanded || amenityView === "todas" || q ? items.length : g.visible;
+                            const visibleN = collapsed ? 0 : g.visible;
                             const visibleItems = items.slice(0, visibleN);
                             const hasMore = items.length > visibleN;
                             const Icon = g.icon;
