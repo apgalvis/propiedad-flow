@@ -28,7 +28,6 @@ import {
   BedDouble,
   Trash2,
   Star,
-  Pencil,
 } from "lucide-react";
 
 import {
@@ -567,7 +566,6 @@ const ContactChannelCard = memo(function ContactChannelCard({
   value,
   onChange,
   placeholder,
-  highlight = false,
   verified = false,
   variant = "default",
   badge,
@@ -578,94 +576,87 @@ const ContactChannelCard = memo(function ContactChannelCard({
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
-  highlight?: boolean;
   verified?: boolean;
   variant?: "default" | "whatsapp";
   badge?: string;
 }) {
   const isWhatsApp = variant === "whatsapp";
+  const filled = value.trim().length > 0;
   return (
     <div
       className={[
-        "rounded-2xl border p-4 shadow-sm transition-shadow hover:shadow-md sm:p-5",
+        "rounded-2xl border-2 p-5 transition-all duration-300 sm:p-6",
         isWhatsApp
-          ? "border-primary/20 bg-accent/50"
-          : "border-border bg-card",
+          ? "border-primary/15 bg-accent/40 hover:border-primary/25 hover:bg-accent/50"
+          : "border-border/70 bg-card hover:border-primary/15 hover:bg-muted/30",
       ].join(" ")}
     >
-      {(highlight || badge) && (
+      <div className="flex items-start gap-4">
         <div
           className={[
-            "mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold",
+            "grid h-12 w-12 shrink-0 place-items-center rounded-2xl transition-transform duration-300",
             isWhatsApp
               ? "bg-primary text-primary-foreground"
-              : "bg-secondary/15 text-primary",
+              : "bg-primary/10 text-primary",
           ].join(" ")}
         >
-          <Star className="h-3.5 w-3.5 fill-current" />
-          {badge || "Más leads al verificar"}
-        </div>
-      )}
-      <div className="flex items-start gap-3">
-        <div
-          className={[
-            "grid h-11 w-11 shrink-0 place-items-center rounded-xl",
-            isWhatsApp ? "bg-primary text-primary-foreground" : "bg-secondary/15 text-primary",
-          ].join(" ")}
-        >
-          <Icon className="h-5 w-5" />
+          <Icon className="h-6 w-6" />
         </div>
         <div className="min-w-0 flex-1">
-          <h4 className="truncate text-sm font-semibold text-foreground sm:text-base">
-            {title}
-          </h4>
-          <p className="text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h4 className="text-sm font-semibold text-foreground sm:text-base">
+                {title}
+              </h4>
+              <p className="text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
+            </div>
+            {filled && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground animate-scale-in">
+                <Check className="h-3 w-3" strokeWidth={4} />
+              </span>
+            )}
+          </div>
+          {badge && (
+            <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">
+              <Star className="h-3 w-3 fill-current" />
+              {badge}
+            </div>
+          )}
         </div>
       </div>
-      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-        <div className="flex h-10 flex-1 items-stretch overflow-hidden rounded-lg border border-border bg-background focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="flex h-11 flex-1 items-stretch overflow-hidden rounded-xl border border-border bg-background transition-colors focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10">
           {isWhatsApp && (
             <div className="flex items-center gap-1 border-r border-border bg-muted/50 px-3 text-sm font-medium text-foreground">
-              <span>+52</span>
+              +52
             </div>
           )}
           <Input
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className="h-10 flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0 text-sm"
+            className="h-11 flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0 text-sm"
           />
         </div>
         <div className="flex items-center gap-2">
           {verified ? (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-10 flex-1 gap-1.5 rounded-lg border-primary/40 text-primary sm:flex-none"
-              >
-                <Check className="h-4 w-4" strokeWidth={3} />
-                Verificado
-              </Button>
-              <Button variant="outline" size="sm" className="h-10 flex-1 gap-1.5 rounded-lg sm:flex-none">
-                <Pencil className="h-4 w-4" />
-                Modificar
-              </Button>
-            </>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-11 gap-1.5 rounded-xl border-primary/30 text-primary hover:bg-primary/5 sm:flex-none"
+            >
+              <Check className="h-4 w-4" strokeWidth={3} />
+              Verificado
+            </Button>
           ) : (
-            <>
-              <Button variant="outline" size="sm" className="h-10 flex-1 gap-1.5 rounded-lg sm:flex-none">
-                <Pencil className="h-4 w-4" />
-                Modificar
-              </Button>
-              <Button
-                size="sm"
-                className="h-10 flex-1 gap-1.5 rounded-lg bg-primary hover:bg-primary/90 sm:flex-none"
-              >
-                <ShieldCheck className="h-4 w-4" />
-                Verificar
-              </Button>
-            </>
+            <Button
+              size="sm"
+              className="h-11 gap-1.5 rounded-xl bg-primary hover:bg-primary/90 sm:flex-none"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Verificar
+            </Button>
           )}
         </div>
       </div>
@@ -1988,8 +1979,15 @@ function Index() {
               onToggle={() => toggleSection("contacto")}
             />
             <Collapse id="sec-p-contacto" open={openSection === "contacto"}>
-              <div className="border-t border-border px-4 pb-6 pt-5 sm:px-6">
-                <div className="space-y-3">
+              <div className="border-t border-border px-4 pb-6 pt-6 sm:px-6">
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-foreground">Datos de contacto</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Elige los medios por los cuales quieres recibir prospectos interesados.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
                   <ContactChannelCard
                     icon={MessageCircle}
                     title="Verifica tu WhatsApp"
@@ -2007,7 +2005,6 @@ function Index() {
                     value={tel}
                     onChange={setTel}
                     placeholder="+52 55 1234 5678"
-                    highlight
                   />
                   <ContactChannelCard
                     icon={Mail}
