@@ -746,7 +746,34 @@ function Index() {
     });
   }, []);
 
-  const clearAllAmenities = useCallback(() => setAmenities({}), []);
+  const selectAllAmenityGroup = useCallback((groupId: string) => {
+    const group = AMENITY_GROUPS.find((g) => g.id === groupId);
+    if (!group) return;
+    setAmenities((cur) => {
+      const next = { ...cur };
+      group.items.forEach((it) => {
+        next[it.id] = 1;
+      });
+      return next;
+    });
+  }, []);
+
+  const isAmenityGroupEmpty = useCallback(
+    (groupId: string) => {
+      const group = AMENITY_GROUPS.find((g) => g.id === groupId);
+      if (!group) return true;
+      return group.items.every((it) => (amenities[it.id] ?? 0) === 0);
+    },
+    [amenities],
+  );
+
+  const toggleAmenityGroup = useCallback(
+    (groupId: string) => {
+      if (isAmenityGroupEmpty(groupId)) selectAllAmenityGroup(groupId);
+      else clearAmenityGroup(groupId);
+    },
+    [isAmenityGroupEmpty, selectAllAmenityGroup, clearAmenityGroup],
+  );
 
   const clearCaractGroup = useCallback((groupId: string) => {
     switch (groupId) {
@@ -782,29 +809,92 @@ function Index() {
     }
   }, []);
 
-  const clearAllCaracteristicas = useCallback(() => {
-    setRecamaras(0);
-    setBanos(0);
-    setMediosBanos(0);
-    setWalkInCloset(0);
-    setEstudio(0);
-    setEstac(0);
-    setVisitas(0);
-    setEstacTechado(0);
-    setGarage(0);
-    setCargadorEV(0);
-    setBicicletero(0);
-    setTerreno(null);
-    setTerrenoSize("");
-    setConstruccion(null);
-    setConstruccionSize("");
-    setJardin(null);
-    setJardinSize("");
-    setAntiguedad("");
-    setNiveles(1);
-    setUsoSuelo("");
-    setTipoRancho("No aplica");
+  const selectAllCaractGroup = useCallback((groupId: string) => {
+    switch (groupId) {
+      case "habitaciones":
+        setRecamaras(1);
+        setBanos(1);
+        setMediosBanos(1);
+        setWalkInCloset(1);
+        setEstudio(1);
+        break;
+      case "movilidad":
+        setEstac(1);
+        setVisitas(1);
+        setEstacTechado(1);
+        setGarage(1);
+        setCargadorEV(1);
+        setBicicletero(1);
+        break;
+      case "espacios":
+        setTerreno(true);
+        setConstruccion(true);
+        setJardin(true);
+        break;
+      case "detalles":
+        setAntiguedad(ANTIGUEDAD_OPTIONS[0]);
+        setNiveles(1);
+        setUsoSuelo("Habitacional");
+        setTipoRancho("No aplica");
+        break;
+    }
   }, []);
+
+  const isCaractGroupEmpty = useCallback(
+    (groupId: string) => {
+      switch (groupId) {
+        case "habitaciones":
+          return (
+            recamaras === 0 &&
+            banos === 0 &&
+            mediosBanos === 0 &&
+            walkInCloset === 0 &&
+            estudio === 0
+          );
+        case "movilidad":
+          return (
+            estac === 0 &&
+            visitas === 0 &&
+            estacTechado === 0 &&
+            garage === 0 &&
+            cargadorEV === 0 &&
+            bicicletero === 0
+          );
+        case "espacios":
+          return terreno === null && construccion === null && jardin === null;
+        case "detalles":
+          return !antiguedad && !usoSuelo;
+        default:
+          return true;
+      }
+    },
+    [
+      recamaras,
+      banos,
+      mediosBanos,
+      walkInCloset,
+      estudio,
+      estac,
+      visitas,
+      estacTechado,
+      garage,
+      cargadorEV,
+      bicicletero,
+      terreno,
+      construccion,
+      jardin,
+      antiguedad,
+      usoSuelo,
+    ],
+  );
+
+  const toggleCaractGroup = useCallback(
+    (groupId: string) => {
+      if (isCaractGroupEmpty(groupId)) selectAllCaractGroup(groupId);
+      else clearCaractGroup(groupId);
+    },
+    [isCaractGroupEmpty, selectAllCaractGroup, clearCaractGroup],
+  );
 
   /* ---------- Características: shared body renderer (list + focus dialog) ---------- */
   type CField = { id: string; label: string; pending: boolean; span?: "full"; node: React.ReactNode };
@@ -976,23 +1066,6 @@ function Index() {
   const renderCaracteristicasBody = () => {
     return (
       <>
-        {/* Section toolbar */}
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-muted/30 px-3 py-2.5">
-          <div className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">{caractGroups.length - caractGroups.filter((g) => g.fields.some((f) => f.pending)).length}</span>
-            {" "}de{" "}
-            <span className="font-medium text-foreground">{caractGroups.length}</span> categorías listas
-          </div>
-          <button
-            type="button"
-            onClick={clearAllCaracteristicas}
-            className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-background hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-            Limpiar todo
-          </button>
-        </div>
-
         {/* Category cards */}
         <div className="space-y-3">
           {caractGroups.map((g) => {
@@ -1026,12 +1099,17 @@ function Index() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => clearCaractGroup(g.id)}
-                    className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
-                    aria-label={`Limpiar selección de ${g.label}`}
+                    onClick={() => toggleCaractGroup(g.id)}
+                    className={[
+                      "inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                      isCaractGroupEmpty(g.id)
+                        ? "text-secondary hover:bg-secondary/10 hover:text-secondary"
+                        : "text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
+                    ].join(" ")}
+                    aria-label={isCaractGroupEmpty(g.id) ? `Seleccionar todo en ${g.label}` : `Limpiar selección de ${g.label}`}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Limpiar</span>
+                    {isCaractGroupEmpty(g.id) ? <Plus className="h-3.5 w-3.5" /> : <Trash2 className="h-3.5 w-3.5" />}
+                    <span className="hidden sm:inline">{isCaractGroupEmpty(g.id) ? "Seleccionar todo" : "Limpiar"}</span>
                   </button>
                 </div>
                 <Collapse id={`caract-${g.id}`} open={!collapsed}>
@@ -1387,22 +1465,6 @@ function Index() {
                     />
                     <Collapse id="sub-p-amenidades" open={openSub === "amenidades"}>
                       <div className="space-y-4 pb-6">
-                        {/* Section toolbar */}
-                        <div className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-muted/30 px-3 py-2.5">
-                          <div className="text-xs text-muted-foreground">
-                            <span className="font-medium text-foreground">{amenidadesCount}</span>
-                            {" "}seleccionadas
-                          </div>
-                          <button
-                            type="button"
-                            onClick={clearAllAmenities}
-                            className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-background hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                            Limpiar todo
-                          </button>
-                        </div>
-
                         {/* Category cards */}
                         <div className="space-y-3">
                           {AMENITY_GROUPS.map((g) => {
@@ -1437,12 +1499,17 @@ function Index() {
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => clearAmenityGroup(g.id)}
-                                    className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
-                                    aria-label={`Limpiar selección de ${g.label}`}
+                                    onClick={() => toggleAmenityGroup(g.id)}
+                                    className={[
+                                      "inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                                      isAmenityGroupEmpty(g.id)
+                                        ? "text-secondary hover:bg-secondary/10 hover:text-secondary"
+                                        : "text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
+                                    ].join(" ")}
+                                    aria-label={isAmenityGroupEmpty(g.id) ? `Seleccionar todo en ${g.label}` : `Limpiar selección de ${g.label}`}
                                   >
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                    <span className="hidden sm:inline">Limpiar</span>
+                                    {isAmenityGroupEmpty(g.id) ? <Plus className="h-3.5 w-3.5" /> : <Trash2 className="h-3.5 w-3.5" />}
+                                    <span className="hidden sm:inline">{isAmenityGroupEmpty(g.id) ? "Seleccionar todo" : "Limpiar"}</span>
                                   </button>
                                 </div>
                                 <Collapse id={`amen-${g.id}`} open={!collapsed}>
