@@ -1290,64 +1290,6 @@ function Index() {
                     />
                     <Collapse id="sub-p-amenidades" open={openSub === "amenidades"}>
                       <div className="space-y-4 pb-6">
-                        {/* Toolbar: search + view selector + only-active toggle */}
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                          <div className="relative flex-1">
-                            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                            <Input
-                              value={amenitySearch}
-                              onChange={(e) => setAmenitySearch(e.target.value)}
-                              placeholder="Buscar amenidad…"
-                              className="h-10 rounded-full border-border bg-card pl-9"
-                              aria-label="Buscar amenidad"
-                            />
-                          </div>
-                          <Select value={amenityView} onValueChange={(v) => setAmenityView(v as "categorias" | "todas")}>
-                            <SelectTrigger className="h-10 w-full rounded-full sm:w-52">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="categorias">Ver por categorías</SelectItem>
-                              <SelectItem value="todas">Ver todas</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <label className="flex shrink-0 items-center gap-2 text-sm text-foreground">
-                            <Switch
-                              checked={amenityOnlyActive}
-                              onCheckedChange={setAmenityOnlyActive}
-                              aria-label="Mostrar solo activas"
-                            />
-                            <span>Mostrar solo activas</span>
-                          </label>
-                        </div>
-
-                        {/* Summary bar */}
-                        {(() => {
-                          const totalDisponibles = AMENITY_GROUPS.reduce((a, g) => a + g.items.length, 0);
-                          const totalCantidad = Object.values(amenities).filter((n) => n > 1).length;
-                          return (
-                            <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
-                              <SummaryStat icon={<Check className="h-4 w-4" />} tint="bg-emerald-50 text-emerald-600" label="Seleccionadas" value={amenidadesCount} />
-                              <div className="hidden h-8 w-px bg-border sm:block" />
-                              <SummaryStat icon={<Tag className="h-4 w-4" />} tint="bg-amber-50 text-amber-600" label="Con cantidad" value={totalCantidad} />
-                              <div className="hidden h-8 w-px bg-border sm:block" />
-                              <SummaryStat icon={<Network className="h-4 w-4" />} tint="bg-slate-100 text-slate-600" label="Disponibles" value={totalDisponibles} />
-                              <div className="ml-auto">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setAmenities({})}
-                                  className="rounded-full border-border text-secondary hover:bg-accent hover:text-secondary"
-                                  disabled={amenidadesCount === 0}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                  Limpiar todo
-                                </Button>
-                              </div>
-                            </div>
-                          );
-                        })()}
-
                         {/* Category cards */}
                         <div className="space-y-3">
                           {AMENITY_GROUPS.map((g) => {
