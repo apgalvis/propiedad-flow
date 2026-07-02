@@ -722,6 +722,7 @@ function Index() {
         if ((cur[id] ?? 0) === n) return cur;
         const next = { ...cur, [id]: n };
         if (n <= 0) delete next[id];
+        if (n > 0) setNoAmenities(false);
         return next;
       }),
     [],
