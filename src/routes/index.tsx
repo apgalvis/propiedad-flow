@@ -893,10 +893,11 @@ function Index() {
 
   const clearCaractGroup = useCallback((groupId: string) => {
     switch (groupId) {
-      case "habitaciones":
+      case "detalles":
         setRecamaras(0);
         setBanos(0);
         setMediosBanos(0);
+        setNiveles(0);
         setWalkInCloset(0);
         setEstudio(0);
         break;
@@ -919,20 +920,16 @@ function Index() {
       case "antiguedad":
         setAntiguedad("");
         break;
-      case "detalles":
-        setNiveles(1);
-        setUsoSuelo("");
-        setTipoRancho("No aplica");
-        break;
     }
   }, []);
 
   const selectAllCaractGroup = useCallback((groupId: string) => {
     switch (groupId) {
-      case "habitaciones":
+      case "detalles":
         setRecamaras(1);
         setBanos(1);
         setMediosBanos(1);
+        setNiveles(1);
         setWalkInCloset(1);
         setEstudio(1);
         break;
@@ -952,22 +949,18 @@ function Index() {
       case "antiguedad":
         setAntiguedad("Nueva");
         break;
-      case "detalles":
-        setNiveles(1);
-        setUsoSuelo("Habitacional");
-        setTipoRancho("No aplica");
-        break;
     }
   }, []);
 
   const isCaractGroupEmpty = useCallback(
     (groupId: string) => {
       switch (groupId) {
-        case "habitaciones":
+        case "detalles":
           return (
             recamaras === 0 &&
             banos === 0 &&
             mediosBanos === 0 &&
+            niveles === 0 &&
             walkInCloset === 0 &&
             estudio === 0
           );
@@ -984,8 +977,6 @@ function Index() {
           return terreno === null && construccion === null && jardin === null;
         case "antiguedad":
           return !antiguedad;
-        case "detalles":
-          return niveles === 0 && !usoSuelo;
         default:
           return true;
       }
@@ -1007,7 +998,6 @@ function Index() {
       jardin,
       antiguedad,
       niveles,
-      usoSuelo,
     ],
   );
 
