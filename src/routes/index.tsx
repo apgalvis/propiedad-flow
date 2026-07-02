@@ -1633,6 +1633,70 @@ function Index() {
                         <div className="flex justify-end">
                           <Button
                             onClick={() => {
+                              setOpenSub("clasificacion");
+                            }}
+                            className="rounded-full bg-primary px-6 hover:bg-primary/90"
+                          >
+                            Guardar y continuar
+                          </Button>
+                        </div>
+                      </div>
+                    </Collapse>
+                  </div>
+                  <div>
+                    <SubHeader
+                      id="sub-h-clasificacion"
+                      panelId="sub-p-clasificacion"
+                      title="Clasificación"
+                      done={clasificacionDone}
+                      open={openSub === "clasificacion"}
+                      onToggle={() =>
+                        setOpenSub(openSub === "clasificacion" ? ("" as SubId) : "clasificacion")
+                      }
+                      description="Uso de suelo y tipo de rancho."
+                    />
+                    <Collapse id="sub-p-clasificacion" open={openSub === "clasificacion"}>
+                      <div className="space-y-4 pb-5">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          <div className="space-y-1.5">
+                            <Label className="text-sm font-medium">Uso de suelo *</Label>
+                            <Select value={usoSuelo} onValueChange={setUsoSuelo}>
+                              <SelectTrigger className="h-10 rounded-lg">
+                                <SelectValue placeholder="Selecciona" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Habitacional">Habitacional</SelectItem>
+                                <SelectItem value="Comercial">Comercial</SelectItem>
+                                <SelectItem value="Mixto">Mixto</SelectItem>
+                                <SelectItem value="Industrial">Industrial</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-sm font-medium">Tipo de rancho</Label>
+                            <div className="flex flex-wrap gap-1.5 rounded-xl border border-border bg-background p-1">
+                              {["No aplica", "Agrícola", "Ganadero"].map((t) => (
+                                <button
+                                  key={t}
+                                  type="button"
+                                  onClick={() => setTipoRancho(t)}
+                                  aria-pressed={tipoRancho === t}
+                                  className={[
+                                    "flex-1 min-w-[80px] rounded-lg px-2 py-1.5 text-xs font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                                    tipoRancho === t
+                                      ? "bg-secondary text-secondary-foreground shadow-sm"
+                                      : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                                  ].join(" ")}
+                                >
+                                  {t}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex justify-end">
+                          <Button
+                            onClick={() => {
                               setOpenSection("especificaciones");
                               setOpenSub("caracteristicas");
                             }}
