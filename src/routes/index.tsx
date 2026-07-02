@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -489,14 +489,27 @@ const AmenityChip = memo(function AmenityChip({
       <div
         className={[
           "group flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-sm transition-all duration-200",
-          block ? "w-full" : "",
+          block ? "w-full justify-between" : "",
           selected
             ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
             : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
         ].join(" ")}
       >
+        <button
+          type="button"
+          onClick={() => onChange(selected ? 0 : 1)}
+          className={[
+            "flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full",
+            block ? "min-w-0 flex-1 justify-start text-left" : "",
+          ].join(" ")}
+          aria-pressed={selected}
+          aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
+        >
+          <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
+          <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
+        </button>
         {selected && (
-          <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
+          <div className="ml-1 flex shrink-0 items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
             <button
               type="button"
               onClick={() => onChange(Math.max(0, count - 1))}
@@ -523,19 +536,6 @@ const AmenityChip = memo(function AmenityChip({
             </button>
           </div>
         )}
-        <button
-          type="button"
-          onClick={() => onChange(selected ? 0 : 1)}
-          className={[
-            "flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full",
-            block ? "min-w-0 flex-1 justify-start text-left" : "",
-          ].join(" ")}
-          aria-pressed={selected}
-          aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
-        >
-          <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
-          <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
-        </button>
       </div>
     );
   }
@@ -612,6 +612,7 @@ function Index() {
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [moreGroupId, setMoreGroupId] = useState<string | null>(null);
   const [moreSearch, setMoreSearch] = useState("");
+  const [noAmenities, setNoAmenities] = useState(false);
 
   // 2.1 Characteristics — per-group collapsed state
   const [caractCollapsed, setCaractCollapsed] = useState<Record<string, boolean>>({});
@@ -637,8 +638,8 @@ function Index() {
   const caractDone =
     recamaras > 0 && banos > 0 && estac > 0 && !!antiguedad && niveles > 0;
   const amenidadesCount = Object.values(amenities).filter((n) => n > 0).length;
-  // Amenidades son opcionales
-  const amenidadesDone = true;
+  // Debe marcar al menos una amenidad, o confirmar explícitamente que no cuenta con ninguna.
+  const amenidadesDone = amenidadesCount > 0 || noAmenities;
   const descripcionDone = descripcion.trim().length >= 40;
   const imagenesDone = imageCount >= 5;
   const especificacionesDone = caractDone && amenidadesDone && descripcionDone && imagenesDone;
@@ -669,6 +670,123 @@ function Index() {
   }, [recamaras, banos, construccion, construccionSize, niveles]);
 
   const contactoSummary = contactoDone ? `${nombre} · ${tel}` : undefined;
+
+  /* ---------- Auto descripción ---------- */
+  const autoDescripcion = useMemo(() => {
+    const tipo = (tipoPropiedad || "propiedad").toLowerCase();
+    const op = (operacion || "venta").toLowerCase();
+    const precioNum = Number(precio);
+    const precioText =
+      precio && !isNaN(precioNum) && precioNum > 0
+        ? `$${precioNum.toLocaleString("es-MX")} MXN`
+        : null;
+    const ubic = direccion?.trim() || "una excelente ubicación";
+
+    const distribucion: string[] = [];
+    if (recamaras > 0) distribucion.push(`${recamaras} ${recamaras === 1 ? "recámara" : "recámaras"}`);
+    if (banos > 0) distribucion.push(`${banos} ${banos === 1 ? "baño completo" : "baños completos"}`);
+    if (mediosBanos > 0) distribucion.push(`${mediosBanos} ${mediosBanos === 1 ? "medio baño" : "medios baños"}`);
+    if (walkInCloset > 0) distribucion.push(`${walkInCloset} walk-in closet`);
+    if (estudio > 0) distribucion.push(`${estudio === 1 ? "estudio / oficina" : `${estudio} estudios`}`);
+    if (niveles > 0) distribucion.push(`distribuidos en ${niveles} ${niveles === 1 ? "nivel" : "niveles"}`);
+
+    const movilidad: string[] = [];
+    if (estac > 0) movilidad.push(`${estac} ${estac === 1 ? "cajón de estacionamiento" : "cajones de estacionamiento"}`);
+    if (visitas > 0) movilidad.push(`${visitas} para visitas`);
+    if (estacTechado > 0) movilidad.push("estacionamiento techado");
+    if (garage > 0) movilidad.push("garage cerrado");
+    if (cargadorEV > 0) movilidad.push("cargador para vehículo eléctrico");
+    if (bicicletero > 0) movilidad.push("bicicletero");
+
+    const espacios: string[] = [];
+    if (terreno && terrenoSize) espacios.push(`terreno de ${terrenoSize} m²`);
+    if (construccion && construccionSize) espacios.push(`${construccionSize} m² de construcción`);
+    if (jardin) espacios.push(jardinSize ? `jardín de ${jardinSize} m²` : "jardín");
+
+    const amenLabels: string[] = [];
+    AMENITY_GROUPS.forEach((g) =>
+      g.items.forEach((it) => {
+        const c = amenities[it.id] ?? 0;
+        if (c > 0) amenLabels.push(c > 1 && it.countable ? `${c} ${it.label.toLowerCase()}` : it.label.toLowerCase());
+      }),
+    );
+
+    const paragraphs: string[] = [];
+
+    paragraphs.push(
+      `Descubre esta ${tipo} en ${op}${antiguedad ? `, con antigüedad de ${antiguedad.toLowerCase()}` : ""}, ubicada en ${ubic}. Un inmueble pensado para quienes buscan comodidad, funcionalidad y una propuesta arquitectónica bien resuelta desde el primer detalle.`,
+    );
+
+    if (distribucion.length) {
+      paragraphs.push(
+        `La distribución ofrece ${distribucion.join(", ")}, con espacios amplios, buena iluminación natural y acabados cuidados que priorizan la calidez del día a día.`,
+      );
+    }
+
+    if (espacios.length) {
+      paragraphs.push(
+        `En el exterior destaca ${espacios.join(", ")}, ideal para disfrutar en familia, recibir visitas o crear tus propios ambientes al aire libre.`,
+      );
+    }
+
+    if (movilidad.length) {
+      paragraphs.push(`Cuenta además con ${movilidad.join(", ")}, brindando practicidad y seguridad para tu movilidad diaria.`);
+    }
+
+    if (amenLabels.length) {
+      paragraphs.push(
+        `Entre sus amenidades y servicios encontrarás ${amenLabels.slice(0, 12).join(", ")}${amenLabels.length > 12 ? " y más" : ""}, complementando un estilo de vida integral dentro del desarrollo.`,
+      );
+    } else if (noAmenities) {
+      paragraphs.push(
+        `La propiedad se enfoca en la esencia del hogar, sin amenidades ni servicios adicionales, ofreciendo mayor privacidad, menores cuotas de mantenimiento y libertad total para adaptarla a tu estilo.`,
+      );
+    }
+
+    paragraphs.push(
+      `${precioText ? `Se ofrece en ${op} por ${precioText}. ` : ""}Una oportunidad inmejorable para quienes buscan una propiedad lista para habitarse en una zona con excelente plusvalía. Agenda una visita y descubre en persona todo lo que este espacio tiene para ofrecerte.`,
+    );
+
+    return paragraphs.join("\n\n");
+  }, [
+    tipoPropiedad,
+    operacion,
+    precio,
+    direccion,
+    antiguedad,
+    recamaras,
+    banos,
+    mediosBanos,
+    walkInCloset,
+    estudio,
+    niveles,
+    estac,
+    visitas,
+    estacTechado,
+    garage,
+    cargadorEV,
+    bicicletero,
+    terreno,
+    terrenoSize,
+    construccion,
+    construccionSize,
+    jardin,
+    jardinSize,
+    amenities,
+    noAmenities,
+  ]);
+
+  const lastAutoDescRef = useRef<string>("");
+  useEffect(() => {
+    setDescripcion((prev) => {
+      if (prev === "" || prev === lastAutoDescRef.current) {
+        lastAutoDescRef.current = autoDescripcion;
+        return autoDescripcion;
+      }
+      lastAutoDescRef.current = autoDescripcion;
+      return prev;
+    });
+  }, [autoDescripcion]);
 
   const totalSubsDone =
     Number(caractDone) + Number(amenidadesDone) + Number(descripcionDone) + Number(imagenesDone);
@@ -721,10 +839,19 @@ function Index() {
         if ((cur[id] ?? 0) === n) return cur;
         const next = { ...cur, [id]: n };
         if (n <= 0) delete next[id];
+        if (n > 0) setNoAmenities(false);
         return next;
       }),
     [],
   );
+
+  const toggleNoAmenities = useCallback(() => {
+    setNoAmenities((prev) => {
+      const next = !prev;
+      if (next) setAmenities({});
+      return next;
+    });
+  }, []);
 
   const clearAmenityGroup = useCallback((groupId: string) => {
     setAmenities((cur) => {
@@ -1580,28 +1707,45 @@ function Index() {
                           })}
                         </div>
 
-                        {/* Footer legend + continue */}
+                        {/* Confirmación "sin amenidades" + continue */}
                         <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1.5">
-                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-                                <Check className="h-2.5 w-2.5" strokeWidth={4} />
+                          <button
+                            type="button"
+                            onClick={toggleNoAmenities}
+                            aria-pressed={noAmenities}
+                            disabled={amenidadesCount > 0}
+                            className={[
+                              "group inline-flex items-center gap-2.5 rounded-full border px-3 py-2 text-left text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                              amenidadesCount > 0
+                                ? "cursor-not-allowed border-border bg-muted/30 text-muted-foreground/60"
+                                : noAmenities
+                                  ? "border-secondary bg-secondary/10 text-foreground"
+                                  : "border-dashed border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
+                            ].join(" ")}
+                          >
+                            <span
+                              className={[
+                                "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors",
+                                noAmenities && amenidadesCount === 0
+                                  ? "border-secondary bg-secondary text-secondary-foreground"
+                                  : "border-border bg-background",
+                              ].join(" ")}
+                              aria-hidden="true"
+                            >
+                              {noAmenities && amenidadesCount === 0 && (
+                                <Check className="h-3 w-3" strokeWidth={4} />
+                              )}
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block font-medium">No cuenta con amenidades ni servicios</span>
+                              <span className="block text-xs text-muted-foreground">
+                                Confírmalo para continuar si no seleccionaste ninguna opción.
                               </span>
-                              Seleccionada
                             </span>
-                            <span className="flex items-center gap-1.5">
-                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-50 text-amber-600">
-                                <Minus className="h-2.5 w-2.5" strokeWidth={4} />
-                              </span>
-                              Con cantidad
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                              <span className="h-4 w-4 rounded-full border border-border bg-card" />
-                              No seleccionada
-                            </span>
-                          </div>
+                          </button>
                           <Button
                             onClick={() => setOpenSub("descripcion")}
+                            disabled={!amenidadesDone}
                             className="rounded-full bg-primary px-6 hover:bg-primary/90"
                           >
                             Guardar y continuar
@@ -1634,9 +1778,16 @@ function Index() {
                           maxLength={1500}
                         />
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <Button variant="outline" className="rounded-full gap-2">
+                          <Button
+                            variant="outline"
+                            className="rounded-full gap-2"
+                            onClick={() => {
+                              setDescripcion(autoDescripcion);
+                              lastAutoDescRef.current = autoDescripcion;
+                            }}
+                          >
                             <Sparkles className="h-4 w-4 text-primary" />
-                            Mejorar con IA
+                            Regenerar con tus datos
                           </Button>
                           <span className="text-xs text-muted-foreground">
                             {descripcion.length} / 1500
