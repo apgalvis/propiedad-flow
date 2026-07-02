@@ -1304,44 +1304,19 @@ function Index() {
       desc: "Indica los años de antigüedad o si la propiedad es nueva.",
       tint: "bg-amber-50 text-amber-600",
       icon: Building2,
-      layout: "chips",
+      layout: "grid",
+      grid: "grid-cols-1",
       fields: [
         {
-          id: "antiguedad-years",
-          label: "Años de antigüedad",
+          id: "antiguedad-block",
+          label: "Antigüedad",
           pending: !antiguedad,
+          span: "full",
           node: (
-            <AmenityChip
-              item={{ id: "antiguedad-years", label: "Años de antigüedad", emoji: "📅", countable: true }}
-              count={antiguedad === "Nueva" || antiguedad === "No estoy seguro" ? 0 : antiguedadYears}
-              onChange={(n) => {
-                const clamped = Math.max(0, Math.min(150, n));
-                setAntiguedad(clamped > 0 ? `${clamped} ${clamped === 1 ? "año" : "años"}` : "");
-              }}
-            />
-          ),
-        },
-        {
-          id: "antiguedad-nueva",
-          label: "Nueva",
-          pending: false,
-          node: (
-            <AmenityChip
-              item={{ id: "antiguedad-nueva", label: "Nueva", emoji: "✨", countable: false }}
-              count={antiguedad === "Nueva" ? 1 : 0}
-              onChange={(n) => setAntiguedad(n > 0 ? "Nueva" : "")}
-            />
-          ),
-        },
-        {
-          id: "antiguedad-nose",
-          label: "No estoy segura",
-          pending: false,
-          node: (
-            <AmenityChip
-              item={{ id: "antiguedad-nose", label: "No estoy segura", emoji: "🤔", countable: false }}
-              count={antiguedad === "No estoy seguro" ? 1 : 0}
-              onChange={(n) => setAntiguedad(n > 0 ? "No estoy seguro" : "")}
+            <AntiguedadBlock
+              value={antiguedad}
+              years={antiguedadYears}
+              onChange={setAntiguedad}
             />
           ),
         },
