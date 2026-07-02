@@ -629,7 +629,8 @@ function Index() {
   /* ---------- Completion ---------- */
   const ubicacionDone = true;
   const basicaDone = !!(operacion && tipoPropiedad && precio);
-  const propiedadDone = ubicacionDone && basicaDone;
+  const clasificacionDone = !!usoSuelo;
+  const propiedadDone = ubicacionDone && basicaDone && clasificacionDone;
 
   // Required fields: recámaras, baños completos, estacionamiento, antigüedad, niveles
   const caractDone =
