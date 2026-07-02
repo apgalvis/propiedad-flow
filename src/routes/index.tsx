@@ -1066,23 +1066,6 @@ function Index() {
   const renderCaracteristicasBody = () => {
     return (
       <>
-        {/* Section toolbar */}
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-muted/30 px-3 py-2.5">
-          <div className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">{caractGroups.length - caractGroups.filter((g) => g.fields.some((f) => f.pending)).length}</span>
-            {" "}de{" "}
-            <span className="font-medium text-foreground">{caractGroups.length}</span> categorías listas
-          </div>
-          <button
-            type="button"
-            onClick={clearAllCaracteristicas}
-            className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-background hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-            Limpiar todo
-          </button>
-        </div>
-
         {/* Category cards */}
         <div className="space-y-3">
           {caractGroups.map((g) => {
