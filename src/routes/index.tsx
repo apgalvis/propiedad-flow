@@ -27,12 +27,9 @@ import {
   Building2,
   Snowflake,
   BedDouble,
-  Tag,
-  Network,
-  Trash2,
   ClipboardList,
 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+
 import {
   Dialog,
   DialogContent,
