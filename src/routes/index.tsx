@@ -461,15 +461,6 @@ const AMENITY_GROUPS: AmenityGroup[] = [
   },
 ];
 
-const ANTIGUEDAD_OPTIONS = [
-  "Nueva",
-  "Menos de 1 año",
-  "1 a 5 años",
-  "5 a 10 años",
-  "10 a 20 años",
-  "Más de 20 años",
-  "No estoy seguro",
-];
 
 /* ---------- Amenity chip ---------- */
 const AmenityChip = memo(function AmenityChip({
