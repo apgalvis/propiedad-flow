@@ -475,10 +475,12 @@ const AmenityChip = memo(function AmenityChip({
   item,
   count,
   onChange,
+  block = false,
 }: {
   item: Amenity;
   count: number;
   onChange: (n: number) => void;
+  block?: boolean;
 }) {
   const selected = count > 0;
 
@@ -487,6 +489,7 @@ const AmenityChip = memo(function AmenityChip({
       <div
         className={[
           "group flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-sm transition-all duration-200",
+          block ? "w-full justify-between" : "",
           selected
             ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
             : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
@@ -495,15 +498,18 @@ const AmenityChip = memo(function AmenityChip({
         <button
           type="button"
           onClick={() => onChange(selected ? 0 : 1)}
-          className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full"
+          className={[
+            "flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full",
+            block ? "min-w-0 flex-1 justify-start text-left" : "",
+          ].join(" ")}
           aria-pressed={selected}
           aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
         >
           <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
-          <span className="font-medium">{item.label}</span>
+          <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
         </button>
         {selected && (
-          <div className="ml-1 flex items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
+          <div className="ml-1 flex shrink-0 items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
             <button
               type="button"
               onClick={() => onChange(Math.max(0, count - 1))}
@@ -540,6 +546,7 @@ const AmenityChip = memo(function AmenityChip({
       onClick={() => onChange(selected ? 0 : 1)}
       className={[
         "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+        block ? "w-full justify-between" : "",
         selected
           ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
           : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
@@ -547,10 +554,12 @@ const AmenityChip = memo(function AmenityChip({
       aria-pressed={selected}
       aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
     >
-      <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
-      <span className="font-medium">{item.label}</span>
+      <span className={`flex items-center gap-2 ${block ? "min-w-0" : ""}`}>
+        <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
+        <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
+      </span>
       {selected && (
-        <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-secondary-foreground animate-scale-in" aria-hidden="true">
+        <span className="ml-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground animate-scale-in" aria-hidden="true">
           <Check className="h-2.5 w-2.5" strokeWidth={4} />
         </span>
       )}
@@ -674,9 +683,10 @@ function Index() {
       `${recamaras} recámaras`,
       `${banos} baños`,
       construccion ? `${construccionSize} m² construcción` : null,
+      niveles > 0 ? `${niveles} ${niveles === 1 ? "nivel" : "niveles"}` : null,
     ].filter(Boolean);
     return parts.join(" · ");
-  }, [recamaras, banos, construccion, construccionSize]);
+  }, [recamaras, banos, construccion, construccionSize, niveles]);
 
   const contactoSummary = contactoDone ? `${nombre} · ${tel}` : undefined;
 
@@ -995,12 +1005,12 @@ function Index() {
             </Select>
           </div>
         )},
-        { id: "niveles", label: "Niveles", pending: false, node: (
+        { id: "niveles", label: "Niveles", pending: niveles === 0, node: (
           <div className="flex flex-wrap">
             <AmenityChip
               item={{ id: "niveles", label: "Niveles", emoji: "🪜", countable: true }}
               count={niveles}
-              onChange={(n) => setNiveles(Math.max(1, n))}
+              onChange={(n) => setNiveles(Math.max(0, n))}
             />
           </div>
         )},
@@ -1519,15 +1529,18 @@ function Index() {
                                   </button>
                                 </div>
                                 <Collapse id={`amen-${g.id}`} open={!collapsed}>
-                                  <div className="flex flex-wrap gap-2 px-4 pb-4">
-                                    {visibleItems.map((it) => (
-                                      <AmenityChip
-                                        key={it.id}
-                                        item={it}
-                                        count={amenities[it.id] ?? 0}
-                                        onChange={(n) => setAmenity(it.id, n)}
-                                      />
-                                    ))}
+                                  <div className="px-4 pb-4">
+                                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                                      {visibleItems.map((it) => (
+                                        <AmenityChip
+                                          key={it.id}
+                                          item={it}
+                                          count={amenities[it.id] ?? 0}
+                                          onChange={(n) => setAmenity(it.id, n)}
+                                          block
+                                        />
+                                      ))}
+                                    </div>
                                     {hasMore && (
                                       <button
                                         type="button"
@@ -1535,10 +1548,10 @@ function Index() {
                                           setMoreGroupId(g.id);
                                           setMoreSearch("");
                                         }}
-                                        className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:border-secondary/50 hover:text-secondary"
+                                        className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:border-secondary/50 hover:text-secondary"
                                         aria-haspopup="dialog"
                                       >
-                                        Ver más ({items.length - visibleN})
+                                        Ver {items.length - visibleN} más
                                         <ChevronDown className="h-3.5 w-3.5" />
                                       </button>
                                     )}
