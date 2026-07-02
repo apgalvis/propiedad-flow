@@ -557,29 +557,6 @@ const AmenityChip = memo(function AmenityChip({
   );
 });
 
-/* ---------- Summary stat pill (amenities toolbar) ---------- */
-function SummaryStat({
-  icon,
-  tint,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  tint: string;
-  label: string;
-  value: number;
-}) {
-  return (
-    <div className="flex items-center gap-2.5">
-      <span className={`flex h-9 w-9 items-center justify-center rounded-full ${tint}`}>{icon}</span>
-      <div className="leading-tight">
-        <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
-        <div className="text-base font-semibold tabular-nums text-foreground">{value}</div>
-      </div>
-    </div>
-  );
-}
-
 /* ---------- Page ---------- */
 function Index() {
   const [openSection, setOpenSection] = useState<SectionId>("especificaciones");
