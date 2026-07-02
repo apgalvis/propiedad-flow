@@ -906,10 +906,11 @@ function Index() {
     countable: boolean,
     value: number,
     setter: (n: number) => void,
+    pending: boolean = false,
   ): CField => ({
     id,
     label,
-    pending: false,
+    pending,
     node: (
       <AmenityChip
         item={{ id, label, emoji, countable }}
@@ -923,13 +924,13 @@ function Index() {
     {
       id: "habitaciones",
       label: "Habitaciones",
-      desc: "Recámaras, baños y espacios interiores.",
+      desc: "",
       tint: "bg-purple-50 text-purple-600",
       icon: BedDouble,
       layout: "chips",
       fields: [
-        chipField("recamaras", "Recámaras", "🛏️", true, recamaras, setRecamaras),
-        chipField("banos", "Baños completos", "🛁", true, banos, setBanos),
+        chipField("recamaras", "Recámaras", "🛏️", true, recamaras, setRecamaras, recamaras === 0),
+        chipField("banos", "Baños completos", "🛁", true, banos, setBanos, banos === 0),
         chipField("medios-banos", "Medios baños", "🚿", true, mediosBanos, setMediosBanos),
         chipField("walkin", "Walk-in closet", "👔", true, walkInCloset, setWalkInCloset),
         chipField("estudio", "Estudio / Oficina", "💼", true, estudio, setEstudio),
@@ -938,12 +939,12 @@ function Index() {
     {
       id: "movilidad",
       label: "Estacionamiento y movilidad",
-      desc: "Cajones, accesos y movilidad sustentable.",
+      desc: "",
       tint: "bg-purple-50 text-purple-600",
       icon: Car,
       layout: "chips",
       fields: [
-        chipField("estacionamiento", "Estacionamiento", "🚗", true, estac, setEstac),
+        chipField("estacionamiento", "Estacionamiento", "🚗", true, estac, setEstac, estac === 0),
         chipField("visitas", "Visitas", "🚙", true, visitas, setVisitas),
         chipField("estac-techado", "Estacionamiento techado", "🏠", false, estacTechado, setEstacTechado),
         chipField("garage", "Garage cerrado", "🚪", false, garage, setGarage),
@@ -960,15 +961,15 @@ function Index() {
       layout: "grid",
       grid: "grid-cols-1 gap-3 sm:grid-cols-3",
       fields: [
-        { id: "terreno", label: "Terreno", pending: terreno === null, node: <PresenceBlock title="Terreno" emoji="🗺️" has={terreno} onHasChange={setTerreno} value={terrenoSize} onValueChange={setTerrenoSize} fieldLabel="Tamaño del terreno" /> },
-        { id: "construccion", label: "Construcción", pending: construccion === null, node: <PresenceBlock title="Construcción" emoji="🏗️" has={construccion} onHasChange={setConstruccion} value={construccionSize} onValueChange={setConstruccionSize} fieldLabel="Tamaño de construcción" /> },
-        { id: "jardin", label: "Jardín", pending: jardin === null, node: <PresenceBlock title="Jardín" emoji="🌳" has={jardin} onHasChange={setJardin} value={jardinSize} onValueChange={setJardinSize} fieldLabel="Tamaño del jardín" /> },
+        { id: "terreno", label: "Terreno", pending: false, node: <PresenceBlock title="Terreno" emoji="🗺️" has={terreno} onHasChange={setTerreno} value={terrenoSize} onValueChange={setTerrenoSize} fieldLabel="Tamaño del terreno" /> },
+        { id: "construccion", label: "Construcción", pending: false, node: <PresenceBlock title="Construcción" emoji="🏗️" has={construccion} onHasChange={setConstruccion} value={construccionSize} onValueChange={setConstruccionSize} fieldLabel="Tamaño de construcción" /> },
+        { id: "jardin", label: "Jardín", pending: false, node: <PresenceBlock title="Jardín" emoji="🌳" has={jardin} onHasChange={setJardin} value={jardinSize} onValueChange={setJardinSize} fieldLabel="Tamaño del jardín" /> },
       ],
     },
     {
       id: "detalles",
       label: "Detalles",
-      desc: "Datos que ayudan a compradores a filtrar mejor.",
+      desc: "",
       tint: "bg-sky-50 text-sky-600",
       icon: ClipboardList,
       layout: "grid",
