@@ -1415,25 +1415,36 @@ function Index() {
                             const Icon = g.icon;
                             return (
                               <div key={g.id} className="overflow-hidden rounded-2xl border border-border bg-card">
-                                <button
-                                  type="button"
-                                  onClick={() => setCollapsedGroups((c) => ({ ...c, [g.id]: !c[g.id] }))}
-                                  className="flex w-full items-center gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
-                                  aria-expanded={!collapsed}
-                                >
-                                  <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${g.tint}`}>
-                                    <Icon className="h-5 w-5" />
-                                  </span>
-                                  <span className="flex-1 min-w-0">
-                                    <span className="flex items-center gap-2">
-                                      <span className="text-sm font-semibold text-foreground">{g.label}</span>
-                                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                        {activeCount || g.items.length}
+                                <div className="flex items-center gap-3 px-4 py-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => setCollapsedGroups((c) => ({ ...c, [g.id]: !c[g.id] }))}
+                                    className="flex flex-1 items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-lg"
+                                    aria-expanded={!collapsed}
+                                  >
+                                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${g.tint}`}>
+                                      <Icon className="h-5 w-5" />
+                                    </span>
+                                    <span className="flex-1 min-w-0">
+                                      <span className="flex items-center gap-2">
+                                        <span className="text-sm font-semibold text-foreground">{g.label}</span>
+                                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                                          {activeCount || g.items.length}
+                                        </span>
                                       </span>
                                     </span>
-                                  </span>
-                                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`} />
-                                </button>
+                                    <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`} />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => clearAmenityGroup(g.id)}
+                                    className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
+                                    aria-label={`Limpiar selección de ${g.label}`}
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    <span className="hidden sm:inline">Limpiar</span>
+                                  </button>
+                                </div>
                                 <Collapse id={`amen-${g.id}`} open={!collapsed}>
                                   <div className="flex flex-wrap gap-2 px-4 pb-4">
                                     {visibleItems.map((it) => (
