@@ -13,7 +13,6 @@ import {
   Bath,
   Car,
   Image as ImageIcon,
-  User,
   Mail,
   Phone,
   MessageCircle,
@@ -570,6 +569,8 @@ const ContactChannelCard = memo(function ContactChannelCard({
   placeholder,
   highlight = false,
   verified = false,
+  variant = "default",
+  badge,
 }: {
   icon: typeof MessageCircle;
   title: string;
@@ -579,35 +580,70 @@ const ContactChannelCard = memo(function ContactChannelCard({
   placeholder?: string;
   highlight?: boolean;
   verified?: boolean;
+  variant?: "default" | "whatsapp";
+  badge?: string;
 }) {
+  const isWhatsApp = variant === "whatsapp";
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md sm:p-5">
-      {highlight && (
-        <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-secondary/15 px-3 py-1 text-xs font-semibold text-primary">
+    <div
+      className={[
+        "rounded-2xl border p-4 shadow-sm transition-shadow hover:shadow-md sm:p-5",
+        isWhatsApp
+          ? "border-primary/20 bg-accent/50"
+          : "border-border bg-card",
+      ].join(" ")}
+    >
+      {(highlight || badge) && (
+        <div
+          className={[
+            "mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold",
+            isWhatsApp
+              ? "bg-primary text-primary-foreground"
+              : "bg-secondary/15 text-primary",
+          ].join(" ")}
+        >
           <Star className="h-3.5 w-3.5 fill-current" />
-          Más leads al verificar
+          {badge || "Más leads al verificar"}
         </div>
       )}
       <div className="flex items-start gap-3">
-        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-secondary/15 text-primary">
+        <div
+          className={[
+            "grid h-11 w-11 shrink-0 place-items-center rounded-xl",
+            isWhatsApp ? "bg-primary text-primary-foreground" : "bg-secondary/15 text-primary",
+          ].join(" ")}
+        >
           <Icon className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <h4 className="truncate text-sm font-semibold text-foreground sm:text-base">{title}</h4>
-          <p className="truncate text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
+          <h4 className="truncate text-sm font-semibold text-foreground sm:text-base">
+            {title}
+          </h4>
+          <p className="text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
         </div>
       </div>
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-        <Input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="h-10 flex-1 rounded-lg border-border bg-muted/40 text-sm"
-        />
+        <div className="flex h-10 flex-1 items-stretch overflow-hidden rounded-lg border border-border bg-background focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+          {isWhatsApp && (
+            <div className="flex items-center gap-1 border-r border-border bg-muted/50 px-3 text-sm font-medium text-foreground">
+              <span>+52</span>
+            </div>
+          )}
+          <Input
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="h-10 flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0 text-sm"
+          />
+        </div>
         <div className="flex items-center gap-2">
           {verified ? (
             <>
-              <Button variant="outline" size="sm" className="h-10 flex-1 gap-1.5 rounded-lg border-primary/40 text-primary sm:flex-none">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-10 flex-1 gap-1.5 rounded-lg border-primary/40 text-primary sm:flex-none"
+              >
                 <Check className="h-4 w-4" strokeWidth={3} />
                 Verificado
               </Button>
@@ -622,7 +658,10 @@ const ContactChannelCard = memo(function ContactChannelCard({
                 <Pencil className="h-4 w-4" />
                 Modificar
               </Button>
-              <Button size="sm" className="h-10 flex-1 gap-1.5 rounded-lg bg-primary hover:bg-primary/90 sm:flex-none">
+              <Button
+                size="sm"
+                className="h-10 flex-1 gap-1.5 rounded-lg bg-primary hover:bg-primary/90 sm:flex-none"
+              >
                 <ShieldCheck className="h-4 w-4" />
                 Verificar
               </Button>
@@ -695,7 +734,6 @@ function Index() {
   const [imageCount] = useState(0);
 
   // 3
-  const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [tel, setTel] = useState("");
   const [whats, setWhats] = useState("");
@@ -716,7 +754,7 @@ function Index() {
   const imagenesDone = imageCount >= 5;
   const especificacionesDone = caractDone && amenidadesDone && descripcionDone && imagenesDone;
 
-  const contactoDone = !!(nombre && correo && tel);
+  const contactoDone = !!(correo && tel);
 
   /* ---------- Summaries ---------- */
   const formatEstac = (n: number) => `${n} ${n === 1 ? "estacionamiento" : "estacionamientos"}`;
@@ -741,7 +779,7 @@ function Index() {
     return parts.join(" · ");
   }, [recamaras, banos, construccion, construccionSize, niveles]);
 
-  const contactoSummary = contactoDone ? `${nombre} · ${tel}` : undefined;
+  const contactoSummary = contactoDone ? `${tel} · ${correo}` : undefined;
 
   /* ---------- Auto descripción ---------- */
   const autoDescripcion = useMemo(() => {
@@ -1619,24 +1657,18 @@ function Index() {
                           </div>
                           <div className="space-y-1.5">
                             <Label className="text-sm font-medium">Tipo de rancho</Label>
-                            <div className="flex flex-wrap gap-1.5 rounded-xl border border-border bg-background p-1">
-                              {["No aplica", "Agrícola", "Ganadero"].map((t) => (
-                                <button
-                                  key={t}
-                                  type="button"
-                                  onClick={() => setTipoRancho(t)}
-                                  aria-pressed={tipoRancho === t}
-                                  className={[
-                                    "flex-1 min-w-[80px] rounded-lg px-2 py-1.5 text-xs font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
-                                    tipoRancho === t
-                                      ? "bg-secondary text-secondary-foreground shadow-sm"
-                                      : "text-muted-foreground hover:text-foreground hover:bg-muted",
-                                  ].join(" ")}
-                                >
-                                  {t}
-                                </button>
-                              ))}
-                            </div>
+                            <Select value={tipoRancho} onValueChange={setTipoRancho}>
+                              <SelectTrigger className="h-10 rounded-lg">
+                                <SelectValue placeholder="Selecciona" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="No aplica">No aplica</SelectItem>
+                                <SelectItem value="Agrícola">Agrícola</SelectItem>
+                                <SelectItem value="Ganadero">Ganadero</SelectItem>
+                                <SelectItem value="Turístico">Turístico</SelectItem>
+                                <SelectItem value="Residencial">Residencial</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
                         </div>
                         <div className="flex justify-end">
@@ -1957,23 +1989,16 @@ function Index() {
             />
             <Collapse id="sec-p-contacto" open={openSection === "contacto"}>
               <div className="border-t border-border px-4 pb-6 pt-5 sm:px-6">
-                <div className="mb-5">
-                  <Label className="mb-1.5 block text-sm">Nombre *</Label>
-                  <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <Input value={nombre} onChange={(e) => setNombre(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="Juan Pérez" />
-                  </div>
-                </div>
-
                 <div className="space-y-3">
                   <ContactChannelCard
                     icon={MessageCircle}
-                    title="WhatsApp"
-                    subtitle="Opcional · canal preferido"
+                    title="Verifica tu WhatsApp"
+                    subtitle="Los interesados te contactan directo. Sin esto, tu anuncio no aparece en búsquedas."
                     value={whats}
                     onChange={setWhats}
-                    placeholder="+52 55 1234 5678"
-                    highlight
+                    placeholder="55 1234 5678"
+                    variant="whatsapp"
+                    badge="+38% LEADS"
                   />
                   <ContactChannelCard
                     icon={Phone}
