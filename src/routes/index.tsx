@@ -1021,15 +1021,12 @@ function Index() {
           label: "Niveles",
           pending: niveles === 0,
           node: (
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Niveles</Label>
-              <AmenityChip
-                item={{ id: "niveles", label: "Niveles", emoji: "🪜", countable: true }}
-                count={niveles}
-                onChange={(n) => setNiveles(Math.max(0, n))}
-                block
-              />
-            </div>
+            <AmenityChip
+              item={{ id: "niveles", label: "Niveles", emoji: "🪜", countable: true }}
+              count={niveles}
+              onChange={(n) => setNiveles(Math.max(0, n))}
+              block
+            />
           ),
         },
         {
