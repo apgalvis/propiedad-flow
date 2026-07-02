@@ -905,15 +905,6 @@ function Index() {
     },
   ];
 
-  const caractFilter = (fields: CField[]) => {
-    const q = caractSearch.trim().toLowerCase();
-    return fields.filter((f) => {
-      if (q && !f.label.toLowerCase().includes(q)) return false;
-      if (caractOnlyPending && !f.pending) return false;
-      return true;
-    });
-  };
-
   const renderCaractFields = (g: CGroup, fields: CField[]) => {
     if (g.layout === "chips") {
       return (
