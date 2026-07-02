@@ -808,6 +808,7 @@ function Index() {
       subs: [
         { id: "ubicacion", code: "1.1", label: "Ubicación", done: ubicacionDone },
         { id: "basica", code: "1.2", label: "Información básica", done: basicaDone },
+        { id: "clasificacion", code: "1.3", label: "Clasificación", done: clasificacionDone },
       ],
     },
     {
