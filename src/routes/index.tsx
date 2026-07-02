@@ -27,7 +27,6 @@ import {
   Building2,
   Snowflake,
   BedDouble,
-  ClipboardList,
   Trash2,
 } from "lucide-react";
 
