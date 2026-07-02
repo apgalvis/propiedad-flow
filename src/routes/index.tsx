@@ -378,7 +378,7 @@ const AMENITY_GROUPS: AmenityGroup[] = [
     label: "Exteriores",
     icon: Trees,
     tint: "bg-emerald-50 text-emerald-600",
-    visible: 8,
+    visible: 9,
     items: [
       { id: "jardin", label: "Jardín", emoji: "🌳" },
       { id: "jardinpriv", label: "Jardín privado", emoji: "🌿" },
@@ -396,7 +396,7 @@ const AMENITY_GROUPS: AmenityGroup[] = [
     label: "Bienestar y recreación",
     icon: Waves,
     tint: "bg-sky-50 text-sky-600",
-    visible: 8,
+    visible: 9,
     items: [
       { id: "alberca", label: "Alberca", emoji: "🏊" },
       { id: "alberca_clima", label: "Alberca climatizada", emoji: "♨️" },
@@ -597,40 +597,18 @@ function Index() {
   const [cargadorEV, setCargadorEV] = useState(1);
   const [bicicletero, setBicicletero] = useState(0);
 
-  const [terreno, setTerreno] = useState<boolean | null>(true);
-  const [terrenoSize, setTerrenoSize] = useState("250");
-  const [construccion, setConstruccion] = useState<boolean | null>(true);
-  const [construccionSize, setConstruccionSize] = useState("180");
-  const [jardin, setJardin] = useState<boolean | null>(true);
-  const [jardinSize, setJardinSize] = useState("50");
+  const [terreno, setTerreno] = useState<boolean | null>(null);
+  const [terrenoSize, setTerrenoSize] = useState("");
+  const [construccion, setConstruccion] = useState<boolean | null>(null);
+  const [construccionSize, setConstruccionSize] = useState("");
+  const [jardin, setJardin] = useState<boolean | null>(null);
+  const [jardinSize, setJardinSize] = useState("");
 
   const [usoSuelo, setUsoSuelo] = useState("Comercial");
   const [tipoRancho, setTipoRancho] = useState("Agrícola");
 
-  // 2.2 Amenidades inline
-  const [amenities, setAmenities] = useState<Record<string, number>>({
-    jardin: 1,
-    jardinpriv: 1,
-    terraza: 1,
-    balcon: 2,
-    roof: 1,
-    bbq: 1,
-    alberca: 1,
-    gimnasio: 1,
-    padel: 1,
-    seg247: 1,
-    caseta: 1,
-    acceso: 1,
-    cctv: 1,
-    porton: 1,
-    elevador: 1,
-    lobby: 1,
-    planta: 1,
-    lavado: 1,
-    bodega: 1,
-    ac: 1,
-    chimenea: 1,
-  });
+  // 2.2 Amenidades inline — sin selección por defecto (todas opcionales)
+  const [amenities, setAmenities] = useState<Record<string, number>>({});
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [moreGroupId, setMoreGroupId] = useState<string | null>(null);
   const [moreSearch, setMoreSearch] = useState("");
@@ -655,10 +633,12 @@ function Index() {
   const basicaDone = !!(operacion && tipoPropiedad && precio);
   const propiedadDone = ubicacionDone && basicaDone;
 
-  const presenceAnswered = terreno !== null && construccion !== null && jardin !== null;
-  const caractDone = presenceAnswered;
+  // Required fields: recámaras, baños completos, estacionamiento, antigüedad, niveles
+  const caractDone =
+    recamaras > 0 && banos > 0 && estac > 0 && !!antiguedad && niveles > 0;
   const amenidadesCount = Object.values(amenities).filter((n) => n > 0).length;
-  const amenidadesDone = amenidadesCount > 0;
+  // Amenidades son opcionales
+  const amenidadesDone = true;
   const descripcionDone = descripcion.trim().length >= 40;
   const imagenesDone = imageCount >= 5;
   const especificacionesDone = caractDone && amenidadesDone && descripcionDone && imagenesDone;
@@ -926,10 +906,11 @@ function Index() {
     countable: boolean,
     value: number,
     setter: (n: number) => void,
+    pending: boolean = false,
   ): CField => ({
     id,
     label,
-    pending: false,
+    pending,
     node: (
       <AmenityChip
         item={{ id, label, emoji, countable }}
@@ -943,13 +924,13 @@ function Index() {
     {
       id: "habitaciones",
       label: "Habitaciones",
-      desc: "Recámaras, baños y espacios interiores.",
+      desc: "",
       tint: "bg-purple-50 text-purple-600",
       icon: BedDouble,
       layout: "chips",
       fields: [
-        chipField("recamaras", "Recámaras", "🛏️", true, recamaras, setRecamaras),
-        chipField("banos", "Baños completos", "🛁", true, banos, setBanos),
+        chipField("recamaras", "Recámaras", "🛏️", true, recamaras, setRecamaras, recamaras === 0),
+        chipField("banos", "Baños completos", "🛁", true, banos, setBanos, banos === 0),
         chipField("medios-banos", "Medios baños", "🚿", true, mediosBanos, setMediosBanos),
         chipField("walkin", "Walk-in closet", "👔", true, walkInCloset, setWalkInCloset),
         chipField("estudio", "Estudio / Oficina", "💼", true, estudio, setEstudio),
@@ -958,12 +939,12 @@ function Index() {
     {
       id: "movilidad",
       label: "Estacionamiento y movilidad",
-      desc: "Cajones, accesos y movilidad sustentable.",
+      desc: "",
       tint: "bg-purple-50 text-purple-600",
       icon: Car,
       layout: "chips",
       fields: [
-        chipField("estacionamiento", "Estacionamiento", "🚗", true, estac, setEstac),
+        chipField("estacionamiento", "Estacionamiento", "🚗", true, estac, setEstac, estac === 0),
         chipField("visitas", "Visitas", "🚙", true, visitas, setVisitas),
         chipField("estac-techado", "Estacionamiento techado", "🏠", false, estacTechado, setEstacTechado),
         chipField("garage", "Garage cerrado", "🚪", false, garage, setGarage),
@@ -980,15 +961,15 @@ function Index() {
       layout: "grid",
       grid: "grid-cols-1 gap-3 sm:grid-cols-3",
       fields: [
-        { id: "terreno", label: "Terreno", pending: terreno === null, node: <PresenceBlock title="Terreno" emoji="🗺️" has={terreno} onHasChange={setTerreno} value={terrenoSize} onValueChange={setTerrenoSize} fieldLabel="Tamaño del terreno" /> },
-        { id: "construccion", label: "Construcción", pending: construccion === null, node: <PresenceBlock title="Construcción" emoji="🏗️" has={construccion} onHasChange={setConstruccion} value={construccionSize} onValueChange={setConstruccionSize} fieldLabel="Tamaño de construcción" /> },
-        { id: "jardin", label: "Jardín", pending: jardin === null, node: <PresenceBlock title="Jardín" emoji="🌳" has={jardin} onHasChange={setJardin} value={jardinSize} onValueChange={setJardinSize} fieldLabel="Tamaño del jardín" /> },
+        { id: "terreno", label: "Terreno", pending: false, node: <PresenceBlock title="Terreno" emoji="🗺️" has={terreno} onHasChange={setTerreno} value={terrenoSize} onValueChange={setTerrenoSize} fieldLabel="Tamaño del terreno" /> },
+        { id: "construccion", label: "Construcción", pending: false, node: <PresenceBlock title="Construcción" emoji="🏗️" has={construccion} onHasChange={setConstruccion} value={construccionSize} onValueChange={setConstruccionSize} fieldLabel="Tamaño de construcción" /> },
+        { id: "jardin", label: "Jardín", pending: false, node: <PresenceBlock title="Jardín" emoji="🌳" has={jardin} onHasChange={setJardin} value={jardinSize} onValueChange={setJardinSize} fieldLabel="Tamaño del jardín" /> },
       ],
     },
     {
       id: "detalles",
       label: "Detalles",
-      desc: "Datos que ayudan a compradores a filtrar mejor.",
+      desc: "",
       tint: "bg-sky-50 text-sky-600",
       icon: ClipboardList,
       layout: "grid",
@@ -1109,7 +1090,20 @@ function Index() {
         {/* Category cards */}
         <div className="space-y-3">
           {caractGroups.map((g) => {
-            const groupPending = g.fields.filter((f) => f.pending).length;
+            const groupSelected = (() => {
+              switch (g.id) {
+                case "habitaciones":
+                  return [recamaras, banos, mediosBanos, walkInCloset, estudio].filter((n) => n > 0).length;
+                case "movilidad":
+                  return [estac, visitas, estacTechado, garage, cargadorEV, bicicletero].filter((n) => n > 0).length;
+                case "espacios":
+                  return [terreno === true, construccion === true, jardin === true].filter(Boolean).length;
+                case "detalles":
+                  return [!!antiguedad, niveles > 0, !!usoSuelo].filter(Boolean).length;
+                default:
+                  return 0;
+              }
+            })();
             const collapsed = caractCollapsed[g.id];
             const Icon = g.icon;
             return (
@@ -1127,13 +1121,13 @@ function Index() {
                     <span className="min-w-0 flex-1">
                       <span className="flex flex-wrap items-center gap-2">
                         <span className="text-sm font-semibold text-foreground">{g.label}</span>
-                        {groupPending > 0 && (
-                          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600">
-                            {groupPending} por completar
-                          </span>
-                        )}
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                          {groupSelected}
+                        </span>
                       </span>
-                      <span className="mt-0.5 block text-xs text-muted-foreground">{g.desc}</span>
+                      {g.desc && (
+                        <span className="mt-0.5 block text-xs text-muted-foreground">{g.desc}</span>
+                      )}
                     </span>
                     <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`} />
                   </button>
@@ -1531,7 +1525,7 @@ function Index() {
                                       <span className="flex items-center gap-2">
                                         <span className="text-sm font-semibold text-foreground">{g.label}</span>
                                         <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                          {activeCount || g.items.length}
+                                          {activeCount}
                                         </span>
                                       </span>
                                     </span>
@@ -1609,7 +1603,6 @@ function Index() {
                           <Button
                             onClick={() => setOpenSub("descripcion")}
                             className="rounded-full bg-primary px-6 hover:bg-primary/90"
-                            disabled={!amenidadesDone}
                           >
                             Guardar y continuar
                           </Button>
