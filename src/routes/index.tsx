@@ -475,10 +475,12 @@ const AmenityChip = memo(function AmenityChip({
   item,
   count,
   onChange,
+  block = false,
 }: {
   item: Amenity;
   count: number;
   onChange: (n: number) => void;
+  block?: boolean;
 }) {
   const selected = count > 0;
 
@@ -487,6 +489,7 @@ const AmenityChip = memo(function AmenityChip({
       <div
         className={[
           "group flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-sm transition-all duration-200",
+          block ? "w-full justify-between" : "",
           selected
             ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
             : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
@@ -495,15 +498,18 @@ const AmenityChip = memo(function AmenityChip({
         <button
           type="button"
           onClick={() => onChange(selected ? 0 : 1)}
-          className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full"
+          className={[
+            "flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full",
+            block ? "min-w-0 flex-1 justify-start text-left" : "",
+          ].join(" ")}
           aria-pressed={selected}
           aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
         >
           <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
-          <span className="font-medium">{item.label}</span>
+          <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
         </button>
         {selected && (
-          <div className="ml-1 flex items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
+          <div className="ml-1 flex shrink-0 items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
             <button
               type="button"
               onClick={() => onChange(Math.max(0, count - 1))}
@@ -540,6 +546,7 @@ const AmenityChip = memo(function AmenityChip({
       onClick={() => onChange(selected ? 0 : 1)}
       className={[
         "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+        block ? "w-full justify-between" : "",
         selected
           ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
           : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
@@ -547,10 +554,12 @@ const AmenityChip = memo(function AmenityChip({
       aria-pressed={selected}
       aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
     >
-      <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
-      <span className="font-medium">{item.label}</span>
+      <span className={`flex items-center gap-2 ${block ? "min-w-0" : ""}`}>
+        <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
+        <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
+      </span>
       {selected && (
-        <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-secondary-foreground animate-scale-in" aria-hidden="true">
+        <span className="ml-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground animate-scale-in" aria-hidden="true">
           <Check className="h-2.5 w-2.5" strokeWidth={4} />
         </span>
       )}
