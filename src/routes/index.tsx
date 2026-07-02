@@ -727,6 +727,14 @@ function Index() {
     [],
   );
 
+  const toggleNoAmenities = useCallback(() => {
+    setNoAmenities((prev) => {
+      const next = !prev;
+      if (next) setAmenities({});
+      return next;
+    });
+  }, []);
+
   const clearAmenityGroup = useCallback((groupId: string) => {
     setAmenities((cur) => {
       const next = { ...cur };
