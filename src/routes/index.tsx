@@ -1980,8 +1980,15 @@ function Index() {
               onToggle={() => toggleSection("contacto")}
             />
             <Collapse id="sec-p-contacto" open={openSection === "contacto"}>
-              <div className="border-t border-border px-4 pb-6 pt-5 sm:px-6">
-                <div className="space-y-3">
+              <div className="border-t border-border px-4 pb-6 pt-6 sm:px-6">
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-foreground">Datos de contacto</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Elige los medios por los cuales quieres recibir prospectos interesados.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
                   <ContactChannelCard
                     icon={MessageCircle}
                     title="Verifica tu WhatsApp"
