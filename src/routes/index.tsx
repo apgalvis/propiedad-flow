@@ -957,9 +957,6 @@ function Index() {
                     <span className="min-w-0 flex-1">
                       <span className="flex flex-wrap items-center gap-2">
                         <span className="text-sm font-semibold text-foreground">{g.label}</span>
-                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                          {g.badge}
-                        </span>
                         {groupPending > 0 && (
                           <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600">
                             {groupPending} por completar
