@@ -1296,7 +1296,7 @@ function Index() {
                             const items = g.items;
                             const activeCount = g.items.filter((it) => (amenities[it.id] ?? 0) > 0).length;
                             const collapsed = collapsedGroups[g.id];
-                            const visibleN = collapsed ? 0 : g.visible;
+                            const visibleN = g.visible;
                             const visibleItems = items.slice(0, visibleN);
                             const hasMore = items.length > visibleN;
                             const Icon = g.icon;
