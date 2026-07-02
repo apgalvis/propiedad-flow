@@ -860,39 +860,48 @@ function Index() {
             </Select>
           </div>
         )},
-        { id: "uso-suelo", label: "Uso de suelo", pending: !usoSuelo, node: (
-          <div>
-            <Label className="mb-1.5 block text-sm font-medium">Uso de suelo *</Label>
-            <Select value={usoSuelo} onValueChange={setUsoSuelo}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Habitacional">Habitacional</SelectItem>
-                <SelectItem value="Comercial">Comercial</SelectItem>
-                <SelectItem value="Mixto">Mixto</SelectItem>
-                <SelectItem value="Industrial">Industrial</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )},
         { id: "niveles", label: "Niveles", pending: false, node: (
           <Stepper label="Niveles" value={niveles} onChange={setNiveles} min={1} icon={<Home className="h-4 w-4" />} />
         )},
-        { id: "tipo-rancho", label: "Tipo de rancho", pending: false, span: "full", node: (
-          <div>
-            <Label className="mb-1.5 block text-sm font-medium">Tipo de rancho</Label>
-            <div className="inline-flex flex-wrap rounded-full border border-border bg-muted/40 p-0.5">
-              {["No aplica", "Agrícola", "Ganadero"].map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setTipoRancho(t)}
-                  aria-pressed={tipoRancho === t}
-                  className={[
-                    "rounded-full px-3.5 py-1.5 text-sm font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
-                    tipoRancho === t ? "bg-secondary text-secondary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
-                  ].join(" ")}
-                >{t}</button>
-              ))}
+        { id: "clasificacion", label: "Uso de suelo y tipo de rancho", pending: !usoSuelo, span: "full", node: (
+          <div className="rounded-xl border border-border/70 bg-muted/30 p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-secondary/10 text-secondary">
+                <ClipboardList className="h-3.5 w-3.5" />
+              </span>
+              <h4 className="text-sm font-semibold text-foreground">Clasificación</h4>
+              <span className="text-xs text-muted-foreground">· Uso de suelo y tipo de rancho</span>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <Label className="mb-1.5 block text-sm font-medium">Uso de suelo *</Label>
+                <Select value={usoSuelo} onValueChange={setUsoSuelo}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Habitacional">Habitacional</SelectItem>
+                    <SelectItem value="Comercial">Comercial</SelectItem>
+                    <SelectItem value="Mixto">Mixto</SelectItem>
+                    <SelectItem value="Industrial">Industrial</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="mb-1.5 block text-sm font-medium">Tipo de rancho</Label>
+                <div className="inline-flex flex-wrap rounded-full border border-border bg-background p-0.5">
+                  {["No aplica", "Agrícola", "Ganadero"].map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setTipoRancho(t)}
+                      aria-pressed={tipoRancho === t}
+                      className={[
+                        "rounded-full px-3.5 py-1.5 text-sm font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                        tipoRancho === t ? "bg-secondary text-secondary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                      ].join(" ")}
+                    >{t}</button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )},
