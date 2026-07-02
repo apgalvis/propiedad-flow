@@ -28,7 +28,6 @@ import {
   BedDouble,
   Trash2,
   Star,
-  Pencil,
 } from "lucide-react";
 
 import {
