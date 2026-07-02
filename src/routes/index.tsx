@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -30,7 +30,6 @@ import {
   Tag,
   Network,
   Trash2,
-  Ruler,
   ClipboardList,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
