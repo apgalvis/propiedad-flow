@@ -922,8 +922,10 @@ function Index() {
         setJardin(null);
         setJardinSize("");
         break;
-      case "detalles":
+      case "antiguedad":
         setAntiguedad("");
+        break;
+      case "detalles":
         setNiveles(1);
         setUsoSuelo("");
         setTipoRancho("No aplica");
