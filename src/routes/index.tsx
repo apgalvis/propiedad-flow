@@ -1099,12 +1099,17 @@ function Index() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => clearCaractGroup(g.id)}
-                    className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
-                    aria-label={`Limpiar selección de ${g.label}`}
+                    onClick={() => toggleCaractGroup(g.id)}
+                    className={[
+                      "inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                      isCaractGroupEmpty(g.id)
+                        ? "text-secondary hover:bg-secondary/10 hover:text-secondary"
+                        : "text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
+                    ].join(" ")}
+                    aria-label={isCaractGroupEmpty(g.id) ? `Seleccionar todo en ${g.label}` : `Limpiar selección de ${g.label}`}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Limpiar</span>
+                    {isCaractGroupEmpty(g.id) ? <Plus className="h-3.5 w-3.5" /> : <Trash2 className="h-3.5 w-3.5" />}
+                    <span className="hidden sm:inline">{isCaractGroupEmpty(g.id) ? "Seleccionar todo" : "Limpiar"}</span>
                   </button>
                 </div>
                 <Collapse id={`caract-${g.id}`} open={!collapsed}>
