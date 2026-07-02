@@ -1778,9 +1778,16 @@ function Index() {
                           maxLength={1500}
                         />
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <Button variant="outline" className="rounded-full gap-2">
+                          <Button
+                            variant="outline"
+                            className="rounded-full gap-2"
+                            onClick={() => {
+                              setDescripcion(autoDescripcion);
+                              lastAutoDescRef.current = autoDescripcion;
+                            }}
+                          >
                             <Sparkles className="h-4 w-4 text-primary" />
-                            Mejorar con IA
+                            Regenerar con tus datos
                           </Button>
                           <span className="text-xs text-muted-foreground">
                             {descripcion.length} / 1500
