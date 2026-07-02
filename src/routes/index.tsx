@@ -1883,36 +1883,44 @@ function Index() {
             />
             <Collapse id="sec-p-contacto" open={openSection === "contacto"}>
               <div className="border-t border-border px-4 pb-6 pt-5 sm:px-6">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <Label className="mb-1.5 block text-sm">Nombre *</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                      <Input value={nombre} onChange={(e) => setNombre(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="Juan Pérez" />
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="mb-1.5 block text-sm">Correo *</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <Input value={correo} onChange={(e) => setCorreo(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="tucorreo@ejemplo.com" />
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="mb-1.5 block text-sm">Teléfono *</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <Input value={tel} onChange={(e) => setTel(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="55 1234 5678" />
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="mb-1.5 block text-sm">WhatsApp</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
-                      <MessageCircle className="h-4 w-4 text-muted-foreground" />
-                      <Input value={whats} onChange={(e) => setWhats(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="55 1234 5678" />
-                    </div>
+                <div className="mb-5">
+                  <Label className="mb-1.5 block text-sm">Nombre *</Label>
+                  <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <Input value={nombre} onChange={(e) => setNombre(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="Juan Pérez" />
                   </div>
                 </div>
+
+                <div className="space-y-3">
+                  <ContactChannelCard
+                    icon={MessageCircle}
+                    title="WhatsApp"
+                    subtitle="Opcional · canal preferido"
+                    value={whats}
+                    onChange={setWhats}
+                    placeholder="+52 55 1234 5678"
+                    highlight
+                  />
+                  <ContactChannelCard
+                    icon={Phone}
+                    title="Teléfono"
+                    subtitle="Para llamadas urgentes"
+                    value={tel}
+                    onChange={setTel}
+                    placeholder="+52 55 1234 5678"
+                    highlight
+                  />
+                  <ContactChannelCard
+                    icon={Mail}
+                    title="Correo electrónico"
+                    subtitle="Para consultas detalladas"
+                    value={correo}
+                    onChange={setCorreo}
+                    placeholder="tucorreo@ejemplo.com"
+                    verified={!!correo}
+                  />
+                </div>
+
                 <div className="mt-6 flex justify-end">
                   <Button className="rounded-full bg-primary px-8 hover:bg-primary/90">
                     Publicar propiedad
