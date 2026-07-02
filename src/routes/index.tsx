@@ -560,6 +560,80 @@ const AmenityChip = memo(function AmenityChip({
   );
 });
 
+/* ---------- Contact channel card ---------- */
+const ContactChannelCard = memo(function ContactChannelCard({
+  icon: Icon,
+  title,
+  subtitle,
+  value,
+  onChange,
+  placeholder,
+  highlight = false,
+  verified = false,
+}: {
+  icon: typeof MessageCircle;
+  title: string;
+  subtitle: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  highlight?: boolean;
+  verified?: boolean;
+}) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md sm:p-5">
+      {highlight && (
+        <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-secondary/15 px-3 py-1 text-xs font-semibold text-primary">
+          <Star className="h-3.5 w-3.5 fill-current" />
+          Más leads al verificar
+        </div>
+      )}
+      <div className="flex items-start gap-3">
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-secondary/15 text-primary">
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h4 className="truncate text-sm font-semibold text-foreground sm:text-base">{title}</h4>
+          <p className="truncate text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
+        </div>
+      </div>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+        <Input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="h-10 flex-1 rounded-lg border-border bg-muted/40 text-sm"
+        />
+        <div className="flex items-center gap-2">
+          {verified ? (
+            <>
+              <Button variant="outline" size="sm" className="h-10 flex-1 gap-1.5 rounded-lg border-primary/40 text-primary sm:flex-none">
+                <Check className="h-4 w-4" strokeWidth={3} />
+                Verificado
+              </Button>
+              <Button variant="outline" size="sm" className="h-10 flex-1 gap-1.5 rounded-lg sm:flex-none">
+                <Pencil className="h-4 w-4" />
+                Modificar
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" size="sm" className="h-10 flex-1 gap-1.5 rounded-lg sm:flex-none">
+                <Pencil className="h-4 w-4" />
+                Modificar
+              </Button>
+              <Button size="sm" className="h-10 flex-1 gap-1.5 rounded-lg bg-primary hover:bg-primary/90 sm:flex-none">
+                <ShieldCheck className="h-4 w-4" />
+                Verificar
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
+
 /* ---------- Page ---------- */
 function Index() {
   const [openSection, setOpenSection] = useState<SectionId>("especificaciones");
