@@ -671,6 +671,123 @@ function Index() {
 
   const contactoSummary = contactoDone ? `${nombre} · ${tel}` : undefined;
 
+  /* ---------- Auto descripción ---------- */
+  const autoDescripcion = useMemo(() => {
+    const tipo = (tipoPropiedad || "propiedad").toLowerCase();
+    const op = (operacion || "venta").toLowerCase();
+    const precioNum = Number(precio);
+    const precioText =
+      precio && !isNaN(precioNum) && precioNum > 0
+        ? `$${precioNum.toLocaleString("es-MX")} MXN`
+        : null;
+    const ubic = direccion?.trim() || "una excelente ubicación";
+
+    const distribucion: string[] = [];
+    if (recamaras > 0) distribucion.push(`${recamaras} ${recamaras === 1 ? "recámara" : "recámaras"}`);
+    if (banos > 0) distribucion.push(`${banos} ${banos === 1 ? "baño completo" : "baños completos"}`);
+    if (mediosBanos > 0) distribucion.push(`${mediosBanos} ${mediosBanos === 1 ? "medio baño" : "medios baños"}`);
+    if (walkInCloset > 0) distribucion.push(`${walkInCloset} walk-in closet`);
+    if (estudio > 0) distribucion.push(`${estudio === 1 ? "estudio / oficina" : `${estudio} estudios`}`);
+    if (niveles > 0) distribucion.push(`distribuidos en ${niveles} ${niveles === 1 ? "nivel" : "niveles"}`);
+
+    const movilidad: string[] = [];
+    if (estac > 0) movilidad.push(`${estac} ${estac === 1 ? "cajón de estacionamiento" : "cajones de estacionamiento"}`);
+    if (visitas > 0) movilidad.push(`${visitas} para visitas`);
+    if (estacTechado > 0) movilidad.push("estacionamiento techado");
+    if (garage > 0) movilidad.push("garage cerrado");
+    if (cargadorEV > 0) movilidad.push("cargador para vehículo eléctrico");
+    if (bicicletero > 0) movilidad.push("bicicletero");
+
+    const espacios: string[] = [];
+    if (terreno && terrenoSize) espacios.push(`terreno de ${terrenoSize} m²`);
+    if (construccion && construccionSize) espacios.push(`${construccionSize} m² de construcción`);
+    if (jardin) espacios.push(jardinSize ? `jardín de ${jardinSize} m²` : "jardín");
+
+    const amenLabels: string[] = [];
+    AMENITY_GROUPS.forEach((g) =>
+      g.items.forEach((it) => {
+        const c = amenities[it.id] ?? 0;
+        if (c > 0) amenLabels.push(c > 1 && it.countable ? `${c} ${it.label.toLowerCase()}` : it.label.toLowerCase());
+      }),
+    );
+
+    const paragraphs: string[] = [];
+
+    paragraphs.push(
+      `Descubre esta ${tipo} en ${op}${antiguedad ? `, con antigüedad de ${antiguedad.toLowerCase()}` : ""}, ubicada en ${ubic}. Un inmueble pensado para quienes buscan comodidad, funcionalidad y una propuesta arquitectónica bien resuelta desde el primer detalle.`,
+    );
+
+    if (distribucion.length) {
+      paragraphs.push(
+        `La distribución ofrece ${distribucion.join(", ")}, con espacios amplios, buena iluminación natural y acabados cuidados que priorizan la calidez del día a día.`,
+      );
+    }
+
+    if (espacios.length) {
+      paragraphs.push(
+        `En el exterior destaca ${espacios.join(", ")}, ideal para disfrutar en familia, recibir visitas o crear tus propios ambientes al aire libre.`,
+      );
+    }
+
+    if (movilidad.length) {
+      paragraphs.push(`Cuenta además con ${movilidad.join(", ")}, brindando practicidad y seguridad para tu movilidad diaria.`);
+    }
+
+    if (amenLabels.length) {
+      paragraphs.push(
+        `Entre sus amenidades y servicios encontrarás ${amenLabels.slice(0, 12).join(", ")}${amenLabels.length > 12 ? " y más" : ""}, complementando un estilo de vida integral dentro del desarrollo.`,
+      );
+    } else if (noAmenities) {
+      paragraphs.push(
+        `La propiedad se enfoca en la esencia del hogar, sin amenidades ni servicios adicionales, ofreciendo mayor privacidad, menores cuotas de mantenimiento y libertad total para adaptarla a tu estilo.`,
+      );
+    }
+
+    paragraphs.push(
+      `${precioText ? `Se ofrece en ${op} por ${precioText}. ` : ""}Una oportunidad inmejorable para quienes buscan una propiedad lista para habitarse en una zona con excelente plusvalía. Agenda una visita y descubre en persona todo lo que este espacio tiene para ofrecerte.`,
+    );
+
+    return paragraphs.join("\n\n");
+  }, [
+    tipoPropiedad,
+    operacion,
+    precio,
+    direccion,
+    antiguedad,
+    recamaras,
+    banos,
+    mediosBanos,
+    walkInCloset,
+    estudio,
+    niveles,
+    estac,
+    visitas,
+    estacTechado,
+    garage,
+    cargadorEV,
+    bicicletero,
+    terreno,
+    terrenoSize,
+    construccion,
+    construccionSize,
+    jardin,
+    jardinSize,
+    amenities,
+    noAmenities,
+  ]);
+
+  const lastAutoDescRef = useRef<string>("");
+  useEffect(() => {
+    setDescripcion((prev) => {
+      if (prev === "" || prev === lastAutoDescRef.current) {
+        lastAutoDescRef.current = autoDescripcion;
+        return autoDescripcion;
+      }
+      lastAutoDescRef.current = autoDescripcion;
+      return prev;
+    });
+  }, [autoDescripcion]);
+
   const totalSubsDone =
     Number(caractDone) + Number(amenidadesDone) + Number(descripcionDone) + Number(imagenesDone);
 
