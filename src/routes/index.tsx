@@ -489,14 +489,27 @@ const AmenityChip = memo(function AmenityChip({
       <div
         className={[
           "group flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-sm transition-all duration-200",
-          block ? "w-full" : "",
+          block ? "w-full justify-between" : "",
           selected
             ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
             : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
         ].join(" ")}
       >
+        <button
+          type="button"
+          onClick={() => onChange(selected ? 0 : 1)}
+          className={[
+            "flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full",
+            block ? "min-w-0 flex-1 justify-start text-left" : "",
+          ].join(" ")}
+          aria-pressed={selected}
+          aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
+        >
+          <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
+          <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
+        </button>
         {selected && (
-          <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
+          <div className="ml-1 flex shrink-0 items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
             <button
               type="button"
               onClick={() => onChange(Math.max(0, count - 1))}
@@ -523,19 +536,6 @@ const AmenityChip = memo(function AmenityChip({
             </button>
           </div>
         )}
-        <button
-          type="button"
-          onClick={() => onChange(selected ? 0 : 1)}
-          className={[
-            "flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full",
-            block ? "min-w-0 flex-1 justify-start text-left" : "",
-          ].join(" ")}
-          aria-pressed={selected}
-          aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
-        >
-          <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
-          <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
-        </button>
       </div>
     );
   }
