@@ -955,8 +955,10 @@ function Index() {
         setConstruccion(true);
         setJardin(true);
         break;
+      case "antiguedad":
+        setAntiguedad("Nueva");
+        break;
       case "detalles":
-        setAntiguedad(ANTIGUEDAD_OPTIONS[0]);
         setNiveles(1);
         setUsoSuelo("Habitacional");
         setTipoRancho("No aplica");
