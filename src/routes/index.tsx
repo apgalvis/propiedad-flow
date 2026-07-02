@@ -1055,8 +1055,8 @@ function Index() {
 
   const caractGroups: CGroup[] = [
     {
-      id: "habitaciones",
-      label: "Habitaciones",
+      id: "detalles",
+      label: "Detalles",
       desc: "",
       tint: "bg-purple-50 text-purple-600",
       icon: BedDouble,
@@ -1065,6 +1065,7 @@ function Index() {
         chipField("recamaras", "Recámaras", "🛏️", true, recamaras, setRecamaras, recamaras === 0),
         chipField("banos", "Baños completos", "🛁", true, banos, setBanos, banos === 0),
         chipField("medios-banos", "Medios baños", "🚿", true, mediosBanos, setMediosBanos),
+        chipField("niveles", "Niveles", "🪜", true, niveles, (n) => setNiveles(Math.max(0, n)), niveles === 0),
         chipField("walkin", "Walk-in closet", "👔", true, walkInCloset, setWalkInCloset),
         chipField("estudio", "Estudio / Oficina", "💼", true, estudio, setEstudio),
       ],
