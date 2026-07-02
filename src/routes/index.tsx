@@ -1296,8 +1296,10 @@ function Index() {
                   return [estac, visitas, estacTechado, garage, cargadorEV, bicicletero].filter((n) => n > 0).length;
                 case "espacios":
                   return [terreno === true, construccion === true, jardin === true].filter(Boolean).length;
+                case "antiguedad":
+                  return !!antiguedad ? 1 : 0;
                 case "detalles":
-                  return [!!antiguedad, niveles > 0, !!usoSuelo].filter(Boolean).length;
+                  return [niveles > 0, !!usoSuelo].filter(Boolean).length;
                 default:
                   return 0;
               }
