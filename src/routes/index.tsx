@@ -621,10 +621,6 @@ function Index() {
     ac: 1,
     chimenea: 1,
   });
-  const [amenitySearch, setAmenitySearch] = useState("");
-  const [amenityOnlyActive, setAmenityOnlyActive] = useState(false);
-  const [amenityView, setAmenityView] = useState<"categorias" | "todas">("categorias");
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [moreGroupId, setMoreGroupId] = useState<string | null>(null);
   const [moreSearch, setMoreSearch] = useState("");
