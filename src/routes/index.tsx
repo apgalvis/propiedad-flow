@@ -584,7 +584,11 @@ function Index() {
   const [mediosBanos, setMediosBanos] = useState(1);
   const [niveles, setNiveles] = useState(1);
   const [estac, setEstac] = useState(2);
-  const [antiguedad, setAntiguedad] = useState("5 a 10 años");
+  const [antiguedad, setAntiguedad] = useState<string>("");
+  const antiguedadYears = (() => {
+    const m = antiguedad.match(/^(\d+)\s*años?$/);
+    return m ? Number(m[1]) : 0;
+  })();
 
   // 2.1b — chip-style habitaciones extras
   const [walkInCloset, setWalkInCloset] = useState(2);
@@ -714,7 +718,7 @@ function Index() {
     const paragraphs: string[] = [];
 
     paragraphs.push(
-      `Descubre esta ${tipo} en ${op}${antiguedad ? `, con antigüedad de ${antiguedad.toLowerCase()}` : ""}, ubicada en ${ubic}. Un inmueble pensado para quienes buscan comodidad, funcionalidad y una propuesta arquitectónica bien resuelta desde el primer detalle.`,
+      `Descubre esta ${tipo} en ${op}${antiguedad && antiguedad !== "No estoy seguro" ? `, con antigüedad de ${antiguedad.toLowerCase()}` : ""}, ubicada en ${ubic}. Un inmueble pensado para quienes buscan comodidad, funcionalidad y una propuesta arquitectónica bien resuelta desde el primer detalle.`,
     );
 
     if (distribucion.length) {
