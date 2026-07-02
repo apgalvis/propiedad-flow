@@ -633,10 +633,12 @@ function Index() {
   const basicaDone = !!(operacion && tipoPropiedad && precio);
   const propiedadDone = ubicacionDone && basicaDone;
 
-  const presenceAnswered = terreno !== null && construccion !== null && jardin !== null;
-  const caractDone = presenceAnswered;
+  // Required fields: recámaras, baños completos, estacionamiento, antigüedad, niveles
+  const caractDone =
+    recamaras > 0 && banos > 0 && estac > 0 && !!antiguedad && niveles > 0;
   const amenidadesCount = Object.values(amenities).filter((n) => n > 0).length;
-  const amenidadesDone = amenidadesCount > 0;
+  // Amenidades son opcionales
+  const amenidadesDone = true;
   const descripcionDone = descripcion.trim().length >= 40;
   const imagenesDone = imageCount >= 5;
   const especificacionesDone = caractDone && amenidadesDone && descripcionDone && imagenesDone;
