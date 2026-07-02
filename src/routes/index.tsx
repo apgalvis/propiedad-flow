@@ -683,9 +683,10 @@ function Index() {
       `${recamaras} recámaras`,
       `${banos} baños`,
       construccion ? `${construccionSize} m² construcción` : null,
+      niveles > 0 ? `${niveles} ${niveles === 1 ? "nivel" : "niveles"}` : null,
     ].filter(Boolean);
     return parts.join(" · ");
-  }, [recamaras, banos, construccion, construccionSize]);
+  }, [recamaras, banos, construccion, construccionSize, niveles]);
 
   const contactoSummary = contactoDone ? `${nombre} · ${tel}` : undefined;
 
@@ -1004,12 +1005,12 @@ function Index() {
             </Select>
           </div>
         )},
-        { id: "niveles", label: "Niveles", pending: false, node: (
+        { id: "niveles", label: "Niveles", pending: niveles === 0, node: (
           <div className="flex flex-wrap">
             <AmenityChip
               item={{ id: "niveles", label: "Niveles", emoji: "🪜", countable: true }}
               count={niveles}
-              onChange={(n) => setNiveles(Math.max(1, n))}
+              onChange={(n) => setNiveles(Math.max(0, n))}
             />
           </div>
         )},
