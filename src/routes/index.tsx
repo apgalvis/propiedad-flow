@@ -603,6 +603,17 @@ function Index() {
   const [estac, setEstac] = useState(2);
   const [antiguedad, setAntiguedad] = useState("5 a 10 años");
 
+  // 2.1b — chip-style habitaciones extras
+  const [walkInCloset, setWalkInCloset] = useState(2);
+  const [estudio, setEstudio] = useState(1);
+
+  // 2.1c — chip-style estacionamiento y movilidad
+  const [visitas, setVisitas] = useState(1);
+  const [estacTechado, setEstacTechado] = useState(0);
+  const [garage, setGarage] = useState(0);
+  const [cargadorEV, setCargadorEV] = useState(1);
+  const [bicicletero, setBicicletero] = useState(0);
+
   const [terreno, setTerreno] = useState<boolean | null>(true);
   const [terrenoSize, setTerrenoSize] = useState("250");
   const [construccion, setConstruccion] = useState<boolean | null>(true);
