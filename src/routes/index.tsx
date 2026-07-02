@@ -1090,7 +1090,20 @@ function Index() {
         {/* Category cards */}
         <div className="space-y-3">
           {caractGroups.map((g) => {
-            const groupPending = g.fields.filter((f) => f.pending).length;
+            const groupSelected = (() => {
+              switch (g.id) {
+                case "habitaciones":
+                  return [recamaras, banos, mediosBanos, walkInCloset, estudio].filter((n) => n > 0).length;
+                case "movilidad":
+                  return [estac, visitas, estacTechado, garage, cargadorEV, bicicletero].filter((n) => n > 0).length;
+                case "espacios":
+                  return [terreno === true, construccion === true, jardin === true].filter(Boolean).length;
+                case "detalles":
+                  return [!!antiguedad, niveles > 0, !!usoSuelo].filter(Boolean).length;
+                default:
+                  return 0;
+              }
+            })();
             const collapsed = caractCollapsed[g.id];
             const Icon = g.icon;
             return (
@@ -1108,13 +1121,13 @@ function Index() {
                     <span className="min-w-0 flex-1">
                       <span className="flex flex-wrap items-center gap-2">
                         <span className="text-sm font-semibold text-foreground">{g.label}</span>
-                        {groupPending > 0 && (
-                          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600">
-                            {groupPending} por completar
-                          </span>
-                        )}
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                          {groupSelected}
+                        </span>
                       </span>
-                      <span className="mt-0.5 block text-xs text-muted-foreground">{g.desc}</span>
+                      {g.desc && (
+                        <span className="mt-0.5 block text-xs text-muted-foreground">{g.desc}</span>
+                      )}
                     </span>
                     <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`} />
                   </button>
