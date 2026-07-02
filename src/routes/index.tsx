@@ -461,15 +461,6 @@ const AMENITY_GROUPS: AmenityGroup[] = [
   },
 ];
 
-const ANTIGUEDAD_OPTIONS = [
-  "Nueva",
-  "Menos de 1 año",
-  "1 a 5 años",
-  "5 a 10 años",
-  "10 a 20 años",
-  "Más de 20 años",
-  "No estoy seguro",
-];
 
 /* ---------- Amenity chip ---------- */
 const AmenityChip = memo(function AmenityChip({
@@ -922,8 +913,10 @@ function Index() {
         setJardin(null);
         setJardinSize("");
         break;
-      case "detalles":
+      case "antiguedad":
         setAntiguedad("");
+        break;
+      case "detalles":
         setNiveles(1);
         setUsoSuelo("");
         setTipoRancho("No aplica");
@@ -953,8 +946,10 @@ function Index() {
         setConstruccion(true);
         setJardin(true);
         break;
+      case "antiguedad":
+        setAntiguedad("Nueva");
+        break;
       case "detalles":
-        setAntiguedad(ANTIGUEDAD_OPTIONS[0]);
         setNiveles(1);
         setUsoSuelo("Habitacional");
         setTipoRancho("No aplica");
@@ -984,8 +979,10 @@ function Index() {
           );
         case "espacios":
           return terreno === null && construccion === null && jardin === null;
+        case "antiguedad":
+          return !antiguedad;
         case "detalles":
-          return !antiguedad && !usoSuelo;
+          return niveles === 0 && !usoSuelo;
         default:
           return true;
       }
@@ -1006,6 +1003,7 @@ function Index() {
       construccion,
       jardin,
       antiguedad,
+      niveles,
       usoSuelo,
     ],
   );
@@ -1099,21 +1097,21 @@ function Index() {
       ],
     },
     {
-      id: "detalles",
-      label: "Detalles",
-      desc: "",
-      tint: "bg-sky-50 text-sky-600",
-      icon: ClipboardList,
+      id: "antiguedad",
+      label: "Antigüedad",
+      desc: "Indica los años de antigüedad o si la propiedad es nueva.",
+      tint: "bg-amber-50 text-amber-600",
+      icon: Building2,
       layout: "grid",
-      grid: "grid-cols-1 gap-4 sm:grid-cols-2",
+      grid: "grid-cols-1",
       fields: [
         {
           id: "antiguedad",
-          label: "Antigüedad",
+          label: "Años de antigüedad",
           pending: !antiguedad,
           node: (
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Antigüedad *</Label>
+              <Label className="text-sm font-medium">Años de antigüedad *</Label>
               <div className="flex flex-wrap items-center gap-2">
                 <div
                   className={cn(
@@ -1188,6 +1186,17 @@ function Index() {
             </div>
           ),
         },
+      ],
+    },
+    {
+      id: "detalles",
+      label: "Detalles",
+      desc: "",
+      tint: "bg-sky-50 text-sky-600",
+      icon: ClipboardList,
+      layout: "grid",
+      grid: "grid-cols-1 gap-4 sm:grid-cols-2",
+      fields: [
         {
           id: "niveles",
           label: "Niveles",
@@ -1289,8 +1298,10 @@ function Index() {
                   return [estac, visitas, estacTechado, garage, cargadorEV, bicicletero].filter((n) => n > 0).length;
                 case "espacios":
                   return [terreno === true, construccion === true, jardin === true].filter(Boolean).length;
+                case "antiguedad":
+                  return !!antiguedad ? 1 : 0;
                 case "detalles":
-                  return [!!antiguedad, niveles > 0, !!usoSuelo].filter(Boolean).length;
+                  return [niveles > 0, !!usoSuelo].filter(Boolean).length;
                 default:
                   return 0;
               }
