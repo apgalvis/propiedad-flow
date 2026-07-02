@@ -925,16 +925,11 @@ function Index() {
   };
 
   const renderCaracteristicasBody = () => {
-    const totalFields = caractGroups.reduce((a, g) => a + g.fields.length, 0);
-    const pendingTotal = caractGroups.reduce((a, g) => a + g.fields.filter((f) => f.pending).length, 0);
-    const completedTotal = totalFields - pendingTotal;
     return (
       <>
         {/* Category cards */}
         <div className="space-y-3">
           {caractGroups.map((g) => {
-            const filtered = caractFilter(g.fields);
-            if (filtered.length === 0) return null;
             const groupPending = g.fields.filter((f) => f.pending).length;
             const collapsed = caractCollapsed[g.id];
             const Icon = g.icon;
@@ -965,7 +960,7 @@ function Index() {
                   </button>
                 </div>
                 <Collapse id={`caract-${g.id}`} open={!collapsed}>
-                  <div className="px-4 pb-4">{renderCaractFields(g, filtered)}</div>
+                  <div className="px-4 pb-4">{renderCaractFields(g, g.fields)}</div>
                 </Collapse>
               </div>
             );
