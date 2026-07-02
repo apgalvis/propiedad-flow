@@ -658,6 +658,18 @@ const ContactChannelCard = memo(function ContactChannelCard({
               Verificar
             </Button>
           )}
+          {filled && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => onChange("")}
+              className="h-11 gap-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/60 sm:flex-none"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              Modificar
+            </Button>
+          )}
         </div>
       </div>
     </div>
