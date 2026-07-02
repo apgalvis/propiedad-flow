@@ -1106,163 +1106,45 @@ function Index() {
       desc: "Indica los años de antigüedad o si la propiedad es nueva.",
       tint: "bg-amber-50 text-amber-600",
       icon: Building2,
-      layout: "grid",
-      grid: "grid-cols-1",
+      layout: "chips",
       fields: [
         {
-          id: "antiguedad",
+          id: "antiguedad-years",
           label: "Años de antigüedad",
           pending: !antiguedad,
           node: (
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Años de antigüedad *</Label>
-              <div className="flex flex-wrap items-center gap-2">
-                <div
-                  className={cn(
-                    "flex h-10 items-center gap-1 rounded-lg border px-2 transition",
-                    antiguedadYears > 0
-                      ? "border-secondary/60 bg-secondary/10"
-                      : "border-input bg-background",
-                    antiguedad === "Nueva" || antiguedad === "No estoy seguro"
-                      ? "opacity-50"
-                      : "",
-                  )}
-                >
-                  <button
-                    type="button"
-                    aria-label="Restar año"
-                    onClick={() => {
-                      const n = Math.max(0, antiguedadYears - 1);
-                      setAntiguedad(n > 0 ? `${n} ${n === 1 ? "año" : "años"}` : "");
-                    }}
-                    disabled={antiguedad === "Nueva" || antiguedad === "No estoy seguro"}
-                    className="grid h-7 w-7 place-items-center rounded-md bg-muted text-foreground/70 hover:bg-muted/80 disabled:cursor-not-allowed"
-                  >
-                    <Minus className="h-3.5 w-3.5" />
-                  </button>
-                  <span className="min-w-[4.5rem] px-1 text-center text-sm font-medium tabular-nums">
-                    {antiguedadYears > 0
-                      ? `${antiguedadYears} ${antiguedadYears === 1 ? "año" : "años"}`
-                      : "0 años"}
-                  </span>
-                  <button
-                    type="button"
-                    aria-label="Sumar año"
-                    onClick={() => {
-                      const n = Math.min(150, antiguedadYears + 1);
-                      setAntiguedad(`${n} ${n === 1 ? "año" : "años"}`);
-                    }}
-                    disabled={antiguedad === "Nueva" || antiguedad === "No estoy seguro"}
-                    className="grid h-7 w-7 place-items-center rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 disabled:cursor-not-allowed"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setAntiguedad((v) => (v === "Nueva" ? "" : "Nueva"))
-                  }
-                  className={cn(
-                    "h-10 rounded-lg border px-3 text-sm font-medium transition",
-                    antiguedad === "Nueva"
-                      ? "border-secondary bg-secondary text-secondary-foreground"
-                      : "border-input bg-background text-foreground/80 hover:bg-muted",
-                  )}
-                >
-                  Nueva
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setAntiguedad((v) => (v === "No estoy seguro" ? "" : "No estoy seguro"))
-                  }
-                  className={cn(
-                    "h-10 rounded-lg border px-3 text-sm font-medium transition",
-                    antiguedad === "No estoy seguro"
-                      ? "border-secondary bg-secondary text-secondary-foreground"
-                      : "border-input bg-background text-foreground/80 hover:bg-muted",
-                  )}
-                >
-                  No estoy segura
-                </button>
-              </div>
-            </div>
-          ),
-        },
-      ],
-    },
-    {
-      id: "detalles",
-      label: "Detalles",
-      desc: "",
-      tint: "bg-sky-50 text-sky-600",
-      icon: ClipboardList,
-      layout: "grid",
-      grid: "grid-cols-1 gap-4 sm:grid-cols-2",
-      fields: [
-        {
-          id: "niveles",
-          label: "Niveles",
-          pending: niveles === 0,
-          node: (
             <AmenityChip
-              item={{ id: "niveles", label: "Niveles", emoji: "🪜", countable: true }}
-              count={niveles}
-              onChange={(n) => setNiveles(Math.max(0, n))}
-              block
+              item={{ id: "antiguedad-years", label: "Años de antigüedad", emoji: "📅", countable: true }}
+              count={antiguedad === "Nueva" || antiguedad === "No estoy seguro" ? 0 : antiguedadYears}
+              onChange={(n) => {
+                const clamped = Math.max(0, Math.min(150, n));
+                setAntiguedad(clamped > 0 ? `${clamped} ${clamped === 1 ? "año" : "años"}` : "");
+              }}
             />
           ),
         },
         {
-          id: "clasificacion",
-          label: "Uso de suelo y tipo de rancho",
-          pending: !usoSuelo,
-          span: "full",
+          id: "antiguedad-nueva",
+          label: "Nueva",
+          pending: false,
           node: (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Label className="text-sm font-medium">Clasificación</Label>
-                <span className="text-xs text-muted-foreground">Uso de suelo y tipo de rancho</span>
-              </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-muted-foreground">Uso de suelo *</Label>
-                  <Select value={usoSuelo} onValueChange={setUsoSuelo}>
-                    <SelectTrigger className="h-10 rounded-lg">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Habitacional">Habitacional</SelectItem>
-                      <SelectItem value="Comercial">Comercial</SelectItem>
-                      <SelectItem value="Mixto">Mixto</SelectItem>
-                      <SelectItem value="Industrial">Industrial</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-muted-foreground">Tipo de rancho</Label>
-                  <div className="flex flex-wrap gap-1.5 rounded-xl border border-border bg-background p-1">
-                    {["No aplica", "Agrícola", "Ganadero"].map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => setTipoRancho(t)}
-                        aria-pressed={tipoRancho === t}
-                        className={[
-                          "flex-1 min-w-[80px] rounded-lg px-2 py-1.5 text-xs font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
-                          tipoRancho === t
-                            ? "bg-secondary text-secondary-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted",
-                        ].join(" ")}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <AmenityChip
+              item={{ id: "antiguedad-nueva", label: "Nueva", emoji: "✨", countable: false }}
+              count={antiguedad === "Nueva" ? 1 : 0}
+              onChange={(n) => setAntiguedad(n > 0 ? "Nueva" : "")}
+            />
+          ),
+        },
+        {
+          id: "antiguedad-nose",
+          label: "No estoy segura",
+          pending: false,
+          node: (
+            <AmenityChip
+              item={{ id: "antiguedad-nose", label: "No estoy segura", emoji: "🤔", countable: false }}
+              count={antiguedad === "No estoy seguro" ? 1 : 0}
+              onChange={(n) => setAntiguedad(n > 0 ? "No estoy seguro" : "")}
+            />
           ),
         },
       ],
