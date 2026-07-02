@@ -612,6 +612,7 @@ function Index() {
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [moreGroupId, setMoreGroupId] = useState<string | null>(null);
   const [moreSearch, setMoreSearch] = useState("");
+  const [noAmenities, setNoAmenities] = useState(false);
 
   // 2.1 Characteristics — per-group collapsed state
   const [caractCollapsed, setCaractCollapsed] = useState<Record<string, boolean>>({});
@@ -637,8 +638,8 @@ function Index() {
   const caractDone =
     recamaras > 0 && banos > 0 && estac > 0 && !!antiguedad && niveles > 0;
   const amenidadesCount = Object.values(amenities).filter((n) => n > 0).length;
-  // Amenidades son opcionales
-  const amenidadesDone = true;
+  // Debe marcar al menos una amenidad, o confirmar explícitamente que no cuenta con ninguna.
+  const amenidadesDone = amenidadesCount > 0 || noAmenities;
   const descripcionDone = descripcion.trim().length >= 40;
   const imagenesDone = imageCount >= 5;
   const especificacionesDone = caractDone && amenidadesDone && descripcionDone && imagenesDone;
