@@ -28,6 +28,7 @@ import {
   Snowflake,
   BedDouble,
   ClipboardList,
+  Trash2,
 } from "lucide-react";
 
 import {
@@ -735,6 +736,76 @@ function Index() {
     [],
   );
 
+  const clearAmenityGroup = useCallback((groupId: string) => {
+    setAmenities((cur) => {
+      const next = { ...cur };
+      const group = AMENITY_GROUPS.find((g) => g.id === groupId);
+      if (!group) return cur;
+      group.items.forEach((it) => delete next[it.id]);
+      return next;
+    });
+  }, []);
+
+  const clearAllAmenities = useCallback(() => setAmenities({}), []);
+
+  const clearCaractGroup = useCallback((groupId: string) => {
+    switch (groupId) {
+      case "habitaciones":
+        setRecamaras(0);
+        setBanos(0);
+        setMediosBanos(0);
+        setWalkInCloset(0);
+        setEstudio(0);
+        break;
+      case "movilidad":
+        setEstac(0);
+        setVisitas(0);
+        setEstacTechado(0);
+        setGarage(0);
+        setCargadorEV(0);
+        setBicicletero(0);
+        break;
+      case "espacios":
+        setTerreno(null);
+        setTerrenoSize("");
+        setConstruccion(null);
+        setConstruccionSize("");
+        setJardin(null);
+        setJardinSize("");
+        break;
+      case "detalles":
+        setAntiguedad("");
+        setNiveles(1);
+        setUsoSuelo("");
+        setTipoRancho("No aplica");
+        break;
+    }
+  }, []);
+
+  const clearAllCaracteristicas = useCallback(() => {
+    setRecamaras(0);
+    setBanos(0);
+    setMediosBanos(0);
+    setWalkInCloset(0);
+    setEstudio(0);
+    setEstac(0);
+    setVisitas(0);
+    setEstacTechado(0);
+    setGarage(0);
+    setCargadorEV(0);
+    setBicicletero(0);
+    setTerreno(null);
+    setTerrenoSize("");
+    setConstruccion(null);
+    setConstruccionSize("");
+    setJardin(null);
+    setJardinSize("");
+    setAntiguedad("");
+    setNiveles(1);
+    setUsoSuelo("");
+    setTipoRancho("No aplica");
+  }, []);
+
   /* ---------- Características: shared body renderer (list + focus dialog) ---------- */
   type CField = { id: string; label: string; pending: boolean; span?: "full"; node: React.ReactNode };
   type CGroup = {
@@ -905,6 +976,23 @@ function Index() {
   const renderCaracteristicasBody = () => {
     return (
       <>
+        {/* Section toolbar */}
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-muted/30 px-3 py-2.5">
+          <div className="text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">{caractGroups.length - caractGroups.filter((g) => g.fields.some((f) => f.pending)).length}</span>
+            {" "}de{" "}
+            <span className="font-medium text-foreground">{caractGroups.length}</span> categorías listas
+          </div>
+          <button
+            type="button"
+            onClick={clearAllCaracteristicas}
+            className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-background hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Limpiar todo
+          </button>
+        </div>
+
         {/* Category cards */}
         <div className="space-y-3">
           {caractGroups.map((g) => {
@@ -935,6 +1023,15 @@ function Index() {
                       <span className="mt-0.5 block text-xs text-muted-foreground">{g.desc}</span>
                     </span>
                     <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => clearCaractGroup(g.id)}
+                    className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
+                    aria-label={`Limpiar selección de ${g.label}`}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Limpiar</span>
                   </button>
                 </div>
                 <Collapse id={`caract-${g.id}`} open={!collapsed}>
@@ -1290,6 +1387,22 @@ function Index() {
                     />
                     <Collapse id="sub-p-amenidades" open={openSub === "amenidades"}>
                       <div className="space-y-4 pb-6">
+                        {/* Section toolbar */}
+                        <div className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-muted/30 px-3 py-2.5">
+                          <div className="text-xs text-muted-foreground">
+                            <span className="font-medium text-foreground">{amenidadesCount}</span>
+                            {" "}seleccionadas
+                          </div>
+                          <button
+                            type="button"
+                            onClick={clearAllAmenities}
+                            className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-background hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Limpiar todo
+                          </button>
+                        </div>
+
                         {/* Category cards */}
                         <div className="space-y-3">
                           {AMENITY_GROUPS.map((g) => {
@@ -1302,25 +1415,36 @@ function Index() {
                             const Icon = g.icon;
                             return (
                               <div key={g.id} className="overflow-hidden rounded-2xl border border-border bg-card">
-                                <button
-                                  type="button"
-                                  onClick={() => setCollapsedGroups((c) => ({ ...c, [g.id]: !c[g.id] }))}
-                                  className="flex w-full items-center gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
-                                  aria-expanded={!collapsed}
-                                >
-                                  <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${g.tint}`}>
-                                    <Icon className="h-5 w-5" />
-                                  </span>
-                                  <span className="flex-1 min-w-0">
-                                    <span className="flex items-center gap-2">
-                                      <span className="text-sm font-semibold text-foreground">{g.label}</span>
-                                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                        {activeCount || g.items.length}
+                                <div className="flex items-center gap-3 px-4 py-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => setCollapsedGroups((c) => ({ ...c, [g.id]: !c[g.id] }))}
+                                    className="flex flex-1 items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-lg"
+                                    aria-expanded={!collapsed}
+                                  >
+                                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${g.tint}`}>
+                                      <Icon className="h-5 w-5" />
+                                    </span>
+                                    <span className="flex-1 min-w-0">
+                                      <span className="flex items-center gap-2">
+                                        <span className="text-sm font-semibold text-foreground">{g.label}</span>
+                                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                                          {activeCount || g.items.length}
+                                        </span>
                                       </span>
                                     </span>
-                                  </span>
-                                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`} />
-                                </button>
+                                    <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`} />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => clearAmenityGroup(g.id)}
+                                    className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
+                                    aria-label={`Limpiar selección de ${g.label}`}
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    <span className="hidden sm:inline">Limpiar</span>
+                                  </button>
+                                </div>
                                 <Collapse id={`amen-${g.id}`} open={!collapsed}>
                                   <div className="flex flex-wrap gap-2 px-4 pb-4">
                                     {visibleItems.map((it) => (
