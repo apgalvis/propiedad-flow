@@ -994,68 +994,95 @@ function Index() {
       layout: "grid",
       grid: "grid-cols-1 gap-4 sm:grid-cols-2",
       fields: [
-        { id: "antiguedad", label: "Antigüedad", pending: !antiguedad, node: (
-          <div>
-            <Label className="mb-1.5 block text-sm font-medium">Antigüedad *</Label>
-            <Select value={antiguedad} onValueChange={setAntiguedad}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {ANTIGUEDAD_OPTIONS.map((o) => (<SelectItem key={o} value={o}>{o}</SelectItem>))}
-              </SelectContent>
-            </Select>
-          </div>
-        )},
-        { id: "niveles", label: "Niveles", pending: niveles === 0, node: (
-          <div className="flex flex-wrap">
-            <AmenityChip
-              item={{ id: "niveles", label: "Niveles", emoji: "🪜", countable: true }}
-              count={niveles}
-              onChange={(n) => setNiveles(Math.max(0, n))}
-            />
-          </div>
-        )},
-        { id: "clasificacion", label: "Uso de suelo y tipo de rancho", pending: !usoSuelo, span: "full", node: (
-          <div className="rounded-xl border border-border/70 bg-muted/30 p-4">
-            <div className="mb-3 flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-secondary/10 text-secondary">
-                <ClipboardList className="h-3.5 w-3.5" />
-              </span>
-              <h4 className="text-sm font-semibold text-foreground">Clasificación</h4>
-              <span className="text-xs text-muted-foreground">· Uso de suelo y tipo de rancho</span>
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <Label className="mb-1.5 block text-sm font-medium">Uso de suelo *</Label>
-                <Select value={usoSuelo} onValueChange={setUsoSuelo}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Habitacional">Habitacional</SelectItem>
-                    <SelectItem value="Comercial">Comercial</SelectItem>
-                    <SelectItem value="Mixto">Mixto</SelectItem>
-                    <SelectItem value="Industrial">Industrial</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="min-w-0">
-                <Label className="mb-1.5 block text-sm font-medium">Tipo de rancho</Label>
-                <div className="flex w-full flex-wrap gap-1.5 rounded-2xl border border-border bg-background p-1">
-                  {["No aplica", "Agrícola", "Ganadero"].map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => setTipoRancho(t)}
-                      aria-pressed={tipoRancho === t}
-                      className={[
-                        "flex-1 min-w-[88px] rounded-xl px-3 py-1.5 text-sm font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
-                        tipoRancho === t ? "bg-secondary text-secondary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
-                      ].join(" ")}
-                    >{t}</button>
+        {
+          id: "antiguedad",
+          label: "Antigüedad",
+          pending: !antiguedad,
+          node: (
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Antigüedad *</Label>
+              <Select value={antiguedad} onValueChange={setAntiguedad}>
+                <SelectTrigger className="h-10 rounded-lg">
+                  <SelectValue placeholder="Selecciona" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ANTIGUEDAD_OPTIONS.map((o) => (
+                    <SelectItem key={o} value={o}>
+                      {o}
+                    </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ),
+        },
+        {
+          id: "niveles",
+          label: "Niveles",
+          pending: niveles === 0,
+          node: (
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Niveles</Label>
+              <AmenityChip
+                item={{ id: "niveles", label: "Niveles", emoji: "🪜", countable: true }}
+                count={niveles}
+                onChange={(n) => setNiveles(Math.max(0, n))}
+                block
+              />
+            </div>
+          ),
+        },
+        {
+          id: "clasificacion",
+          label: "Uso de suelo y tipo de rancho",
+          pending: !usoSuelo,
+          span: "full",
+          node: (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Label className="text-sm font-medium">Clasificación</Label>
+                <span className="text-xs text-muted-foreground">Uso de suelo y tipo de rancho</span>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-muted-foreground">Uso de suelo *</Label>
+                  <Select value={usoSuelo} onValueChange={setUsoSuelo}>
+                    <SelectTrigger className="h-10 rounded-lg">
+                      <SelectValue placeholder="Selecciona" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Habitacional">Habitacional</SelectItem>
+                      <SelectItem value="Comercial">Comercial</SelectItem>
+                      <SelectItem value="Mixto">Mixto</SelectItem>
+                      <SelectItem value="Industrial">Industrial</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-muted-foreground">Tipo de rancho</Label>
+                  <div className="flex flex-wrap gap-1.5 rounded-xl border border-border bg-background p-1">
+                    {["No aplica", "Agrícola", "Ganadero"].map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setTipoRancho(t)}
+                        aria-pressed={tipoRancho === t}
+                        className={[
+                          "flex-1 min-w-[80px] rounded-lg px-2 py-1.5 text-xs font-medium transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                          tipoRancho === t
+                            ? "bg-secondary text-secondary-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                        ].join(" ")}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )},
+          ),
+        },
       ],
     },
   ];
