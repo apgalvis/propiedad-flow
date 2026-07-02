@@ -1529,15 +1529,18 @@ function Index() {
                                   </button>
                                 </div>
                                 <Collapse id={`amen-${g.id}`} open={!collapsed}>
-                                  <div className="flex flex-wrap gap-2 px-4 pb-4">
-                                    {visibleItems.map((it) => (
-                                      <AmenityChip
-                                        key={it.id}
-                                        item={it}
-                                        count={amenities[it.id] ?? 0}
-                                        onChange={(n) => setAmenity(it.id, n)}
-                                      />
-                                    ))}
+                                  <div className="px-4 pb-4">
+                                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                                      {visibleItems.map((it) => (
+                                        <AmenityChip
+                                          key={it.id}
+                                          item={it}
+                                          count={amenities[it.id] ?? 0}
+                                          onChange={(n) => setAmenity(it.id, n)}
+                                          block
+                                        />
+                                      ))}
+                                    </div>
                                     {hasMore && (
                                       <button
                                         type="button"
@@ -1545,10 +1548,10 @@ function Index() {
                                           setMoreGroupId(g.id);
                                           setMoreSearch("");
                                         }}
-                                        className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:border-secondary/50 hover:text-secondary"
+                                        className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:border-secondary/50 hover:text-secondary"
                                         aria-haspopup="dialog"
                                       >
-                                        Ver más ({items.length - visibleN})
+                                        Ver {items.length - visibleN} más
                                         <ChevronDown className="h-3.5 w-3.5" />
                                       </button>
                                     )}
