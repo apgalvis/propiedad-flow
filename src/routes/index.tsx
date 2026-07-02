@@ -746,7 +746,34 @@ function Index() {
     });
   }, []);
 
-  const clearAllAmenities = useCallback(() => setAmenities({}), []);
+  const selectAllAmenityGroup = useCallback((groupId: string) => {
+    const group = AMENITY_GROUPS.find((g) => g.id === groupId);
+    if (!group) return;
+    setAmenities((cur) => {
+      const next = { ...cur };
+      group.items.forEach((it) => {
+        next[it.id] = 1;
+      });
+      return next;
+    });
+  }, []);
+
+  const isAmenityGroupEmpty = useCallback(
+    (groupId: string) => {
+      const group = AMENITY_GROUPS.find((g) => g.id === groupId);
+      if (!group) return true;
+      return group.items.every((it) => (amenities[it.id] ?? 0) === 0);
+    },
+    [amenities],
+  );
+
+  const toggleAmenityGroup = useCallback(
+    (groupId: string) => {
+      if (isAmenityGroupEmpty(groupId)) selectAllAmenityGroup(groupId);
+      else clearAmenityGroup(groupId);
+    },
+    [isAmenityGroupEmpty, selectAllAmenityGroup, clearAmenityGroup],
+  );
 
   const clearCaractGroup = useCallback((groupId: string) => {
     switch (groupId) {
@@ -782,29 +809,92 @@ function Index() {
     }
   }, []);
 
-  const clearAllCaracteristicas = useCallback(() => {
-    setRecamaras(0);
-    setBanos(0);
-    setMediosBanos(0);
-    setWalkInCloset(0);
-    setEstudio(0);
-    setEstac(0);
-    setVisitas(0);
-    setEstacTechado(0);
-    setGarage(0);
-    setCargadorEV(0);
-    setBicicletero(0);
-    setTerreno(null);
-    setTerrenoSize("");
-    setConstruccion(null);
-    setConstruccionSize("");
-    setJardin(null);
-    setJardinSize("");
-    setAntiguedad("");
-    setNiveles(1);
-    setUsoSuelo("");
-    setTipoRancho("No aplica");
+  const selectAllCaractGroup = useCallback((groupId: string) => {
+    switch (groupId) {
+      case "habitaciones":
+        setRecamaras(1);
+        setBanos(1);
+        setMediosBanos(1);
+        setWalkInCloset(1);
+        setEstudio(1);
+        break;
+      case "movilidad":
+        setEstac(1);
+        setVisitas(1);
+        setEstacTechado(1);
+        setGarage(1);
+        setCargadorEV(1);
+        setBicicletero(1);
+        break;
+      case "espacios":
+        setTerreno(true);
+        setConstruccion(true);
+        setJardin(true);
+        break;
+      case "detalles":
+        setAntiguedad(ANTIGUEDAD_OPTIONS[0]);
+        setNiveles(1);
+        setUsoSuelo("Habitacional");
+        setTipoRancho("No aplica");
+        break;
+    }
   }, []);
+
+  const isCaractGroupEmpty = useCallback(
+    (groupId: string) => {
+      switch (groupId) {
+        case "habitaciones":
+          return (
+            recamaras === 0 &&
+            banos === 0 &&
+            mediosBanos === 0 &&
+            walkInCloset === 0 &&
+            estudio === 0
+          );
+        case "movilidad":
+          return (
+            estac === 0 &&
+            visitas === 0 &&
+            estacTechado === 0 &&
+            garage === 0 &&
+            cargadorEV === 0 &&
+            bicicletero === 0
+          );
+        case "espacios":
+          return terreno === null && construccion === null && jardin === null;
+        case "detalles":
+          return !antiguedad && !usoSuelo;
+        default:
+          return true;
+      }
+    },
+    [
+      recamaras,
+      banos,
+      mediosBanos,
+      walkInCloset,
+      estudio,
+      estac,
+      visitas,
+      estacTechado,
+      garage,
+      cargadorEV,
+      bicicletero,
+      terreno,
+      construccion,
+      jardin,
+      antiguedad,
+      usoSuelo,
+    ],
+  );
+
+  const toggleCaractGroup = useCallback(
+    (groupId: string) => {
+      if (isCaractGroupEmpty(groupId)) selectAllCaractGroup(groupId);
+      else clearCaractGroup(groupId);
+    },
+    [isCaractGroupEmpty, selectAllCaractGroup, clearCaractGroup],
+  );
 
   /* ---------- Características: shared body renderer (list + focus dialog) ---------- */
   type CField = { id: string; label: string; pending: boolean; span?: "full"; node: React.ReactNode };
