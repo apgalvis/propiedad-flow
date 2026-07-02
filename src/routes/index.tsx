@@ -1063,9 +1063,9 @@ function Index() {
   const renderCaractFields = (g: CGroup, fields: CField[]) => {
     if (g.layout === "chips") {
       return (
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {fields.map((f) => (
-            <div key={f.id}>{f.node}</div>
+            <div key={f.id} className="[&>*]:w-full">{f.node}</div>
           ))}
         </div>
       );
