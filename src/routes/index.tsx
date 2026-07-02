@@ -754,8 +754,16 @@ function Index() {
     },
   ];
 
-  const setAmenity = (id: string, n: number) =>
-    setAmenities((cur) => ({ ...cur, [id]: n }));
+  const setAmenity = useCallback(
+    (id: string, n: number) =>
+      setAmenities((cur) => {
+        if ((cur[id] ?? 0) === n) return cur;
+        const next = { ...cur, [id]: n };
+        if (n <= 0) delete next[id];
+        return next;
+      }),
+    [],
+  );
 
   /* ---------- Características: shared body renderer (list + focus dialog) ---------- */
   type CField = { id: string; label: string; pending: boolean; span?: "full"; node: React.ReactNode };
