@@ -1499,12 +1499,17 @@ function Index() {
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => clearAmenityGroup(g.id)}
-                                    className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60"
-                                    aria-label={`Limpiar selección de ${g.label}`}
+                                    onClick={() => toggleAmenityGroup(g.id)}
+                                    className={[
+                                      "inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+                                      isAmenityGroupEmpty(g.id)
+                                        ? "text-secondary hover:bg-secondary/10 hover:text-secondary"
+                                        : "text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
+                                    ].join(" ")}
+                                    aria-label={isAmenityGroupEmpty(g.id) ? `Seleccionar todo en ${g.label}` : `Limpiar selección de ${g.label}`}
                                   >
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                    <span className="hidden sm:inline">Limpiar</span>
+                                    {isAmenityGroupEmpty(g.id) ? <Plus className="h-3.5 w-3.5" /> : <Trash2 className="h-3.5 w-3.5" />}
+                                    <span className="hidden sm:inline">{isAmenityGroupEmpty(g.id) ? "Seleccionar todo" : "Limpiar"}</span>
                                   </button>
                                 </div>
                                 <Collapse id={`amen-${g.id}`} open={!collapsed}>
