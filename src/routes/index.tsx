@@ -1999,7 +1999,6 @@ function Index() {
                     value={tel}
                     onChange={setTel}
                     placeholder="+52 55 1234 5678"
-                    highlight
                   />
                   <ContactChannelCard
                     icon={Mail}
