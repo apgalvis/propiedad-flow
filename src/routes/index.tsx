@@ -1828,47 +1828,6 @@ function Index() {
         );
       })()}
 
-      {/* Características "Ver más" — focus dialog */}
-      {(() => {
-        const g = caractGroups.find((x) => x.id === caractMoreId) ?? null;
-        if (!g) return null;
-        const Icon = g.icon;
-        const groupPending = g.fields.filter((f) => f.pending).length;
-        return (
-          <Dialog open={!!g} onOpenChange={(o) => !o && setCaractMoreId(null)}>
-            <DialogContent className="max-h-[85vh] overflow-hidden p-0 sm:max-w-2xl">
-              <div className="flex flex-col">
-                <DialogHeader className="border-b border-border px-6 py-4 text-left">
-                  <div className="flex items-center gap-3">
-                    <span className={`flex h-10 w-10 items-center justify-center rounded-full ${g.tint}`}>
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <DialogTitle className="text-base font-semibold">{g.label}</DialogTitle>
-                      <DialogDescription className="text-xs">
-                        {groupPending === 0
-                          ? "Todo listo en esta categoría."
-                          : `${groupPending} campo${groupPending === 1 ? "" : "s"} por completar.`}
-                      </DialogDescription>
-                    </div>
-                  </div>
-                </DialogHeader>
-                <div className="max-h-[60vh] overflow-y-auto px-6 py-4">
-                  {renderCaractFields(g, g.fields)}
-                </div>
-                <DialogFooter className="flex-row items-center justify-end border-t border-border bg-muted/30 px-6 py-3">
-                  <Button
-                    onClick={() => setCaractMoreId(null)}
-                    className="rounded-full bg-primary px-6 hover:bg-primary/90"
-                  >
-                    Listo
-                  </Button>
-                </DialogFooter>
-              </div>
-            </DialogContent>
-          </Dialog>
-        );
-      })()}
     </div>
   );
 }
