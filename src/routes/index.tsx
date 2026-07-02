@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -30,7 +30,6 @@ import {
   Tag,
   Network,
   Trash2,
-  Ruler,
   ClipboardList,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
@@ -474,7 +473,7 @@ const ANTIGUEDAD_OPTIONS = [
 ];
 
 /* ---------- Amenity chip ---------- */
-function AmenityChip({
+const AmenityChip = memo(function AmenityChip({
   item,
   count,
   onChange,
@@ -559,7 +558,7 @@ function AmenityChip({
       )}
     </button>
   );
-}
+});
 
 /* ---------- Summary stat pill (amenities toolbar) ---------- */
 function SummaryStat({
@@ -656,11 +655,8 @@ function Index() {
   const [moreGroupId, setMoreGroupId] = useState<string | null>(null);
   const [moreSearch, setMoreSearch] = useState("");
 
-  // 2.1 Characteristics — toolbar/drawer state (mirrors amenities)
-  const [caractSearch, setCaractSearch] = useState("");
-  const [caractOnlyPending, setCaractOnlyPending] = useState(false);
+  // 2.1 Characteristics — per-group collapsed state
   const [caractCollapsed, setCaractCollapsed] = useState<Record<string, boolean>>({});
-  const [caractMoreId, setCaractMoreId] = useState<string | null>(null);
 
   // 2.3
   const [descripcion, setDescripcion] = useState("");
@@ -758,8 +754,16 @@ function Index() {
     },
   ];
 
-  const setAmenity = (id: string, n: number) =>
-    setAmenities((cur) => ({ ...cur, [id]: n }));
+  const setAmenity = useCallback(
+    (id: string, n: number) =>
+      setAmenities((cur) => {
+        if ((cur[id] ?? 0) === n) return cur;
+        const next = { ...cur, [id]: n };
+        if (n <= 0) delete next[id];
+        return next;
+      }),
+    [],
+  );
 
   /* ---------- Características: shared body renderer (list + focus dialog) ---------- */
   type CField = { id: string; label: string; pending: boolean; span?: "full"; node: React.ReactNode };
@@ -909,15 +913,6 @@ function Index() {
     },
   ];
 
-  const caractFilter = (fields: CField[]) => {
-    const q = caractSearch.trim().toLowerCase();
-    return fields.filter((f) => {
-      if (q && !f.label.toLowerCase().includes(q)) return false;
-      if (caractOnlyPending && !f.pending) return false;
-      return true;
-    });
-  };
-
   const renderCaractFields = (g: CGroup, fields: CField[]) => {
     if (g.layout === "chips") {
       return (
@@ -938,16 +933,11 @@ function Index() {
   };
 
   const renderCaracteristicasBody = () => {
-    const totalFields = caractGroups.reduce((a, g) => a + g.fields.length, 0);
-    const pendingTotal = caractGroups.reduce((a, g) => a + g.fields.filter((f) => f.pending).length, 0);
-    const completedTotal = totalFields - pendingTotal;
     return (
       <>
         {/* Category cards */}
         <div className="space-y-3">
           {caractGroups.map((g) => {
-            const filtered = caractFilter(g.fields);
-            if (filtered.length === 0) return null;
             const groupPending = g.fields.filter((f) => f.pending).length;
             const collapsed = caractCollapsed[g.id];
             const Icon = g.icon;
@@ -978,7 +968,7 @@ function Index() {
                   </button>
                 </div>
                 <Collapse id={`caract-${g.id}`} open={!collapsed}>
-                  <div className="px-4 pb-4">{renderCaractFields(g, filtered)}</div>
+                  <div className="px-4 pb-4">{renderCaractFields(g, g.fields)}</div>
                 </Collapse>
               </div>
             );
@@ -1027,7 +1017,7 @@ function Index() {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[240px_1fr_320px] lg:gap-8 lg:px-8 lg:py-10">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-5 px-4 py-5 sm:px-6 sm:py-7 lg:grid-cols-[224px_minmax(0,1fr)_320px] lg:gap-6 lg:px-8 lg:py-8">
         {/* Sidebar */}
         <aside className="hidden space-y-6 lg:block">
           <div>
@@ -1151,7 +1141,7 @@ function Index() {
         </div>
 
         {/* Main */}
-        <main className="space-y-4">
+        <main className="space-y-3">
           {/* SECTION 1 — PROPIEDAD */}
           <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <SectionHeader
@@ -1846,47 +1836,6 @@ function Index() {
         );
       })()}
 
-      {/* Características "Ver más" — focus dialog */}
-      {(() => {
-        const g = caractGroups.find((x) => x.id === caractMoreId) ?? null;
-        if (!g) return null;
-        const Icon = g.icon;
-        const groupPending = g.fields.filter((f) => f.pending).length;
-        return (
-          <Dialog open={!!g} onOpenChange={(o) => !o && setCaractMoreId(null)}>
-            <DialogContent className="max-h-[85vh] overflow-hidden p-0 sm:max-w-2xl">
-              <div className="flex flex-col">
-                <DialogHeader className="border-b border-border px-6 py-4 text-left">
-                  <div className="flex items-center gap-3">
-                    <span className={`flex h-10 w-10 items-center justify-center rounded-full ${g.tint}`}>
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <DialogTitle className="text-base font-semibold">{g.label}</DialogTitle>
-                      <DialogDescription className="text-xs">
-                        {groupPending === 0
-                          ? "Todo listo en esta categoría."
-                          : `${groupPending} campo${groupPending === 1 ? "" : "s"} por completar.`}
-                      </DialogDescription>
-                    </div>
-                  </div>
-                </DialogHeader>
-                <div className="max-h-[60vh] overflow-y-auto px-6 py-4">
-                  {renderCaractFields(g, g.fields)}
-                </div>
-                <DialogFooter className="flex-row items-center justify-end border-t border-border bg-muted/30 px-6 py-3">
-                  <Button
-                    onClick={() => setCaractMoreId(null)}
-                    className="rounded-full bg-primary px-6 hover:bg-primary/90"
-                  >
-                    Listo
-                  </Button>
-                </DialogFooter>
-              </div>
-            </DialogContent>
-          </Dialog>
-        );
-      })()}
     </div>
   );
 }
