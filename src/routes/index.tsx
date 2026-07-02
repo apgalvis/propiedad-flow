@@ -70,6 +70,7 @@ type SectionId = "propiedad" | "especificaciones" | "contacto";
 type SubId =
   | "ubicacion"
   | "basica"
+  | "clasificacion"
   | "caracteristicas"
   | "amenidades"
   | "descripcion"
