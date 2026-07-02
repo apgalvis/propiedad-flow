@@ -597,40 +597,18 @@ function Index() {
   const [cargadorEV, setCargadorEV] = useState(1);
   const [bicicletero, setBicicletero] = useState(0);
 
-  const [terreno, setTerreno] = useState<boolean | null>(true);
-  const [terrenoSize, setTerrenoSize] = useState("250");
-  const [construccion, setConstruccion] = useState<boolean | null>(true);
-  const [construccionSize, setConstruccionSize] = useState("180");
-  const [jardin, setJardin] = useState<boolean | null>(true);
-  const [jardinSize, setJardinSize] = useState("50");
+  const [terreno, setTerreno] = useState<boolean | null>(null);
+  const [terrenoSize, setTerrenoSize] = useState("");
+  const [construccion, setConstruccion] = useState<boolean | null>(null);
+  const [construccionSize, setConstruccionSize] = useState("");
+  const [jardin, setJardin] = useState<boolean | null>(null);
+  const [jardinSize, setJardinSize] = useState("");
 
   const [usoSuelo, setUsoSuelo] = useState("Comercial");
   const [tipoRancho, setTipoRancho] = useState("Agrícola");
 
-  // 2.2 Amenidades inline
-  const [amenities, setAmenities] = useState<Record<string, number>>({
-    jardin: 1,
-    jardinpriv: 1,
-    terraza: 1,
-    balcon: 2,
-    roof: 1,
-    bbq: 1,
-    alberca: 1,
-    gimnasio: 1,
-    padel: 1,
-    seg247: 1,
-    caseta: 1,
-    acceso: 1,
-    cctv: 1,
-    porton: 1,
-    elevador: 1,
-    lobby: 1,
-    planta: 1,
-    lavado: 1,
-    bodega: 1,
-    ac: 1,
-    chimenea: 1,
-  });
+  // 2.2 Amenidades inline — sin selección por defecto (todas opcionales)
+  const [amenities, setAmenities] = useState<Record<string, number>>({});
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [moreGroupId, setMoreGroupId] = useState<string | null>(null);
   const [moreSearch, setMoreSearch] = useState("");
