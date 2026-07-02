@@ -1603,7 +1603,6 @@ function Index() {
                           <Button
                             onClick={() => setOpenSub("descripcion")}
                             className="rounded-full bg-primary px-6 hover:bg-primary/90"
-                            disabled={!amenidadesDone}
                           >
                             Guardar y continuar
                           </Button>
