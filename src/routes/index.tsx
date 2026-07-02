@@ -988,8 +988,10 @@ function Index() {
           );
         case "espacios":
           return terreno === null && construccion === null && jardin === null;
+        case "antiguedad":
+          return !antiguedad;
         case "detalles":
-          return !antiguedad && !usoSuelo;
+          return niveles === 0 && !usoSuelo;
         default:
           return true;
       }
@@ -1010,6 +1012,7 @@ function Index() {
       construccion,
       jardin,
       antiguedad,
+      niveles,
       usoSuelo,
     ],
   );
