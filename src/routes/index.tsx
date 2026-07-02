@@ -28,6 +28,8 @@ import {
   Snowflake,
   BedDouble,
   Trash2,
+  Star,
+  Pencil,
 } from "lucide-react";
 
 import {
@@ -480,8 +482,8 @@ const AmenityChip = memo(function AmenityChip({
     return (
       <div
         className={[
-          "group flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-sm transition-all duration-200",
-          block ? "w-full justify-between" : "",
+          "group flex h-9 items-center gap-2 rounded-full border pl-3 pr-1.5 text-sm transition-all duration-200",
+          block ? "w-full" : "",
           selected
             ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
             : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
@@ -491,17 +493,16 @@ const AmenityChip = memo(function AmenityChip({
           type="button"
           onClick={() => onChange(selected ? 0 : 1)}
           className={[
-            "flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full",
-            block ? "min-w-0 flex-1 justify-start text-left" : "",
+            "flex min-w-0 flex-1 items-center gap-2 justify-start text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 rounded-full",
           ].join(" ")}
           aria-pressed={selected}
           aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
         >
           <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
-          <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
+          <span className="truncate font-medium">{item.label}</span>
         </button>
         {selected && (
-          <div className="ml-1 flex shrink-0 items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 rounded-full bg-background/80 px-1 py-0.5 animate-fade-in">
             <button
               type="button"
               onClick={() => onChange(Math.max(0, count - 1))}
@@ -537,8 +538,8 @@ const AmenityChip = memo(function AmenityChip({
       type="button"
       onClick={() => onChange(selected ? 0 : 1)}
       className={[
-        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
-        block ? "w-full justify-between" : "",
+        "flex h-9 items-center gap-2 rounded-full border px-3 text-sm transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60",
+        block ? "w-full" : "",
         selected
           ? "border-secondary bg-secondary/10 text-foreground shadow-sm"
           : "border-border bg-card text-foreground hover:border-secondary/50 hover:bg-muted/40",
@@ -546,16 +547,90 @@ const AmenityChip = memo(function AmenityChip({
       aria-pressed={selected}
       aria-label={selected ? `Desactivar ${item.label}` : `Activar ${item.label}`}
     >
-      <span className={`flex items-center gap-2 ${block ? "min-w-0" : ""}`}>
+      <span className="flex min-w-0 flex-1 items-center gap-2">
         <span className="text-base leading-none" aria-hidden="true">{item.emoji}</span>
-        <span className={`font-medium ${block ? "truncate" : ""}`}>{item.label}</span>
+        <span className="truncate font-medium">{item.label}</span>
       </span>
       {selected && (
-        <span className="ml-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground animate-scale-in" aria-hidden="true">
+        <span className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground animate-scale-in" aria-hidden="true">
           <Check className="h-2.5 w-2.5" strokeWidth={4} />
         </span>
       )}
     </button>
+  );
+});
+
+/* ---------- Contact channel card ---------- */
+const ContactChannelCard = memo(function ContactChannelCard({
+  icon: Icon,
+  title,
+  subtitle,
+  value,
+  onChange,
+  placeholder,
+  highlight = false,
+  verified = false,
+}: {
+  icon: typeof MessageCircle;
+  title: string;
+  subtitle: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  highlight?: boolean;
+  verified?: boolean;
+}) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md sm:p-5">
+      {highlight && (
+        <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-secondary/15 px-3 py-1 text-xs font-semibold text-primary">
+          <Star className="h-3.5 w-3.5 fill-current" />
+          Más leads al verificar
+        </div>
+      )}
+      <div className="flex items-start gap-3">
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-secondary/15 text-primary">
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h4 className="truncate text-sm font-semibold text-foreground sm:text-base">{title}</h4>
+          <p className="truncate text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
+        </div>
+      </div>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+        <Input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="h-10 flex-1 rounded-lg border-border bg-muted/40 text-sm"
+        />
+        <div className="flex items-center gap-2">
+          {verified ? (
+            <>
+              <Button variant="outline" size="sm" className="h-10 flex-1 gap-1.5 rounded-lg border-primary/40 text-primary sm:flex-none">
+                <Check className="h-4 w-4" strokeWidth={3} />
+                Verificado
+              </Button>
+              <Button variant="outline" size="sm" className="h-10 flex-1 gap-1.5 rounded-lg sm:flex-none">
+                <Pencil className="h-4 w-4" />
+                Modificar
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" size="sm" className="h-10 flex-1 gap-1.5 rounded-lg sm:flex-none">
+                <Pencil className="h-4 w-4" />
+                Modificar
+              </Button>
+              <Button size="sm" className="h-10 flex-1 gap-1.5 rounded-lg bg-primary hover:bg-primary/90 sm:flex-none">
+                <ShieldCheck className="h-4 w-4" />
+                Verificar
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 });
 
@@ -1882,36 +1957,44 @@ function Index() {
             />
             <Collapse id="sec-p-contacto" open={openSection === "contacto"}>
               <div className="border-t border-border px-4 pb-6 pt-5 sm:px-6">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <Label className="mb-1.5 block text-sm">Nombre *</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                      <Input value={nombre} onChange={(e) => setNombre(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="Juan Pérez" />
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="mb-1.5 block text-sm">Correo *</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <Input value={correo} onChange={(e) => setCorreo(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="tucorreo@ejemplo.com" />
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="mb-1.5 block text-sm">Teléfono *</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <Input value={tel} onChange={(e) => setTel(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="55 1234 5678" />
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="mb-1.5 block text-sm">WhatsApp</Label>
-                    <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
-                      <MessageCircle className="h-4 w-4 text-muted-foreground" />
-                      <Input value={whats} onChange={(e) => setWhats(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="55 1234 5678" />
-                    </div>
+                <div className="mb-5">
+                  <Label className="mb-1.5 block text-sm">Nombre *</Label>
+                  <div className="flex items-center rounded-lg border border-border px-3 transition-colors focus-within:border-primary">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <Input value={nombre} onChange={(e) => setNombre(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="Juan Pérez" />
                   </div>
                 </div>
+
+                <div className="space-y-3">
+                  <ContactChannelCard
+                    icon={MessageCircle}
+                    title="WhatsApp"
+                    subtitle="Opcional · canal preferido"
+                    value={whats}
+                    onChange={setWhats}
+                    placeholder="+52 55 1234 5678"
+                    highlight
+                  />
+                  <ContactChannelCard
+                    icon={Phone}
+                    title="Teléfono"
+                    subtitle="Para llamadas urgentes"
+                    value={tel}
+                    onChange={setTel}
+                    placeholder="+52 55 1234 5678"
+                    highlight
+                  />
+                  <ContactChannelCard
+                    icon={Mail}
+                    title="Correo electrónico"
+                    subtitle="Para consultas detalladas"
+                    value={correo}
+                    onChange={setCorreo}
+                    placeholder="tucorreo@ejemplo.com"
+                    verified={!!correo}
+                  />
+                </div>
+
                 <div className="mt-6 flex justify-end">
                   <Button className="rounded-full bg-primary px-8 hover:bg-primary/90">
                     Publicar propiedad
