@@ -766,38 +766,73 @@ function Index() {
   type CGroup = {
     id: string;
     label: string;
-    badge: string;
     desc: string;
     tint: string;
     icon: React.ComponentType<{ className?: string }>;
-    grid: string;
+    layout: "grid" | "chips";
+    grid?: string;
     fields: CField[];
   };
 
+  const chipField = (
+    id: string,
+    label: string,
+    emoji: string,
+    countable: boolean,
+    value: number,
+    setter: (n: number) => void,
+  ): CField => ({
+    id,
+    label,
+    pending: false,
+    node: (
+      <AmenityChip
+        item={{ id, label, emoji, countable }}
+        count={value}
+        onChange={setter}
+      />
+    ),
+  });
+
   const caractGroups: CGroup[] = [
     {
-      id: "distribucion",
-      label: "Distribución",
-      badge: "Habitaciones y estacionamiento",
-      desc: "Ajusta la cantidad con + / − en cada espacio.",
-      tint: "bg-fuchsia-50 text-fuchsia-600",
+      id: "habitaciones",
+      label: "Habitaciones",
+      desc: "Recámaras, baños y espacios interiores.",
+      tint: "bg-purple-50 text-purple-600",
       icon: BedDouble,
-      grid: "grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5",
+      layout: "chips",
       fields: [
-        { id: "recamaras", label: "Recámaras", pending: recamaras === 0, node: <Stepper label="Recámaras *" value={recamaras} onChange={setRecamaras} icon={<Bed className="h-4 w-4" />} /> },
-        { id: "banos", label: "Baños", pending: banos === 0, node: <Stepper label="Baños *" value={banos} onChange={setBanos} icon={<Bath className="h-4 w-4" />} /> },
-        { id: "medios-banos", label: "Medios baños", pending: false, node: <Stepper label="Medios baños" value={mediosBanos} onChange={setMediosBanos} icon={<Bath className="h-4 w-4" />} /> },
-        { id: "niveles", label: "Niveles", pending: false, node: <Stepper label="Niveles" value={niveles} onChange={setNiveles} min={1} icon={<Home className="h-4 w-4" />} /> },
-        { id: "estacionamiento", label: "Estacionamiento", pending: false, node: <Stepper label="Estacionamiento" value={estac} onChange={setEstac} icon={<Car className="h-4 w-4" />} /> },
+        chipField("recamaras", "Recámaras", "🛏️", true, recamaras, setRecamaras),
+        chipField("banos", "Baños completos", "🛁", true, banos, setBanos),
+        chipField("medios-banos", "Medios baños", "🚿", true, mediosBanos, setMediosBanos),
+        chipField("walkin", "Walk-in closet", "👔", true, walkInCloset, setWalkInCloset),
+        chipField("estudio", "Estudio / Oficina", "💼", true, estudio, setEstudio),
+      ],
+    },
+    {
+      id: "movilidad",
+      label: "Estacionamiento y movilidad",
+      desc: "Cajones, accesos y movilidad sustentable.",
+      tint: "bg-purple-50 text-purple-600",
+      icon: Car,
+      layout: "chips",
+      fields: [
+        chipField("estacionamiento", "Estacionamiento", "🚗", true, estac, setEstac),
+        chipField("visitas", "Visitas", "🚙", true, visitas, setVisitas),
+        chipField("estac-techado", "Estacionamiento techado", "🏠", false, estacTechado, setEstacTechado),
+        chipField("garage", "Garage cerrado", "🚪", false, garage, setGarage),
+        chipField("cargador-ev", "Cargador EV", "🔌", true, cargadorEV, setCargadorEV),
+        chipField("bicicletero", "Bicicletero", "🚲", false, bicicletero, setBicicletero),
       ],
     },
     {
       id: "espacios",
       label: "Espacios exteriores",
-      badge: "Terreno · Construcción · Jardín",
       desc: "Responde Sí o No. Si aplica, indica la superficie en m².",
       tint: "bg-emerald-50 text-emerald-600",
       icon: Trees,
+      layout: "grid",
       grid: "grid-cols-1 gap-3 sm:grid-cols-3",
       fields: [
         { id: "terreno", label: "Terreno", pending: terreno === null, node: <PresenceBlock title="Terreno" emoji="🗺️" has={terreno} onHasChange={setTerreno} value={terrenoSize} onValueChange={setTerrenoSize} fieldLabel="Tamaño del terreno" /> },
@@ -808,10 +843,10 @@ function Index() {
     {
       id: "detalles",
       label: "Detalles",
-      badge: "Antigüedad · Uso de suelo",
       desc: "Datos que ayudan a compradores a filtrar mejor.",
       tint: "bg-sky-50 text-sky-600",
       icon: ClipboardList,
+      layout: "grid",
       grid: "grid-cols-1 gap-4 sm:grid-cols-2",
       fields: [
         { id: "antiguedad", label: "Antigüedad", pending: !antiguedad, node: (
@@ -838,6 +873,9 @@ function Index() {
               </SelectContent>
             </Select>
           </div>
+        )},
+        { id: "niveles", label: "Niveles", pending: false, node: (
+          <Stepper label="Niveles" value={niveles} onChange={setNiveles} min={1} icon={<Home className="h-4 w-4" />} />
         )},
         { id: "tipo-rancho", label: "Tipo de rancho", pending: false, span: "full", node: (
           <div>
@@ -871,13 +909,24 @@ function Index() {
     });
   };
 
-  const renderCaractFields = (g: CGroup, fields: CField[]) => (
-    <div className={`grid ${g.grid}`}>
-      {fields.map((f) => (
-        <div key={f.id} className={f.span === "full" ? "sm:col-span-2" : ""}>{f.node}</div>
-      ))}
-    </div>
-  );
+  const renderCaractFields = (g: CGroup, fields: CField[]) => {
+    if (g.layout === "chips") {
+      return (
+        <div className="flex flex-wrap gap-2">
+          {fields.map((f) => (
+            <div key={f.id}>{f.node}</div>
+          ))}
+        </div>
+      );
+    }
+    return (
+      <div className={`grid ${g.grid ?? ""}`}>
+        {fields.map((f) => (
+          <div key={f.id} className={f.span === "full" ? "sm:col-span-2" : ""}>{f.node}</div>
+        ))}
+      </div>
+    );
+  };
 
   const renderCaracteristicasBody = () => {
     const totalFields = caractGroups.reduce((a, g) => a + g.fields.length, 0);
