@@ -1168,16 +1168,14 @@ function Index() {
           {caractGroups.map((g) => {
             const groupSelected = (() => {
               switch (g.id) {
-                case "habitaciones":
-                  return [recamaras, banos, mediosBanos, walkInCloset, estudio].filter((n) => n > 0).length;
+                case "detalles":
+                  return [recamaras, banos, mediosBanos, niveles, walkInCloset, estudio].filter((n) => n > 0).length;
                 case "movilidad":
                   return [estac, visitas, estacTechado, garage, cargadorEV, bicicletero].filter((n) => n > 0).length;
                 case "espacios":
                   return [terreno === true, construccion === true, jardin === true].filter(Boolean).length;
                 case "antiguedad":
                   return !!antiguedad ? 1 : 0;
-                case "detalles":
-                  return [niveles > 0, !!usoSuelo].filter(Boolean).length;
                 default:
                   return 0;
               }
