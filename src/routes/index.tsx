@@ -736,6 +736,76 @@ function Index() {
     [],
   );
 
+  const clearAmenityGroup = useCallback((groupId: string) => {
+    setAmenities((cur) => {
+      const next = { ...cur };
+      const group = AMENITY_GROUPS.find((g) => g.id === groupId);
+      if (!group) return cur;
+      group.items.forEach((it) => delete next[it.id]);
+      return next;
+    });
+  }, []);
+
+  const clearAllAmenities = useCallback(() => setAmenities({}), []);
+
+  const clearCaractGroup = useCallback((groupId: string) => {
+    switch (groupId) {
+      case "habitaciones":
+        setRecamaras(0);
+        setBanos(0);
+        setMediosBanos(0);
+        setWalkInCloset(0);
+        setEstudio(0);
+        break;
+      case "movilidad":
+        setEstac(0);
+        setVisitas(0);
+        setEstacTechado(0);
+        setGarage(0);
+        setCargadorEV(0);
+        setBicicletero(0);
+        break;
+      case "espacios":
+        setTerreno(null);
+        setTerrenoSize("");
+        setConstruccion(null);
+        setConstruccionSize("");
+        setJardin(null);
+        setJardinSize("");
+        break;
+      case "detalles":
+        setAntiguedad("");
+        setNiveles(1);
+        setUsoSuelo("");
+        setTipoRancho("No aplica");
+        break;
+    }
+  }, []);
+
+  const clearAllCaracteristicas = useCallback(() => {
+    setRecamaras(0);
+    setBanos(0);
+    setMediosBanos(0);
+    setWalkInCloset(0);
+    setEstudio(0);
+    setEstac(0);
+    setVisitas(0);
+    setEstacTechado(0);
+    setGarage(0);
+    setCargadorEV(0);
+    setBicicletero(0);
+    setTerreno(null);
+    setTerrenoSize("");
+    setConstruccion(null);
+    setConstruccionSize("");
+    setJardin(null);
+    setJardinSize("");
+    setAntiguedad("");
+    setNiveles(1);
+    setUsoSuelo("");
+    setTipoRancho("No aplica");
+  }, []);
+
   /* ---------- Características: shared body renderer (list + focus dialog) ---------- */
   type CField = { id: string; label: string; pending: boolean; span?: "full"; node: React.ReactNode };
   type CGroup = {
